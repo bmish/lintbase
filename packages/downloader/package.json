@@ -1,0 +1,37 @@
+{
+  "name": "downloader",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "download": "node --loader ts-node/esm bin/download.ts",
+    "lint": "npm-run-all --continue-on-error --aggregate-output --parallel \"lint:*\"",
+    "lint:docs:fix": "npm run lint:docs -- --fix",
+    "lint:js": "eslint --cache .",
+    "lint:js:fix": "npm run lint:js -- --fix",
+    "lint:package-json": "npmPkgJsonLint .",
+    "lint:package-json-sorting": "sort-package-json --check",
+    "lint:package-json-sorting:fix": "sort-package-json package.json",
+    "lint:types": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.1",
+    "pacote": "^15.2.0",
+    "ts-node": "^10.9.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.2.4",
+    "@types/pacote": "^11.1.5",
+    "eslint": "^8",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-square": "^25",
+    "npm-registry-client": "^8.6.0",
+    "npm-run-all": "^4.1.5",
+    "sort-package-json": "^2.4.1",
+    "typescript": "^5.0.4"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
