@@ -8,6 +8,7 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "lib": [
+      "dom",
       "es2022"
     ],
     "module": "es2022",
