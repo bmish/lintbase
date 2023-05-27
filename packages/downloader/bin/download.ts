@@ -26,19 +26,25 @@ async function downloadPackages(
 
   const packagesAndVersions = data.objects.map((pkg) => ({
     name: pkg.package.name,
-    version: pkg.package.version, // Unused.
+    version: pkg.package.version,
   }));
 
-  // TODO: try to batch install for performance.
-  for (const pkg of packagesAndVersions.slice(0, 10)) {
-    console.log(`Installing ${pkg.name}@${pkg.version}`);
-    const command = `npm install ${pkg.name} --prefix ${downloadPath} -f`;
+  const packageJson = {
+    dependencies: Object.fromEntries(
+      packagesAndVersions.map((pkg) => [pkg.name, `^${pkg.version}`])
+    ),
+  };
 
-    try {
-      await execP(command);
-    } catch (error) {
-      console.error(`Failed to install ${pkg.name}. Error: ${String(error)}`);
-    }
+  fs.mkdirSync(downloadPath, { recursive: true });
+  fs.writeFileSync(
+    path.join(downloadPath, 'package.json'),
+    JSON.stringify(packageJson)
+  );
+
+  try {
+    await execP(`npm install --prefix ${downloadPath} -f`);
+  } catch (error) {
+    console.error(`Failed to npm install. Error: ${String(error)}`);
   }
 
   return packagesAndVersions;
@@ -62,25 +68,33 @@ const downloadPath = path.join(__dirname, '..', 'tmp', 'npm-packages');
 
 const packages = await downloadPackages(keyword, downloadPath);
 
-console.log(
-  packages.flatMap((pkg) => {
-    // ignore if this package doesn't have package.json
-    const packagePath = path.join(downloadPath, 'node_modules', pkg.name);
-    if (!fs.existsSync(packagePath)) {
-      console.log(`No package.json found for ${pkg.name}@${pkg.version}`);
-
-      return [];
-    }
-
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, import/no-dynamic-require
-      return require(packagePath);
-    } catch (error) {
-      console.log(
-        `Failed to require: ${packagePath}. Error = ${String(error)}`
-      );
-    }
+const packagesLoad = packages.flatMap((pkg) => {
+  const packagePath = path.join(downloadPath, 'node_modules', pkg.name);
+  if (!fs.existsSync(packagePath)) {
+    console.log(`No package.json found for ${pkg.name}@${pkg.version}`);
 
     return [];
-  })
+  }
+
+  try {
+    // eslint-disable-next-line import/no-dynamic-require
+    const loaded = require(packagePath) as {
+      name: string;
+      rules?: Record<string, unknown>[];
+      configs?: Record<string, unknown>[];
+    };
+    loaded.name = pkg.name;
+    return [loaded];
+  } catch (error) {
+    console.log(`Failed to require: ${packagePath}. Error = ${String(error)}`);
+  }
+
+  return [];
+});
+
+console.log(
+  packagesLoad.map(
+    (pkg) => `${pkg.name}: ${Object.keys(pkg.rules || {}).length} rules`
+  )
 );
+console.log(`Loaded ${packagesLoad.length} packages`);
