@@ -1,25 +1,34 @@
 import Header from '@/components/Header';
+import PluginCard from '@/components/PluginCard';
+import RuleCard from '@/components/RuleCard';
+import { FAKE_PLUGINS } from '@/data';
 
 export default function index() {
   return (
-    <div className="bg-gray-100">
+    <div className="bg-gray-100 h-screen">
       <Header />
 
-      <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-semibold mb-4">Welcome to My Website</h1>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
-            auctor eros augue, a pellentesque arcu consectetur ac. Nulla
-            facilisi. Vestibulum vel fringilla tortor. Duis rhoncus nulla id
-            aliquet ultricies. Quisque semper elit vel nisi ultricies, id
-            feugiat nunc tristique. Phasellus at ullamcorper neque, sed ultrices
-            ligula. Sed vel orci leo. Integer commodo consectetur leo, ac
-            posuere tortor facilisis id. Morbi consequat hendrerit turpis in
-            porttitor. Sed luctus, nisl et semper scelerisque, turpis felis
-            vehicula velit, a pellentesque odio arcu a nisl. Curabitur eu
-            gravida nisl. Nulla facilisi.
-          </p>
+      <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 max-w-4xl mx-auto">
+        <div className="flex">
+          <div className="w-1/2 p-4">
+            <h2 className="text-2xl font-bold mb-4 text-center">Top Plugins</h2>
+            <ul>
+              {FAKE_PLUGINS.map((p) => (
+                <li key={p.name}>
+                  <PluginCard plugin={p}></PluginCard>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="w-1/2 p-4">
+            <h2 className="text-2xl font-bold mb-4 text-center">Top Rules</h2>
+            <ul>
+              <li>
+                <RuleCard rule={FAKE_PLUGINS[0].rules[0]}></RuleCard>
+              </li>
+            </ul>
+          </div>
         </div>
       </main>
     </div>
