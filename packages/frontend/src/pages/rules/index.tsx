@@ -1,32 +1,61 @@
 import Header from '@/components/Header';
-import RuleCard from '@/components/RuleCard';
 import { FAKE_PLUGINS } from '@/data';
-import { Grid } from '@mui/material';
+import {
+  Link,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material';
+
+const rules = [
+  FAKE_PLUGINS[0].rules[0],
+  FAKE_PLUGINS[0].rules[0],
+  FAKE_PLUGINS[0].rules[0],
+  FAKE_PLUGINS[0].rules[0],
+  FAKE_PLUGINS[0].rules[0],
+];
 
 export default function Rules() {
-  const rule = FAKE_PLUGINS[0].rules[0];
   return (
-    <div className="bg-gray-100 h-min">
+    <div className="bg-gray-100 h-screen">
       <Header />
 
       <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 max-w-4xl mx-auto">
-        <Grid container spacing={2}>
-          <Grid item xs={8}>
-            <RuleCard rule={rule}></RuleCard>
-          </Grid>
-          <Grid item xs={8}>
-            <RuleCard rule={rule}></RuleCard>
-          </Grid>
-          <Grid item xs={8}>
-            <RuleCard rule={rule}></RuleCard>
-          </Grid>
-          <Grid item xs={8}>
-            <RuleCard rule={rule}></RuleCard>
-          </Grid>
-          <Grid item xs={8}>
-            <RuleCard rule={rule}></RuleCard>
-          </Grid>
-        </Grid>
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Name</TableCell>
+                <TableCell align="left">Description</TableCell>
+                <TableCell align="right">Fixable</TableCell>
+                <TableCell align="right">Has Suggestions</TableCell>
+                <TableCell align="right">Last Published</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rules.map((rule) => (
+                <TableRow
+                  key={rule.name}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    <Link href={`/npm/${rule.name}`}>{rule.name}</Link>
+                  </TableCell>
+                  <TableCell align="left">{rule.description}</TableCell>
+                  <TableCell align="right">{rule.fixable}</TableCell>
+                  <TableCell align="right">{rule.hasSuggestions}</TableCell>
+                  <TableCell align="right">
+                    {new Date(rule.updatedAt).toLocaleDateString()}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </main>
     </div>
   );

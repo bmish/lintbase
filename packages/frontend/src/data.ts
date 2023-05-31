@@ -4,7 +4,11 @@ export const FAKE_PLUGINS: Plugin[] = [
   {
     name: 'eslint-plugin-unicorn',
     ecosystem: 'JavaScript',
-    link: 'https://github.com/sindresorhus/eslint-plugin-unicorn',
+    links: {
+      us: '/npm/eslint-plugin-unicorn',
+      packageRegistry: 'https://www.npmjs.com/package/eslint-plugin-unicorn',
+      readme: 'https://github.com/sindresorhus/eslint-plugin-unicorn',
+    },
     description: 'More than 100 powerful ESLint rules',
     keywords: [
       'nodejs',
@@ -22,7 +26,12 @@ export const FAKE_PLUGINS: Plugin[] = [
         name: 'prefer-array-flat-map',
         plugin: {
           name: 'eslint-plugin-unicorn',
-          link: 'https://github.com/sindresorhus/eslint-plugin-unicorn',
+          links: {
+            us: '/npm/eslint-plugin-unicorn',
+            packageRegistry:
+              'https://www.npmjs.com/package/eslint-plugin-unicorn',
+            readme: 'https://github.com/sindresorhus/eslint-plugin-unicorn',
+          },
         },
         ecosystem: 'JavaScript',
         fixable: 'code',
@@ -33,8 +42,14 @@ export const FAKE_PLUGINS: Plugin[] = [
         category: 'Stylistic Issues',
         options: [],
         description: 'Prefer `Array#flatMap()` over `.map().flat()`.',
-        link: 'https://github.com/sindresorhus/eslint-plugin-unicorn/blob/main/docs/rules/prefer-array-flat-map.md',
         requiresTypeChecking: false,
+        links: {
+          us: '/npm/eslint-plugin-unicorn/prefer-array-flat-map',
+          ruleDoc:
+            'https://github.com/sindresorhus/eslint-plugin-unicorn/blob/main/docs/rules/prefer-array-flat-map.md',
+        },
+        updatedAt: '2020-10-20T15:00:00.000Z',
+        createdAt: '2017-01-01T15:00:00.000Z',
       },
     ],
     stats: {

@@ -25,7 +25,7 @@ export default function PluginCard({ plugin }: { plugin: Plugin }) {
         <Typography variant="body2">{plugin.description}</Typography>
       </CardContent>
       <CardActions>
-        <Button size="small" href={plugin.link}>
+        <Button size="small" href={plugin.links.us}>
           README
         </Button>
       </CardActions>

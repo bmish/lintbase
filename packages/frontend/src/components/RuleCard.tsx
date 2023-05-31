@@ -32,10 +32,10 @@ export default function RuleCard({ rule }: { rule: Rule }) {
         <Typography variant="body2">{rule.description}</Typography>
       </CardContent>
       <CardActions>
-        <Button size="small" href={rule.plugin.link}>
+        <Button size="small" href={rule.plugin.links.us}>
           plugin
         </Button>
-        <Button size="small" href={rule.link}>
+        <Button size="small" href={rule.links.us}>
           rule doc
         </Button>
       </CardActions>

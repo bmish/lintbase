@@ -2,10 +2,13 @@ export type Rule = {
   name: string;
   plugin: {
     name: string;
-    link: string;
+    links: {
+      us: string;
+      packageRegistry: string;
+      readme: string;
+    };
   };
   ecosystem: string;
-  link: string;
   description: string;
   fixable: 'code' | 'whitespace' | undefined;
   hasSuggestions: boolean;
@@ -15,12 +18,17 @@ export type Rule = {
   requiresTypeChecking: boolean;
   category: string; // meta.docs.category
   options: any[];
+  links: {
+    us: string;
+    ruleDoc: string;
+  };
+  updatedAt: string;
+  createdAt: string;
 };
 
 export type Plugin = {
   name: string;
   ecosystem: string;
-  link: string;
   description: string; // could be multiple sources for this
   keywords: string[]; // npm or github source
   rules: Rule[];
@@ -32,6 +40,11 @@ export type Plugin = {
     forks: number;
     contributors: number;
     weeklyDownloads: number;
+  };
+  links: {
+    us: string;
+    packageRegistry: string;
+    readme: string;
   };
   updatedAt: string;
   createdAt: string;
