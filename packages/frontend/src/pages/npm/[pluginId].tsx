@@ -29,7 +29,7 @@ export default function Plugin() {
       <Header />
 
       <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 max-w-4xl mx-auto">
-        {plugin && <PluginCard plugin={plugin}></PluginCard>}
+        {plugin && <PluginCard plugin={plugin} detailed={true}></PluginCard>}
 
         {plugin && (
           <TableContainer component={Paper} className="mt-8">
@@ -50,7 +50,10 @@ export default function Plugin() {
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
-                      <Link href={`/npm/${plugin.name}/${rule.name}`}>
+                      <Link
+                        href={`/npm/${plugin.name}/${rule.name}`}
+                        underline="none"
+                      >
                         {rule.name}
                       </Link>
                     </TableCell>

@@ -3,11 +3,18 @@ import {
   Card,
   CardActions,
   CardContent,
+  Link,
   Typography,
 } from '@mui/material';
 import { Rule } from '@/types';
 
-export default function RuleCard({ rule }: { rule: Rule }) {
+export default function RuleCard({
+  rule,
+  detailed = false,
+}: {
+  rule: Rule;
+  detailed?: boolean;
+}) {
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
@@ -15,7 +22,13 @@ export default function RuleCard({ rule }: { rule: Rule }) {
           {rule.ecosystem} • {rule.plugin.name}
         </Typography>
         <Typography variant="h5" component="div">
-          {rule.name} {rule.fixable ? '🔧' : ''}
+          {detailed && rule.name}
+          {!detailed && (
+            <Link href={rule.links.us} underline="none">
+              {rule.name}
+            </Link>
+          )}{' '}
+          {rule.fixable ? '🔧' : ''}
           {rule.hasSuggestions ? '💡' : ''}
           {rule.options ? '⚙️' : ''}
           {rule.requiresTypeChecking ? '💭' : ''}
@@ -31,14 +44,17 @@ export default function RuleCard({ rule }: { rule: Rule }) {
 
         <Typography variant="body2">{rule.description}</Typography>
       </CardContent>
-      <CardActions>
-        <Button size="small" href={rule.plugin.links.us}>
-          plugin
-        </Button>
-        <Button size="small" href={rule.links.us}>
-          rule doc
-        </Button>
-      </CardActions>
+      {detailed && (
+        <CardActions>
+          <Button size="small" href={rule.plugin.links.us}>
+            plugin
+          </Button>
+
+          <Button size="small" href={rule.links.ruleDoc}>
+            Rule Doc
+          </Button>
+        </CardActions>
+      )}
     </Card>
   );
 }

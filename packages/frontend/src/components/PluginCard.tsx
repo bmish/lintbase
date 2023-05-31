@@ -4,10 +4,17 @@ import {
   Card,
   CardActions,
   CardContent,
+  Link,
   Typography,
 } from '@mui/material';
 
-export default function PluginCard({ plugin }: { plugin: Plugin }) {
+export default function PluginCard({
+  plugin,
+  detailed = false,
+}: {
+  plugin: Plugin;
+  detailed?: boolean;
+}) {
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
@@ -15,7 +22,12 @@ export default function PluginCard({ plugin }: { plugin: Plugin }) {
           JavaScript
         </Typography>
         <Typography variant="h5" component="div">
-          {plugin.name}
+          {detailed && plugin.name}
+          {!detailed && (
+            <Link href={plugin.links.us} underline="none">
+              {plugin.name}
+            </Link>
+          )}
         </Typography>
         <Typography sx={{ mb: 1.5, fontSize: 14 }} color="text.secondary">
           {plugin.rules.length} Rules • {plugin.stats.stars} Stars •{' '}
@@ -24,11 +36,17 @@ export default function PluginCard({ plugin }: { plugin: Plugin }) {
 
         <Typography variant="body2">{plugin.description}</Typography>
       </CardContent>
-      <CardActions>
-        <Button size="small" href={plugin.links.us}>
-          README
-        </Button>
-      </CardActions>
+      {detailed && (
+        <CardActions>
+          <Button size="small" href={plugin.links.readme}>
+            README
+          </Button>
+
+          <Button size="small" href={plugin.links.packageRegistry}>
+            Package Registry
+          </Button>
+        </CardActions>
+      )}
     </Card>
   );
 }

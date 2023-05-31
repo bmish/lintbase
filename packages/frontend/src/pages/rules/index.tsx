@@ -43,7 +43,12 @@ export default function Rules() {
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   <TableCell component="th" scope="row">
-                    <Link href={`/npm/${rule.name}`}>{rule.name}</Link>
+                    <Link
+                      href={`/npm/${rule.plugin.name}/${rule.name}`}
+                      underline="none"
+                    >
+                      {rule.name}
+                    </Link>
                   </TableCell>
                   <TableCell align="left">{rule.description}</TableCell>
                   <TableCell align="right">{rule.fixable}</TableCell>

@@ -20,8 +20,8 @@ export default function Plugin() {
     <div className="bg-gray-100 h-screen">
       <Header />
 
-      <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 max-w-md mx-auto">
-        {rule && <RuleCard rule={rule}></RuleCard>}
+      <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 max-w-4xl mx-auto">
+        {rule && <RuleCard rule={rule} detailed={true}></RuleCard>}
       </main>
     </div>
   );

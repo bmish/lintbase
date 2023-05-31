@@ -43,7 +43,9 @@ export default function Plugins() {
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   <TableCell component="th" scope="row">
-                    <Link href={`/npm/${plugin.name}`}>{plugin.name}</Link>
+                    <Link href={`/npm/${plugin.name}`} underline="none">
+                      {plugin.name}
+                    </Link>
                   </TableCell>
                   <TableCell align="left">{plugin.description}</TableCell>
                   <TableCell align="right">{plugin.rules.length}</TableCell>
