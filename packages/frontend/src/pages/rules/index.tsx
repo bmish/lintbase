@@ -42,9 +42,9 @@ export default function Rules({
               <TableRow>
                 <TableCell>Name</TableCell>
                 <TableCell align="left">Description</TableCell>
-                <TableCell align="right">Fixable</TableCell>
-                <TableCell align="right">Has Suggestions</TableCell>
-                <TableCell align="right">Last Published</TableCell>
+                <TableCell align="right">🔧</TableCell>
+                <TableCell align="right">💡</TableCell>
+                <TableCell align="right">Updated</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -62,8 +62,12 @@ export default function Rules({
                     </Link>
                   </TableCell>
                   <TableCell align="left">{rule.description}</TableCell>
-                  <TableCell align="right">{rule.fixable}</TableCell>
-                  <TableCell align="right">{rule.hasSuggestions}</TableCell>
+                  <TableCell align="right">
+                    {rule.fixable ? '🔧' : ''}
+                  </TableCell>
+                  <TableCell align="right">
+                    {rule.hasSuggestions ? '💡' : ''}
+                  </TableCell>
                   <TableCell align="right">
                     {new Date(rule.updatedAt).toLocaleDateString()}
                   </TableCell>

@@ -15,6 +15,12 @@ function hasOptions(jsonSchema: JSONSchema.JSONSchema4): boolean {
   );
 }
 
+function randomDate(start: Date, end: Date) {
+  return new Date(
+    start.getTime() + Math.random() * (end.getTime() - start.getTime())
+  );
+}
+
 function loadedPluginToNormalizedPlugin(
   pluginName: string,
   plugin: TSESLint.Linter.Plugin
@@ -40,8 +46,8 @@ function loadedPluginToNormalizedPlugin(
         options: hasOptions(rule.meta?.schema) ? [{}] : null,
         // @ts-expect-error -- requiresTypeChecking not an official property
         requiresTypeChecking: rule.meta?.requiresTypeChecking || false,
-        updatedAt: 'fake rule updated',
-        createdAt: 'fake rule created',
+        updatedAt: randomDate(new Date(2020, 0, 1), new Date()).toString(),
+        createdAt: randomDate(new Date(2020, 0, 1), new Date()).toString(),
         links: {
           us: `/npm/${pluginName}/${ruleName}}`,
           ruleDoc: rule.meta?.docs?.url || '',
@@ -66,16 +72,16 @@ function loadedPluginToNormalizedPlugin(
     description: 'fake plugin desc',
     rules,
     stats: {
-      prs: Math.random() * 100,
-      issues: Math.random() * 100,
-      stars: Math.random() * 100,
-      watching: Math.random() * 100,
-      forks: Math.random() * 100,
-      contributors: Math.random() * 100,
-      weeklyDownloads: Math.random() * 100,
+      prs: Math.round(Math.random() * 100),
+      issues: Math.round(Math.random() * 100),
+      stars: Math.round(Math.random() * 100),
+      watching: Math.round(Math.random() * 100),
+      forks: Math.round(Math.random() * 100),
+      contributors: Math.round(Math.random() * 100),
+      weeklyDownloads: Math.round(Math.random() * 100),
     },
-    updatedAt: 'fake plugin updated',
-    createdAt: 'fake plugin created',
+    updatedAt: randomDate(new Date(2020, 0, 1), new Date()).toString(),
+    createdAt: randomDate(new Date(2020, 0, 1), new Date()).toString(),
     links: {
       us: `/npm/${pluginName}`,
       packageRegistry: '',

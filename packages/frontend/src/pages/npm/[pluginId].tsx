@@ -53,11 +53,11 @@ export default function Plugin({
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  <TableCell>Name</TableCell>
+                  <TableCell>Rule</TableCell>
                   <TableCell align="left">Description</TableCell>
-                  <TableCell align="right">Fixable</TableCell>
-                  <TableCell align="right">Has Suggestions</TableCell>
-                  <TableCell align="right">Last Published</TableCell>
+                  <TableCell align="right">🔧</TableCell>
+                  <TableCell align="right">💡</TableCell>
+                  <TableCell align="right">Updated</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -75,8 +75,12 @@ export default function Plugin({
                       </Link>
                     </TableCell>
                     <TableCell align="left">{rule.description}</TableCell>
-                    <TableCell align="right">{rule.fixable}</TableCell>
-                    <TableCell align="right">{rule.hasSuggestions}</TableCell>
+                    <TableCell align="right">
+                      {rule.fixable ? '🔧' : ''}
+                    </TableCell>
+                    <TableCell align="right">
+                      {rule.hasSuggestions ? '💡' : ''}
+                    </TableCell>
                     <TableCell align="right">
                       {new Date(rule.updatedAt).toLocaleDateString()}
                     </TableCell>
