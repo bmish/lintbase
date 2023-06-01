@@ -3,7 +3,7 @@ import { Plugin } from './types';
 export const FAKE_PLUGINS: Plugin[] = [
   {
     name: 'eslint-plugin-unicorn',
-    ecosystem: 'JavaScript',
+    ecosystem: 'node',
     links: {
       us: '/npm/eslint-plugin-unicorn',
       packageRegistry: 'https://www.npmjs.com/package/eslint-plugin-unicorn',
@@ -33,7 +33,7 @@ export const FAKE_PLUGINS: Plugin[] = [
             readme: 'https://github.com/sindresorhus/eslint-plugin-unicorn',
           },
         },
-        ecosystem: 'JavaScript',
+        ecosystem: 'node',
         fixable: 'code',
         hasSuggestions: false,
         type: 'suggestion',

@@ -19,7 +19,8 @@ export default function RuleCard({
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
         <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          {rule.ecosystem} • {rule.plugin.name}
+          {rule.ecosystem === 'node' ? 'Node.js' : rule.ecosystem} •{' '}
+          {rule.plugin.name}
         </Typography>
         <Typography variant="h5" component="div">
           {detailed && rule.name}

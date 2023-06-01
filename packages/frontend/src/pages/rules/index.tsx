@@ -1,5 +1,6 @@
 import Header from '@/components/Header';
-import { FAKE_PLUGINS } from '@/data';
+import { Rule } from '@/types';
+import { getPlugins } from '@/utils';
 import {
   Link,
   Paper,
@@ -11,17 +12,27 @@ import {
   TableRow,
 } from '@mui/material';
 
-const rules = [
-  FAKE_PLUGINS[0].rules[0],
-  FAKE_PLUGINS[0].rules[0],
-  FAKE_PLUGINS[0].rules[0],
-  FAKE_PLUGINS[0].rules[0],
-  FAKE_PLUGINS[0].rules[0],
-];
+export async function getServerSideProps() {
+  const plugins = await getPlugins();
 
-export default function Rules() {
+  const rules = plugins.flatMap((plugin) => plugin.rules);
+
+  return {
+    props: {
+      data: {
+        rules,
+      },
+    },
+  };
+}
+
+export default function Rules({
+  data: { rules },
+}: {
+  data: { rules: Rule[] };
+}) {
   return (
-    <div className="bg-gray-100 h-screen">
+    <div className="bg-gray-100 h-full">
       <Header />
 
       <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 max-w-4xl mx-auto">

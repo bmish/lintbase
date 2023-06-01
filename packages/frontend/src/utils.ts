@@ -31,7 +31,7 @@ function loadedPluginToNormalizedPlugin(
         description: rule.meta?.docs?.description || '',
         fixable: rule.meta?.fixable || 'code',
         hasSuggestions: rule.meta?.hasSuggestions || false,
-        ecosystem: 'npm',
+        ecosystem: 'node',
         type: rule.meta?.type || null,
         deprecated: rule.meta?.deprecated || false,
         replacedBy: rule.meta?.replacedBy || [],
@@ -62,7 +62,7 @@ function loadedPluginToNormalizedPlugin(
 
   const pluginNormalized: Plugin = {
     name: pluginName,
-    ecosystem: 'npm',
+    ecosystem: 'node',
     description: 'fake plugin desc',
     rules,
     stats: {

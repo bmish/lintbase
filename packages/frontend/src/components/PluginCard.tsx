@@ -19,7 +19,7 @@ export default function PluginCard({
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
         <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          JavaScript
+          {plugin.ecosystem === 'node' ? 'Node.js' : plugin.ecosystem}
         </Typography>
         <Typography variant="h5" component="div">
           {detailed && plugin.name}

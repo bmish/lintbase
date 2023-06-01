@@ -42,7 +42,7 @@ export default function Plugin({
   const plugin = plugins.find((plugin) => plugin.name === pluginId);
 
   return (
-    <div className="bg-gray-100 h-screen">
+    <div className="bg-gray-100 h-full">
       <Header />
 
       <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 max-w-4xl mx-auto">
