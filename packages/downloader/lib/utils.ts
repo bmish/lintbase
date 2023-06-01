@@ -4,6 +4,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { exec } from 'node:child_process';
 import util from 'node:util';
+// import url from 'node:url';
 
 const execP = util.promisify(exec);
 
@@ -92,4 +93,19 @@ export function loadPackages<T>(
       return [];
     })
   );
+}
+
+export async function searchDownloadAndLoad<T>(
+  keyword: string,
+  downloadPath: string
+) {
+  // const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+
+  // const downloadPath = path.join(__dirname, '..', 'tmp', 'npm-packages');
+
+  const packageInfos = await searchPackages(keyword);
+
+  await installPackages(packageInfos, downloadPath);
+
+  return loadPackages<T>(packageInfos, downloadPath);
 }

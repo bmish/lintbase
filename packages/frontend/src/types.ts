@@ -14,10 +14,10 @@ export type Rule = {
   hasSuggestions: boolean;
   type: 'problem' | 'suggestion' | 'layout' | undefined;
   deprecated: boolean;
-  replacedBy: string[];
+  replacedBy: readonly string[];
   requiresTypeChecking: boolean;
   category: string; // meta.docs.category
-  options: any[];
+  options: any | readonly any[];
   links: {
     us: string;
     ruleDoc: string;
@@ -30,8 +30,8 @@ export type Plugin = {
   name: string;
   ecosystem: string;
   description: string; // could be multiple sources for this
-  keywords: string[]; // npm or github source
-  rules: Rule[];
+  keywords: readonly string[]; // npm or github source
+  rules: readonly Rule[];
   stats: {
     prs: number;
     issues: number;

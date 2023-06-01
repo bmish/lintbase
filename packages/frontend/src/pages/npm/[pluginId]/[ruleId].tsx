@@ -1,20 +1,37 @@
 /* eslint filenames/match-exported:"off",unicorn/filename-case:"off" */
 import Header from '@/components/Header';
 import RuleCard from '@/components/RuleCard';
-import { FAKE_PLUGINS } from '@/data';
 import { useRouter } from 'next/router';
+import { getPlugins } from '@/utils';
+import { Plugin } from '@/types';
 
 interface IQueryParam {
   ruleId: string;
 }
 
-export default function Plugin() {
+export async function getServerSideProps() {
+  const plugins = await getPlugins();
+
+  return {
+    props: {
+      data: {
+        plugins,
+      },
+    },
+  };
+}
+
+export default function Rule({
+  data: { plugins },
+}: {
+  data: { plugins: Plugin[] };
+}) {
   const router = useRouter();
   const { ruleId } = router.query as unknown as IQueryParam;
 
-  const rule = FAKE_PLUGINS.flatMap((plugin) => plugin.rules).find(
-    (rule) => rule.name === ruleId
-  );
+  const rule = plugins
+    .flatMap((plugin) => plugin.rules)
+    .find((rule) => rule.name === ruleId);
 
   return (
     <div className="bg-gray-100 h-screen">

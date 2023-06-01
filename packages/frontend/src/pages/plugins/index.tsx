@@ -1,5 +1,6 @@
 import Header from '@/components/Header';
-import { FAKE_PLUGINS } from '@/data';
+import { Plugin } from '@/types';
+import { getPlugins } from '@/utils';
 import {
   Link,
   Paper,
@@ -11,15 +12,23 @@ import {
   TableRow,
 } from '@mui/material';
 
-const plugins = [
-  FAKE_PLUGINS[0],
-  FAKE_PLUGINS[0],
-  FAKE_PLUGINS[0],
-  FAKE_PLUGINS[0],
-  FAKE_PLUGINS[0],
-];
+export async function getServerSideProps() {
+  const plugins = await getPlugins();
 
-export default function Plugins() {
+  return {
+    props: {
+      data: {
+        plugins,
+      },
+    },
+  };
+}
+
+export default function Plugins({
+  data: { plugins },
+}: {
+  data: { plugins: Plugin[] };
+}) {
   return (
     <div className="bg-gray-100 h-screen">
       <Header />

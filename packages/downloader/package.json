@@ -1,8 +1,15 @@
 {
-  "name": "downloader",
-  "version": "1.0.0",
+  "name": "@lintbase/downloader",
+  "version": "0.0.0",
   "description": "",
   "type": "module",
+  "exports": "./dist/lib/index.js",
+  "main": "./dist/lib/index.js",
+  "types": "./dist/lib/index.d.ts",
+  "files": [
+    "dist/",
+    "README.md"
+  ],
   "scripts": {
     "download": "node --loader ts-node/esm bin/download.ts",
     "lint": "npm-run-all --continue-on-error --aggregate-output --parallel \"lint:*\"",
@@ -16,7 +23,6 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@typescript-eslint/utils": "^5.59.7",
     "node-fetch": "^3.3.1",
     "ts-node": "^10.9.1"
   },

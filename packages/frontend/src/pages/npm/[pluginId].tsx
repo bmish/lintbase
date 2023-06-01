@@ -1,7 +1,6 @@
 /* eslint filenames/match-exported:"off",unicorn/filename-case:"off" */
 import Header from '@/components/Header';
 import PluginCard from '@/components/PluginCard';
-import { FAKE_PLUGINS } from '@/data';
 import { useRouter } from 'next/router';
 import {
   Link,
@@ -13,16 +12,34 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
+import { getPlugins } from '@/utils';
+import { Plugin as PluginType } from '@/types';
 
 interface IQueryParam {
   pluginId: string;
 }
 
-export default function Plugin() {
+export async function getServerSideProps() {
+  const plugins = await getPlugins();
+
+  return {
+    props: {
+      data: {
+        plugins,
+      },
+    },
+  };
+}
+
+export default function Plugin({
+  data: { plugins },
+}: {
+  data: { plugins: PluginType[] };
+}) {
   const router = useRouter();
   const { pluginId } = router.query as unknown as IQueryParam;
 
-  const plugin = FAKE_PLUGINS.find((plugin) => plugin.name === pluginId);
+  const plugin = plugins.find((plugin) => plugin.name === pluginId);
 
   return (
     <div className="bg-gray-100 h-screen">
