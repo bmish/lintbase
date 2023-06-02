@@ -34,7 +34,7 @@ function loadedPluginToNormalizedPlugin(
 
       const ruleNormalized: Rule = {
         name: ruleName,
-        description: rule.meta?.docs?.description || '',
+        description: rule.meta?.docs?.description || null,
         fixable: rule.meta?.fixable || 'code',
         hasSuggestions: rule.meta?.hasSuggestions || false,
         ecosystem: 'node',
@@ -42,7 +42,7 @@ function loadedPluginToNormalizedPlugin(
         deprecated: rule.meta?.deprecated || false,
         replacedBy: rule.meta?.replacedBy || [],
         // @ts-expect-error -- category not an official property
-        category: rule.meta?.docs?.category || '',
+        category: rule.meta?.docs?.category || null,
         options: hasOptions(rule.meta?.schema) ? [{}] : null,
         // @ts-expect-error -- requiresTypeChecking not an official property
         requiresTypeChecking: rule.meta?.requiresTypeChecking || false,
@@ -50,7 +50,7 @@ function loadedPluginToNormalizedPlugin(
         createdAt: randomDate(new Date(2020, 0, 1), new Date()).toString(),
         links: {
           us: `/npm/${pluginName}/${ruleName}}`,
-          ruleDoc: rule.meta?.docs?.url || '',
+          ruleDoc: rule.meta?.docs?.url || null,
         },
         plugin: {
           name: pluginName,
