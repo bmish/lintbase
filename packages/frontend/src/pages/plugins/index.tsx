@@ -38,11 +38,19 @@ export default function Plugins({
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell align="left">Description</TableCell>
-                <TableCell align="right">Rules</TableCell>
-                <TableCell align="right">Stars</TableCell>
-                <TableCell align="right">Last Published</TableCell>
+                <TableCell scope="col">Name</TableCell>
+                <TableCell scope="col" align="left">
+                  Description
+                </TableCell>
+                <TableCell scope="col" align="right">
+                  Rules
+                </TableCell>
+                <TableCell scope="col" align="right">
+                  Stars
+                </TableCell>
+                <TableCell scope="col" align="right">
+                  Last Published
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

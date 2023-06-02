@@ -53,8 +53,10 @@ export default function Plugin({
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  <TableCell>Configuration</TableCell>
-                  <TableCell align="right">Description</TableCell>
+                  <TableCell scope="col">Configuration</TableCell>
+                  <TableCell scope="col" align="right">
+                    Description
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -79,11 +81,19 @@ export default function Plugin({
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  <TableCell>Rule</TableCell>
-                  <TableCell align="left">Description</TableCell>
-                  <TableCell align="right">🔧</TableCell>
-                  <TableCell align="right">💡</TableCell>
-                  <TableCell align="right">Updated</TableCell>
+                  <TableCell scope="col">Rule</TableCell>
+                  <TableCell scope="col" align="left">
+                    Description
+                  </TableCell>
+                  <TableCell scope="col" align="right">
+                    🔧
+                  </TableCell>
+                  <TableCell scope="col" align="right">
+                    💡
+                  </TableCell>
+                  <TableCell scope="col" align="right">
+                    Updated
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

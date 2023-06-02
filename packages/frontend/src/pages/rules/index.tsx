@@ -40,11 +40,19 @@ export default function Rules({
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell align="left">Description</TableCell>
-                <TableCell align="right">🔧</TableCell>
-                <TableCell align="right">💡</TableCell>
-                <TableCell align="right">Updated</TableCell>
+                <TableCell scope="col">Name</TableCell>
+                <TableCell scope="col" align="left">
+                  Description
+                </TableCell>
+                <TableCell scope="col" align="right">
+                  🔧
+                </TableCell>
+                <TableCell scope="col" align="right">
+                  💡
+                </TableCell>
+                <TableCell scope="col" align="right">
+                  Updated
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
