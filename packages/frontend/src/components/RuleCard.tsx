@@ -51,9 +51,11 @@ export default function RuleCard({
             plugin
           </Button>
 
-          <Button size="small" href={rule.links.ruleDoc}>
-            Rule Doc
-          </Button>
+          {rule.links.ruleDoc && (
+            <Button size="small" href={rule.links.ruleDoc}>
+              Rule Doc
+            </Button>
+          )}
         </CardActions>
       )}
     </Card>

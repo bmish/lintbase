@@ -48,7 +48,33 @@ export default function Plugin({
       <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 max-w-4xl mx-auto">
         {plugin && <PluginCard plugin={plugin} detailed={true}></PluginCard>}
 
-        {plugin && (
+        {plugin && plugin.configs.length > 0 && (
+          <TableContainer component={Paper} className="mt-8">
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Configuration</TableCell>
+                  <TableCell align="right">Description</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {plugin.configs.map((config) => (
+                  <TableRow
+                    key={config.name}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {config.name}
+                    </TableCell>
+                    <TableCell align="right">{config.description}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+
+        {plugin && plugin.rules.length > 0 && (
           <TableContainer component={Paper} className="mt-8">
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>

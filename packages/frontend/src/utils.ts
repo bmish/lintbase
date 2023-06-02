@@ -1,4 +1,4 @@
-import { Plugin, Rule } from '@/types';
+import { Config, Plugin, Rule } from '@/types';
 import { searchDownloadAndLoad } from '@lintbase/downloader';
 import type { TSESLint, JSONSchema } from '@typescript-eslint/utils';
 import path from 'node:path';
@@ -56,7 +56,7 @@ function loadedPluginToNormalizedPlugin(
           name: pluginName,
           links: {
             us: `/npm/${pluginName}`,
-            packageRegistry: '',
+            packageRegistry: `https://www.npmjs.com/package/${pluginName}`,
             readme: '',
           },
         },
@@ -66,11 +66,26 @@ function loadedPluginToNormalizedPlugin(
     }
   );
 
+  const configNormalized = Object.entries(plugin.configs || {}).map(
+    ([configName]) => {
+      const config: Config = {
+        name: configName,
+        description: 'fake config desc',
+      };
+
+      return config;
+    }
+  );
+
   const pluginNormalized: Plugin = {
     name: pluginName,
     ecosystem: 'node',
+    linter: 'eslint',
     description: 'fake plugin desc',
+
     rules,
+    configs: configNormalized,
+
     stats: {
       prs: Math.round(Math.random() * 100),
       issues: Math.round(Math.random() * 100),
@@ -80,13 +95,16 @@ function loadedPluginToNormalizedPlugin(
       contributors: Math.round(Math.random() * 100),
       weeklyDownloads: Math.round(Math.random() * 100),
     },
+
     updatedAt: randomDate(new Date(2020, 0, 1), new Date()).toString(),
     createdAt: randomDate(new Date(2020, 0, 1), new Date()).toString(),
+
     links: {
       us: `/npm/${pluginName}`,
-      packageRegistry: '',
+      packageRegistry: `https://www.npmjs.com/package/${pluginName}`,
       readme: '',
     },
+
     keywords: ['fake', 'plugin', 'keywords'],
   };
 

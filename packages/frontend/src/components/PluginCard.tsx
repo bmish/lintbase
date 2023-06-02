@@ -19,7 +19,8 @@ export default function PluginCard({
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
         <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          {plugin.ecosystem === 'node' ? 'Node.js' : plugin.ecosystem}
+          {plugin.ecosystem === 'node' ? 'Node.js' : plugin.ecosystem} •{' '}
+          {plugin.linter === 'eslint' ? 'ESLint' : plugin.linter}
         </Typography>
         <Typography variant="h5" component="div">
           {detailed && plugin.name}

@@ -32,15 +32,22 @@ export type Rule = {
   };
 };
 
+export type Config = {
+  name: string;
+  description: string | undefined; // TODO: try to get this from README or future config property?
+};
+
 export type Plugin = {
   name: string;
 
   ecosystem: 'node';
+  linter: 'eslint' | 'ember-template-lint';
 
   description: string | null; // could be multiple sources for this
   keywords: readonly string[]; // npm or github source
 
   rules: readonly Rule[];
+  configs: readonly Config[];
 
   createdAt: string;
   updatedAt: string;
