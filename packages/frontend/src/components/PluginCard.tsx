@@ -32,7 +32,14 @@ export default function PluginCard({
         </Typography>
         <div className="mb-4">
           <Typography sx={{ fontSize: 14 }} color="text.secondary">
-            {plugin.rules.length} Rules • {plugin.stats.stars} Stars •{' '}
+            {plugin.configs.length > 0 &&
+              `${plugin.configs.length} Config${
+                plugin.configs.length > 1 ? 's' : ''
+              } • `}
+            {plugin.rules.length > 0 &&
+              `${plugin.rules.length} Rule${
+                plugin.rules.length > 1 ? 's' : ''
+              } • `}
             {plugin.stats.weeklyDownloads} Weekly Downloads
           </Typography>
           {detailed && plugin.keywords && plugin.keywords.length > 0 && (
