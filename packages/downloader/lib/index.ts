@@ -1,1 +1,1 @@
-export { searchDownloadAndLoad } from '../lib/utils.js';
+export { load } from '../lib/utils.js';

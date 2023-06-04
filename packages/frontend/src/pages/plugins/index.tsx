@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 
 export async function getServerSideProps() {
-  const plugins = await getPlugins();
+  const plugins = getPlugins();
 
   return {
     props: {
@@ -60,7 +60,10 @@ export default function Plugins({
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   <TableCell component="th" scope="row">
-                    <Link href={`/npm/${plugin.name}`} underline="none">
+                    <Link
+                      href={`/npm/${encodeURIComponent(plugin.name)}`}
+                      underline="none"
+                    >
                       {plugin.name}
                     </Link>
                   </TableCell>

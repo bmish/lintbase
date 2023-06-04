@@ -5,7 +5,7 @@ import { Plugin, Rule } from '@/types';
 import { getPlugins } from '@/utils';
 
 export async function getServerSideProps() {
-  const plugins = await getPlugins();
+  const plugins = getPlugins();
 
   const pluginsRandomSelection = randomlyPickItemsFromArray(plugins, 5);
 

@@ -4,12 +4,17 @@ import path from 'node:path';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
-const downloadPath = path.join(__dirname, '..', 'tmp', 'npm-packages');
+const retrievals = ['eslint-plugin', 'ember-template-lint-plugin'];
 
-const packagesLoaded = await searchDownloadAndLoad<unknown>(
-  'eslint-plugin',
-  downloadPath
-);
+const downloadPath = path.join(__dirname, '..', 'tmp', 'npm');
 
-console.log(packagesLoaded);
-console.log(`Loaded ${Object.keys(packagesLoaded).length} packages`);
+for (const searchText of retrievals) {
+  if (searchText) {
+    const packagesLoaded = await searchDownloadAndLoad<unknown>(
+      searchText,
+      path.join(downloadPath, searchText)
+    );
+    console.log(packagesLoaded);
+    console.log(`Loaded ${Object.keys(packagesLoaded).length} packages`);
+  }
+}

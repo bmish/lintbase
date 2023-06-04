@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 
 export async function getServerSideProps() {
-  const plugins = await getPlugins();
+  const plugins = getPlugins();
 
   const rules = plugins.flatMap((plugin) => plugin.rules);
 
@@ -58,12 +58,14 @@ export default function Rules({
             <TableBody>
               {rules.map((rule) => (
                 <TableRow
-                  key={rule.name}
+                  key={`${rule.plugin.name}/${rule.name}`}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   <TableCell component="th" scope="row">
                     <Link
-                      href={`/npm/${rule.plugin.name}/${rule.name}`}
+                      href={`/npm/${encodeURIComponent(
+                        rule.plugin.name
+                      )}/${encodeURIComponent(rule.name)}`}
                       underline="none"
                     >
                       {rule.name}

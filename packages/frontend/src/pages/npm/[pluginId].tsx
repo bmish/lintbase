@@ -20,7 +20,7 @@ interface IQueryParam {
 }
 
 export async function getServerSideProps() {
-  const plugins = await getPlugins();
+  const plugins = getPlugins();
 
   return {
     props: {
@@ -62,7 +62,7 @@ export default function Plugin({
               <TableBody>
                 {plugin.configs.map((config) => (
                   <TableRow
-                    key={config.name}
+                    key={`${plugin.name}/${config.name}`}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
@@ -99,12 +99,14 @@ export default function Plugin({
               <TableBody>
                 {plugin.rules.map((rule) => (
                   <TableRow
-                    key={rule.name}
+                    key={`${rule.plugin.name}/${rule.name}`}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
                       <Link
-                        href={`/npm/${plugin.name}/${rule.name}`}
+                        href={`/npm/${encodeURIComponent(
+                          plugin.name
+                        )}/${encodeURIComponent(rule.name)}`}
                         underline="none"
                       >
                         {rule.name}

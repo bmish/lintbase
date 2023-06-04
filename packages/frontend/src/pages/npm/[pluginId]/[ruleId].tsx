@@ -10,7 +10,7 @@ interface IQueryParam {
 }
 
 export async function getServerSideProps() {
-  const plugins = await getPlugins();
+  const plugins = getPlugins();
 
   return {
     props: {

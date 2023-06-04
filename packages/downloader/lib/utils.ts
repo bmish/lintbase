@@ -4,7 +4,6 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { exec } from 'node:child_process';
 import util from 'node:util';
-// import url from 'node:url';
 
 const execP = util.promisify(exec);
 
@@ -29,9 +28,7 @@ async function downloadJSON<T>(url: string): Promise<T> {
   return data;
 }
 
-export async function searchPackages(
-  searchText: string
-): Promise<PackageInfo[]> {
+async function searchPackages(searchText: string): Promise<PackageInfo[]> {
   const data = await downloadJSON<NpmSearchResult>(
     `https://registry.npmjs.org/-/v1/search?text=${searchText}&size=1000`
   );
@@ -44,7 +41,7 @@ export async function searchPackages(
   return packageInfos;
 }
 
-export async function installPackages(
+async function installPackages(
   packageInfos: PackageInfo[],
   downloadPath: string
 ) {
@@ -67,7 +64,7 @@ export async function installPackages(
   }
 }
 
-export function loadPackages<T>(
+function loadPackages<T>(
   packages: PackageInfo[],
   downloadPath: string
 ): Record<string, T> {
@@ -96,14 +93,32 @@ export function loadPackages<T>(
 }
 
 export async function searchDownloadAndLoad<T>(
-  keyword: string,
+  searchText: string,
   downloadPath: string
 ) {
-  // const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+  const packageInfos = await searchPackages(searchText);
 
-  // const downloadPath = path.join(__dirname, '..', 'tmp', 'npm-packages');
+  await installPackages(packageInfos, downloadPath);
 
-  const packageInfos = await searchPackages(keyword);
+  return loadPackages<T>(packageInfos, downloadPath);
+}
+
+export function load<T>(downloadPath: string) {
+  const packageJsonPath = path.join(downloadPath, 'package.json');
+  const packageJson = JSON.parse(
+    fs.readFileSync(packageJsonPath, { encoding: 'utf8' })
+  ) as { dependencies?: Record<string, string> };
+  const packageInfos = Object.entries(packageJson.dependencies || {}).map(
+    ([name, version]) => ({ name, version })
+  );
+  return loadPackages<T>(packageInfos, downloadPath);
+}
+
+export async function downloadAndLoad<T>(
+  packageName: string,
+  downloadPath: string
+) {
+  const packageInfos = [{ name: packageName, version: 'latest' }];
 
   await installPackages(packageInfos, downloadPath);
 

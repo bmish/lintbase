@@ -1,5 +1,5 @@
 import { Config, Plugin, Rule } from '@/types';
-import { searchDownloadAndLoad } from '@lintbase/downloader';
+import { load } from '@lintbase/downloader';
 import type { TSESLint, JSONSchema } from '@typescript-eslint/utils';
 import path from 'node:path';
 
@@ -21,7 +21,7 @@ function randomDate(start: Date, end: Date) {
   );
 }
 
-function loadedPluginToNormalizedPlugin(
+function eslintPluginToNormalizedPlugin(
   pluginName: string,
   plugin: TSESLint.Linter.Plugin
 ): Plugin {
@@ -111,23 +111,133 @@ function loadedPluginToNormalizedPlugin(
   return pluginNormalized;
 }
 
-export async function getPlugins(): Promise<Plugin[]> {
-  const downloadPath = path.join(
-    process.cwd(),
-    '..',
-    'downloader',
-    'tmp',
-    'npm-packages'
+type EmberTemplateLint = {
+  configurations: Record<string, { rules: {} }>;
+  rules: Record<string, {}>;
+};
+
+function etlPluginToNormalizedPlugin(
+  pluginName: string,
+  plugin: EmberTemplateLint
+): Plugin {
+  const rules = Object.entries(plugin.rules || {}).map(([ruleName]) => {
+    const ruleNormalized: Rule = {
+      name: ruleName,
+      description: null, // TODO
+      fixable: null, // TODO
+      hasSuggestions: false, // Not supported.
+      ecosystem: 'node',
+      type: null, // Not supported.
+      deprecated: false, // Not supported.
+      replacedBy: [], // Not supported.
+      category: null, // Not supported.
+      options: null, // TODO
+      requiresTypeChecking: false, // Not supported.
+      updatedAt: randomDate(new Date(2020, 0, 1), new Date()).toString(),
+      createdAt: randomDate(new Date(2020, 0, 1), new Date()).toString(),
+      links: {
+        us: `/npm/${pluginName}/${ruleName}}`,
+        ruleDoc: null, // TODO
+      },
+      plugin: {
+        name: pluginName,
+        links: {
+          us: `/npm/${pluginName}`,
+          packageRegistry: `https://www.npmjs.com/package/${pluginName}`,
+          readme: '',
+        },
+      },
+    };
+
+    return ruleNormalized;
+  });
+
+  const configNormalized = Object.entries(plugin.configurations || {}).map(
+    ([configName]) => {
+      const config: Config = {
+        name: configName,
+        description: 'fake config desc',
+      };
+
+      return config;
+    }
   );
 
-  const pluginRecord = await searchDownloadAndLoad<TSESLint.Linter.Plugin>(
-    'eslint-plugin',
-    downloadPath
-  );
+  const pluginNormalized: Plugin = {
+    name: pluginName,
+    ecosystem: 'node',
+    linter: 'ember-template-lint',
+    description: 'fake plugin desc',
 
-  const pluginsNormalized: Plugin[] = Object.entries(pluginRecord).map(
-    ([pluginName, plugin]) => loadedPluginToNormalizedPlugin(pluginName, plugin)
-  );
+    rules,
+    configs: configNormalized,
 
-  return pluginsNormalized;
+    stats: {
+      prs: Math.round(Math.random() * 100),
+      issues: Math.round(Math.random() * 100),
+      stars: Math.round(Math.random() * 100),
+      watching: Math.round(Math.random() * 100),
+      forks: Math.round(Math.random() * 100),
+      contributors: Math.round(Math.random() * 100),
+      weeklyDownloads: Math.round(Math.random() * 100),
+    },
+
+    updatedAt: randomDate(new Date(2020, 0, 1), new Date()).toString(),
+    createdAt: randomDate(new Date(2020, 0, 1), new Date()).toString(),
+
+    links: {
+      us: `/npm/${pluginName}`,
+      packageRegistry: `https://www.npmjs.com/package/${pluginName}`,
+      readme: '',
+    },
+
+    keywords: ['fake', 'plugin', 'keywords'],
+  };
+
+  return pluginNormalized;
+}
+
+export function getPlugins(): Plugin[] {
+  const pluginTypes = ['eslint-plugin', 'ember-template-lint-plugin'];
+
+  const plugins: Plugin[] = [];
+
+  for (const pluginType of pluginTypes) {
+    const downloadPath = path.join(
+      process.cwd(),
+      '..',
+      'downloader',
+      'tmp',
+      'npm',
+      pluginType
+    );
+
+    const pluginRecord =
+      pluginType === 'eslint-plugin'
+        ? load<TSESLint.Linter.Plugin>(downloadPath)
+        : load<EmberTemplateLint>(downloadPath);
+
+    const pluginsNormalized: Plugin[] = Object.entries(pluginRecord).flatMap(
+      ([pluginName, plugin]) => {
+        const pluginNormalized =
+          pluginType === 'eslint-plugin'
+            ? eslintPluginToNormalizedPlugin(pluginName, plugin)
+            : etlPluginToNormalizedPlugin(pluginName, plugin);
+
+        if (
+          pluginNormalized.configs.length === 0 &&
+          pluginNormalized.rules.length === 0
+        ) {
+          // Probably not an actual plugin.
+          return [];
+        }
+
+        return [pluginNormalized];
+      }
+    );
+
+    plugins.push(...pluginsNormalized);
+  }
+
+  return plugins;
 }

@@ -25,7 +25,7 @@ export default function PluginCard({
         <Typography variant="h5" component="div">
           {detailed && plugin.name}
           {!detailed && (
-            <Link href={plugin.links.us} underline="none">
+            <Link href={encodeURIComponent(plugin.links.us)} underline="none">
               {plugin.name}
             </Link>
           )}
