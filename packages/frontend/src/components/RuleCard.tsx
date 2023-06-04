@@ -25,7 +25,7 @@ export default function RuleCard({
         <Typography variant="h5" component="div">
           {detailed && rule.name}
           {!detailed && (
-            <Link href={encodeURIComponent(rule.links.us)} underline="none">
+            <Link href={rule.links.us} underline="none">
               {rule.name}
             </Link>
           )}{' '}

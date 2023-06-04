@@ -6,6 +6,7 @@
     "lint": "npm-run-all \"lint:*\"",
     "lint:deps": "check-dependency-version-consistency",
     "lint:deps:fix": "check-dependency-version-consistency --fix",
+    "lint:package-json": "npmPkgJsonLint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Bryan Mishkin",
@@ -14,6 +15,7 @@
   ],
   "devDependencies": {
     "check-dependency-version-consistency": "^4.0.0",
+    "npm-package-json-lint": "^6.4.0",
     "npm-run-all": "^4.1.5"
   }
 }

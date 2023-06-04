@@ -4,7 +4,7 @@ import RuleCard from '@/components/RuleCard';
 import { Plugin, Rule } from '@/types';
 import { getPlugins } from '@/utils';
 
-export async function getServerSideProps() {
+export function getServerSideProps() {
   const plugins = getPlugins();
 
   const pluginsRandomSelection = randomlyPickItemsFromArray(plugins, 5);

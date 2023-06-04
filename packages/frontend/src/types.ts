@@ -26,7 +26,7 @@ export type Rule = {
     name: string;
     links: {
       packageRegistry: string;
-      readme: string;
+      readme: string | null;
       us: string;
     };
   };
@@ -44,7 +44,7 @@ export type Plugin = {
   linter: 'eslint' | 'ember-template-lint';
 
   description: string | null; // could be multiple sources for this
-  keywords: readonly string[]; // npm or github source
+  keywords: readonly string[] | null; // npm or github source
 
   rules: readonly Rule[];
   configs: readonly Config[];
@@ -64,7 +64,7 @@ export type Plugin = {
 
   links: {
     packageRegistry: string;
-    readme: string;
+    readme: string | null;
     us: string;
   };
 };

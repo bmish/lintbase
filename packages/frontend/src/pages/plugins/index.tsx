@@ -12,7 +12,7 @@ import {
   TableRow,
 } from '@mui/material';
 
-export async function getServerSideProps() {
+export function getServerSideProps() {
   const plugins = getPlugins();
 
   return {

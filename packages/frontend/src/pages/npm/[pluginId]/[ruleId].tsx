@@ -9,7 +9,7 @@ interface IQueryParam {
   ruleId: string;
 }
 
-export async function getServerSideProps() {
+export function getServerSideProps() {
   const plugins = getPlugins();
 
   return {

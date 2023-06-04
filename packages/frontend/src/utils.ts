@@ -2,6 +2,8 @@ import { Config, Plugin, Rule } from '@/types';
 import { load } from '@lintbase/downloader';
 import type { TSESLint, JSONSchema } from '@typescript-eslint/utils';
 import path from 'node:path';
+import { PackageJson } from 'type-fest';
+import { readFileSync } from 'node:fs';
 
 /**
  * Check if a rule schema is non-blank/empty and thus has actual options.
@@ -23,7 +25,8 @@ function randomDate(start: Date, end: Date) {
 
 function eslintPluginToNormalizedPlugin(
   pluginName: string,
-  plugin: TSESLint.Linter.Plugin
+  plugin: TSESLint.Linter.Plugin,
+  packageJson: PackageJson
 ): Plugin {
   const rules = Object.entries(plugin.rules || {}).flatMap(
     ([ruleName, rule]) => {
@@ -49,15 +52,17 @@ function eslintPluginToNormalizedPlugin(
         updatedAt: randomDate(new Date(2020, 0, 1), new Date()).toString(),
         createdAt: randomDate(new Date(2020, 0, 1), new Date()).toString(),
         links: {
-          us: `/npm/${pluginName}/${ruleName}}`,
+          us: `/npm/${encodeURIComponent(pluginName)}/${encodeURIComponent(
+            ruleName
+          )}`,
           ruleDoc: rule.meta?.docs?.url || null,
         },
         plugin: {
           name: pluginName,
           links: {
-            us: `/npm/${pluginName}`,
+            us: `/npm/${encodeURIComponent(pluginName)}`,
             packageRegistry: `https://www.npmjs.com/package/${pluginName}`,
-            readme: '',
+            readme: packageJson.homepage?.toString() || null,
           },
         },
       };
@@ -81,11 +86,12 @@ function eslintPluginToNormalizedPlugin(
     name: pluginName,
     ecosystem: 'node',
     linter: 'eslint',
-    description: 'fake plugin desc',
+    description: packageJson.description || null,
 
     rules,
     configs: configNormalized,
 
+    // TODO: get real data from npm/github
     stats: {
       prs: Math.round(Math.random() * 100),
       issues: Math.round(Math.random() * 100),
@@ -96,16 +102,17 @@ function eslintPluginToNormalizedPlugin(
       weeklyDownloads: Math.round(Math.random() * 100),
     },
 
+    // TODO: get real data from npm/github
     updatedAt: randomDate(new Date(2020, 0, 1), new Date()).toString(),
     createdAt: randomDate(new Date(2020, 0, 1), new Date()).toString(),
 
     links: {
-      us: `/npm/${pluginName}`,
+      us: `/npm/${encodeURIComponent(pluginName)}`,
       packageRegistry: `https://www.npmjs.com/package/${pluginName}`,
-      readme: '',
+      readme: packageJson.homepage?.toString() || null,
     },
 
-    keywords: ['fake', 'plugin', 'keywords'],
+    keywords: packageJson.keywords || null,
   };
 
   return pluginNormalized;
@@ -118,7 +125,8 @@ type EmberTemplateLint = {
 
 function etlPluginToNormalizedPlugin(
   pluginName: string,
-  plugin: EmberTemplateLint
+  plugin: EmberTemplateLint,
+  packageJson: PackageJson
 ): Plugin {
   const rules = Object.entries(plugin.rules || {}).map(([ruleName]) => {
     const ruleNormalized: Rule = {
@@ -133,18 +141,20 @@ function etlPluginToNormalizedPlugin(
       category: null, // Not supported.
       options: null, // TODO
       requiresTypeChecking: false, // Not supported.
-      updatedAt: randomDate(new Date(2020, 0, 1), new Date()).toString(),
-      createdAt: randomDate(new Date(2020, 0, 1), new Date()).toString(),
+      updatedAt: randomDate(new Date(2020, 0, 1), new Date()).toString(), // TODO
+      createdAt: randomDate(new Date(2020, 0, 1), new Date()).toString(), // TODO
       links: {
-        us: `/npm/${pluginName}/${ruleName}}`,
+        us: `/npm/${encodeURIComponent(pluginName)}/${encodeURIComponent(
+          ruleName
+        )}`,
         ruleDoc: null, // TODO
       },
       plugin: {
         name: pluginName,
         links: {
-          us: `/npm/${pluginName}`,
+          us: `/npm/${encodeURIComponent(pluginName)}`,
           packageRegistry: `https://www.npmjs.com/package/${pluginName}`,
-          readme: '',
+          readme: packageJson.homepage?.toString() || null,
         },
       },
     };
@@ -167,11 +177,12 @@ function etlPluginToNormalizedPlugin(
     name: pluginName,
     ecosystem: 'node',
     linter: 'ember-template-lint',
-    description: 'fake plugin desc',
+    description: packageJson.description || null,
 
     rules,
     configs: configNormalized,
 
+    // TODO: get real data from npm/github
     stats: {
       prs: Math.round(Math.random() * 100),
       issues: Math.round(Math.random() * 100),
@@ -182,16 +193,17 @@ function etlPluginToNormalizedPlugin(
       weeklyDownloads: Math.round(Math.random() * 100),
     },
 
+    // TODO: get real data from npm/github
     updatedAt: randomDate(new Date(2020, 0, 1), new Date()).toString(),
     createdAt: randomDate(new Date(2020, 0, 1), new Date()).toString(),
 
     links: {
-      us: `/npm/${pluginName}`,
+      us: `/npm/${encodeURIComponent(pluginName)}`,
       packageRegistry: `https://www.npmjs.com/package/${pluginName}`,
-      readme: '',
+      readme: packageJson.homepage?.toString() || null,
     },
 
-    keywords: ['fake', 'plugin', 'keywords'],
+    keywords: packageJson.keywords || null,
   };
 
   return pluginNormalized;
@@ -219,10 +231,21 @@ export function getPlugins(): Plugin[] {
 
     const pluginsNormalized: Plugin[] = Object.entries(pluginRecord).flatMap(
       ([pluginName, plugin]) => {
+        // load package.json from
+        const pathPackageJson = path.join(
+          downloadPath,
+          'node_modules',
+          pluginName,
+          'package.json'
+        );
+        const packageJson = JSON.parse(
+          readFileSync(pathPackageJson, { encoding: 'utf8' })
+        ) as PackageJson;
+
         const pluginNormalized =
           pluginType === 'eslint-plugin'
-            ? eslintPluginToNormalizedPlugin(pluginName, plugin)
-            : etlPluginToNormalizedPlugin(pluginName, plugin);
+            ? eslintPluginToNormalizedPlugin(pluginName, plugin, packageJson)
+            : etlPluginToNormalizedPlugin(pluginName, plugin, packageJson);
 
         if (
           pluginNormalized.configs.length === 0 &&

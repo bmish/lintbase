@@ -25,23 +25,32 @@ export default function PluginCard({
         <Typography variant="h5" component="div">
           {detailed && plugin.name}
           {!detailed && (
-            <Link href={encodeURIComponent(plugin.links.us)} underline="none">
+            <Link href={plugin.links.us} underline="none">
               {plugin.name}
             </Link>
           )}
         </Typography>
-        <Typography sx={{ mb: 1.5, fontSize: 14 }} color="text.secondary">
-          {plugin.rules.length} Rules • {plugin.stats.stars} Stars •{' '}
-          {plugin.stats.weeklyDownloads} Weekly Downloads
-        </Typography>
+        <div className="mb-4">
+          <Typography sx={{ fontSize: 14 }} color="text.secondary">
+            {plugin.rules.length} Rules • {plugin.stats.stars} Stars •{' '}
+            {plugin.stats.weeklyDownloads} Weekly Downloads
+          </Typography>
+          {detailed && plugin.keywords && plugin.keywords.length > 0 && (
+            <Typography sx={{ fontSize: 14 }} color="text.secondary">
+              {plugin.keywords.join(' • ')}
+            </Typography>
+          )}
+        </div>
 
         <Typography variant="body2">{plugin.description}</Typography>
       </CardContent>
       {detailed && (
         <CardActions>
-          <Button size="small" href={plugin.links.readme}>
-            README
-          </Button>
+          {plugin.links.readme && (
+            <Button size="small" href={plugin.links.readme}>
+              README
+            </Button>
+          )}
 
           <Button size="small" href={plugin.links.packageRegistry}>
             Package Registry
