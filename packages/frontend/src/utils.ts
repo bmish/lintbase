@@ -23,6 +23,37 @@ function randomDate(start: Date, end: Date) {
   );
 }
 
+const IGNORED_KEYWORDS = new Set([
+  'configs',
+  'configuration',
+  'configurations',
+  'plugin',
+  'rule',
+  'rules',
+]);
+
+const ESLINT_IGNORED_KEYWORDS = new Set([
+  ...IGNORED_KEYWORDS,
+  'eslint',
+  'eslint-plugin',
+  'eslintplugin',
+  'eslint-config',
+  'eslintconfig',
+  'eslint-configs',
+  'eslintconfigs',
+]);
+
+const EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS = new Set([
+  ...IGNORED_KEYWORDS,
+  'ember-template-lint',
+  'ember-template-lint-plugin',
+  'ember-template-lint-config',
+  'ember-template-lint-configs',
+  'ember-template-lint-configurations',
+  'ember-template-lint-configuration',
+  'ember-template-lint-configurations',
+]);
+
 function eslintPluginToNormalizedPlugin(
   pluginName: string,
   plugin: TSESLint.Linter.Plugin,
@@ -112,7 +143,10 @@ function eslintPluginToNormalizedPlugin(
       readme: packageJson.homepage?.toString() || null,
     },
 
-    keywords: packageJson.keywords || null,
+    keywords:
+      packageJson.keywords?.filter(
+        (keyword) => !ESLINT_IGNORED_KEYWORDS.has(keyword)
+      ) || null,
   };
 
   return pluginNormalized;
@@ -203,7 +237,10 @@ function etlPluginToNormalizedPlugin(
       readme: packageJson.homepage?.toString() || null,
     },
 
-    keywords: packageJson.keywords || null,
+    keywords:
+      packageJson.keywords?.filter(
+        (keyword) => !EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS.has(keyword)
+      ) || null,
   };
 
   return pluginNormalized;
