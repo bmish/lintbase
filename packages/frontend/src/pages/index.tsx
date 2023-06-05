@@ -2,41 +2,77 @@ import Header from '@/components/Header';
 import PluginCard from '@/components/PluginCard';
 import RuleCard from '@/components/RuleCard';
 import { Plugin, Rule } from '@/types';
-import { getPlugins } from '@/utils';
+import { prisma } from '@/server/db';
 
-export function getServerSideProps() {
-  const plugins = getPlugins();
+export async function getStaticProps() {
+  const rules = await prisma.rule.findMany({
+    include: {
+      plugin: true,
+    },
+    take: 25,
+  });
+  const rulesFixed = await rules.map((rule) => {
+    return {
+      ...rule,
+      plugin: {
+        ...rule.plugin,
+        linkUs: `/npm/${encodeURIComponent(rule.plugin.name)}`,
+        createdAt: rule.plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
+        updatedAt: rule.plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
+      },
+      linkUs: `/npm/${encodeURIComponent(
+        rule.plugin.name
+      )}/${encodeURIComponent(rule.name)}`,
+      createdAt: rule.plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
+      updatedAt: rule.plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
+    };
+  });
 
-  const pluginsRandomSelection = randomlyPickItemsFromArray(plugins, 5);
-
-  const rulesRandomSelection = randomlyPickItemsFromArray(
-    plugins.flatMap((plugin) => plugin.rules),
-    5
-  );
+  const plugins = await prisma.plugin.findMany({
+    include: {
+      rules: true,
+      configs: true,
+    },
+    take: 25,
+  });
+  const pluginsFixed = plugins.map((plugin) => ({
+    ...plugin,
+    rules: plugin.rules.map((rule) => ({
+      ...rule,
+      createdAt: rule.createdAt.toISOString(), // Since DataTime can't be serialized by next.
+      updatedAt: rule.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
+      linkUs: `/npm/${encodeURIComponent(plugin.name)}/${encodeURIComponent(
+        rule.name
+      )}`,
+    })),
+    linkUs: `/npm/${encodeURIComponent(plugin.name)}`,
+    createdAt: plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
+    updatedAt: plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
+  }));
 
   return {
     props: {
       data: {
-        pluginsRandomSelection,
-        rulesRandomSelection,
+        pluginsRandomSelection: pluginsFixed,
+        rulesRandomSelection: rulesFixed,
       },
     },
   };
 }
 
-function randomlyPickItemsFromArray<T>(array: T[], count: number): T[] {
-  const indicesUsed = new Set<number>();
-  const result: T[] = [];
-  for (let i = 0; i < count; i++) {
-    let index = Math.floor(Math.random() * array.length);
-    while (indicesUsed.has(index)) {
-      index = Math.floor(Math.random() * array.length);
-    }
-    indicesUsed.add(index);
-    result.push(array[index]);
-  }
-  return result;
-}
+// function randomlyPickItemsFromArray<T>(array: T[], count: number): T[] {
+//   const indicesUsed = new Set<number>();
+//   const result: T[] = [];
+//   for (let i = 0; i < count; i++) {
+//     let index = Math.floor(Math.random() * array.length);
+//     while (indicesUsed.has(index)) {
+//       index = Math.floor(Math.random() * array.length);
+//     }
+//     indicesUsed.add(index);
+//     result.push(array[index]);
+//   }
+//   return result;
+// }
 
 export default function index({
   data: { pluginsRandomSelection, rulesRandomSelection },

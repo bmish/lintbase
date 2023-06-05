@@ -1,6 +1,5 @@
 import Header from '@/components/Header';
 import { Rule } from '@/types';
-import { getPlugins } from '@/utils';
 import {
   Link,
   Paper,
@@ -11,18 +10,29 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
+import { prisma } from '@/server/db';
 
-export function getServerSideProps() {
-  const plugins = getPlugins();
-
-  const rules = plugins.flatMap((plugin) => plugin.rules);
+export async function getStaticProps() {
+  const rules = await prisma.rule.findMany({
+    include: {
+      plugin: true,
+    },
+  });
+  const rulesFixed = await rules.map((rule) => {
+    return {
+      ...rule,
+      plugin: {
+        ...rule.plugin,
+        createdAt: rule.plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
+        updatedAt: rule.plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
+      },
+      createdAt: rule.plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
+      updatedAt: rule.plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
+    };
+  });
 
   return {
-    props: {
-      data: {
-        rules,
-      },
-    },
+    props: { data: { rules: rulesFixed } },
   };
 }
 

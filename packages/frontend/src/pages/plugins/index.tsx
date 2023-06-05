@@ -1,6 +1,5 @@
 import Header from '@/components/Header';
 import { Plugin } from '@/types';
-import { getPlugins } from '@/utils';
 import {
   Link,
   Paper,
@@ -11,16 +10,34 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
+import { prisma } from '@/server/db';
 
-export function getServerSideProps() {
-  const plugins = getPlugins();
+export async function getStaticProps() {
+  const plugins = await prisma.plugin.findMany({
+    include: {
+      rules: true,
+      configs: true,
+    },
+  });
+  const pluginsFixed = await plugins.map((plugin) => {
+    return {
+      ...plugin,
+      rules: plugin.rules.map((rule) => ({
+        ...rule,
+        createdAt: rule.createdAt.toISOString(), // Since DataTime can't be serialized by next.
+        updatedAt: rule.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
+        linkUs: `/npm/${encodeURIComponent(plugin.name)}/${encodeURIComponent(
+          rule.name
+        )}`,
+      })),
+      linkUs: `/npm/${encodeURIComponent(plugin.name)}`,
+      createdAt: plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
+      updatedAt: plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
+    };
+  });
 
   return {
-    props: {
-      data: {
-        plugins,
-      },
-    },
+    props: { data: { plugins: pluginsFixed } },
   };
 }
 
@@ -69,7 +86,7 @@ export default function Plugins({
                   </TableCell>
                   <TableCell align="left">{plugin.description}</TableCell>
                   <TableCell align="right">{plugin.rules.length}</TableCell>
-                  <TableCell align="right">{plugin.stats.stars}</TableCell>
+                  <TableCell align="right">{plugin.countStars}</TableCell>
                   <TableCell align="right">
                     {new Date(plugin.updatedAt).toLocaleDateString()}
                   </TableCell>

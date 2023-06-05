@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Rule {
+  id                   Int      @id @default(autoincrement())
+  name                 String
+  ecosystem            String // TODO: enum
+  category             String?
+  deprecated           Boolean
+  description          String?
+  fixable              String?
+  hasSuggestions       Boolean
+  // options           Json?
+  // replacedBy        String[]
+  requiresTypeChecking Boolean
+  type                 String?
+  createdAt            DateTime
+  updatedAt            DateTime
+  linkRuleDoc          String?
+  linkUs               String // TODO: dynamically generate instead of storing in DB
+  plugin               Plugin   @relation(fields: [pluginId], references: [id])
+  pluginId             Int
+
+  @@unique([name, pluginId])
+}
+
+model Config {
+  id       Int     @id @default(autoincrement())
+  name     String
+  // description String? // TODO: try to get this from README or future config property?
+  Plugin   Plugin? @relation(fields: [pluginId], references: [id])
+  pluginId Int?
+
+  @@unique([name, pluginId])
+}
+
+model Plugin {
+  id                   Int      @id @default(autoincrement())
+  name                 String   @unique
+  ecosystem            String // TODO: enum
+  linter               String // TODO: enum
+  description          String? // TODO: multiple potential soures for this
+  // keywords          String[]
+  createdAt            DateTime
+  updatedAt            DateTime
+  countContributors    Int
+  countForks           Int
+  countIssues          Int
+  countPrs             Int
+  countStars           Int
+  countWatching        Int
+  countWeeklyDownloads Int
+  linkPackageRegistry  String // TODO: dynamically generate instead of storing in DB
+  linkReadme           String?
+  linkUs               String // TODO: dynamically generate instead of storing in DB
+  rules                Rule[]
+  configs              Config[]
+  // TODO: add version history
+}

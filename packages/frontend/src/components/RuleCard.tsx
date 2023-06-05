@@ -25,13 +25,13 @@ export default function RuleCard({
         <Typography variant="h5" component="div">
           {detailed && rule.name}
           {!detailed && (
-            <Link href={rule.links.us} underline="none">
+            <Link href={rule.linkUs} underline="none">
               {rule.name}
             </Link>
           )}{' '}
           {rule.fixable ? '🔧' : ''}
           {rule.hasSuggestions ? '💡' : ''}
-          {rule.options ? '⚙️' : ''}
+          {/* {rule.options ? '⚙️' : ''} */}
           {rule.requiresTypeChecking ? '💭' : ''}
           {rule.type === 'layout' ? '📏' : ''}
           {rule.type === 'problem' ? '❗' : ''}
@@ -47,12 +47,12 @@ export default function RuleCard({
       </CardContent>
       {detailed && (
         <CardActions>
-          <Button size="small" href={rule.plugin.links.us}>
+          <Button size="small" href={rule.plugin.linkUs}>
             plugin
           </Button>
 
-          {rule.links.ruleDoc && (
-            <Button size="small" href={rule.links.ruleDoc}>
+          {rule.linkRuleDoc && (
+            <Button size="small" href={rule.linkRuleDoc}>
               Rule Doc
             </Button>
           )}

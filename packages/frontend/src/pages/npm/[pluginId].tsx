@@ -1,7 +1,6 @@
 /* eslint filenames/match-exported:"off",unicorn/filename-case:"off" */
 import Header from '@/components/Header';
 import PluginCard from '@/components/PluginCard';
-import { useRouter } from 'next/router';
 import {
   Link,
   Paper,
@@ -12,35 +11,50 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { getPlugins } from '@/utils';
 import { Plugin as PluginType } from '@/types';
+import { prisma } from '@/server/db';
 
 interface IQueryParam {
   pluginId: string;
 }
 
-export function getServerSideProps() {
-  const plugins = getPlugins();
+export async function getServerSideProps({ params }: { params: IQueryParam }) {
+  const { pluginId } = params;
+
+  const plugin = await prisma.plugin.findFirstOrThrow({
+    where: {
+      name: pluginId,
+    },
+    include: {
+      rules: true,
+      configs: true,
+    },
+  });
+  const pluginFixed = {
+    ...plugin,
+    rules: plugin.rules.map((rule) => ({
+      ...rule,
+      createdAt: rule.createdAt.toISOString(), // Since DataTime can't be serialized by next.
+      updatedAt: rule.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
+      linkUs: `/npm/${encodeURIComponent(plugin.name)}/${encodeURIComponent(
+        rule.name
+      )}`,
+    })),
+    linkUs: `/npm/${encodeURIComponent(plugin.name)}`,
+    createdAt: plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
+    updatedAt: plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
+  };
 
   return {
-    props: {
-      data: {
-        plugins,
-      },
-    },
+    props: { data: { plugin: pluginFixed } },
   };
 }
 
 export default function Plugin({
-  data: { plugins },
+  data: { plugin },
 }: {
-  data: { plugins: PluginType[] };
+  data: { plugin: PluginType };
 }) {
-  const router = useRouter();
-  const { pluginId } = router.query as unknown as IQueryParam;
-
-  const plugin = plugins.find((plugin) => plugin.name === pluginId);
-
   return (
     <div className="bg-gray-100 h-full">
       <Header />
@@ -68,7 +82,7 @@ export default function Plugin({
                     <TableCell component="th" scope="row">
                       {config.name}
                     </TableCell>
-                    <TableCell align="right">{config.description}</TableCell>
+                    {/* <TableCell align="right">{config.description}</TableCell> */}
                   </TableRow>
                 ))}
               </TableBody>
@@ -99,7 +113,7 @@ export default function Plugin({
               <TableBody>
                 {plugin.rules.map((rule) => (
                   <TableRow
-                    key={`${rule.plugin.name}/${rule.name}`}
+                    key={`${plugin.name}/${rule.name}`}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">

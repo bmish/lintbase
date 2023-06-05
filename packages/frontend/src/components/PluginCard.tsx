@@ -25,7 +25,7 @@ export default function PluginCard({
         <Typography variant="h5" component="div">
           {detailed && plugin.name}
           {!detailed && (
-            <Link href={plugin.links.us} underline="none">
+            <Link href={plugin.linkUs} underline="none">
               {plugin.name}
             </Link>
           )}
@@ -40,26 +40,26 @@ export default function PluginCard({
               `${plugin.rules.length} Rule${
                 plugin.rules.length > 1 ? 's' : ''
               } • `}
-            {plugin.stats.weeklyDownloads} Weekly Downloads
+            {plugin.countWeeklyDownloads} Weekly Downloads
           </Typography>
-          {detailed && plugin.keywords && plugin.keywords.length > 0 && (
+          {/* {detailed && plugin.keywords && plugin.keywords.length > 0 && (
             <Typography sx={{ fontSize: 14 }} color="text.secondary">
               {plugin.keywords.join(' • ')}
             </Typography>
-          )}
+          )} */}
         </div>
 
         <Typography variant="body2">{plugin.description}</Typography>
       </CardContent>
       {detailed && (
         <CardActions>
-          {plugin.links.readme && (
-            <Button size="small" href={plugin.links.readme}>
+          {plugin.linkReadme && (
+            <Button size="small" href={plugin.linkReadme}>
               README
             </Button>
           )}
 
-          <Button size="small" href={plugin.links.packageRegistry}>
+          <Button size="small" href={plugin.linkPackageRegistry}>
             Package Registry
           </Button>
         </CardActions>

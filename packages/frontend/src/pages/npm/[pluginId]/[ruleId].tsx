@@ -1,38 +1,45 @@
 /* eslint filenames/match-exported:"off",unicorn/filename-case:"off" */
 import Header from '@/components/Header';
 import RuleCard from '@/components/RuleCard';
-import { useRouter } from 'next/router';
-import { getPlugins } from '@/utils';
-import { Plugin } from '@/types';
+import { Rule as RuleType } from '@/types';
+import { prisma } from '@/server/db';
 
 interface IQueryParam {
   ruleId: string;
 }
 
-export function getServerSideProps() {
-  const plugins = getPlugins();
+export async function getServerSideProps({ params }: { params: IQueryParam }) {
+  const { ruleId } = params;
+
+  const rule = await prisma.rule.findFirstOrThrow({
+    where: {
+      name: ruleId,
+    },
+    include: {
+      plugin: true,
+    },
+  });
+  const ruleFixed = {
+    ...rule,
+    plugin: {
+      ...rule.plugin,
+      createdAt: rule.createdAt.toISOString(), // Since DataTime can't be serialized by next.
+      updatedAt: rule.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
+      linkUs: `/npm/${encodeURIComponent(rule.plugin.name)}`,
+    },
+    linkUs: `/npm/${encodeURIComponent(rule.plugin.name)}/${encodeURIComponent(
+      rule.name
+    )}`,
+    createdAt: rule.createdAt.toISOString(), // Since DataTime can't be serialized by next.
+    updatedAt: rule.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
+  };
 
   return {
-    props: {
-      data: {
-        plugins,
-      },
-    },
+    props: { data: { rule: ruleFixed } },
   };
 }
 
-export default function Rule({
-  data: { plugins },
-}: {
-  data: { plugins: Plugin[] };
-}) {
-  const router = useRouter();
-  const { ruleId } = router.query as unknown as IQueryParam;
-
-  const rule = plugins
-    .flatMap((plugin) => plugin.rules)
-    .find((rule) => rule.name === ruleId);
-
+export default function Rule({ data: { rule } }: { data: { rule: RuleType } }) {
   return (
     <div className="bg-gray-100 h-full">
       <Header />
