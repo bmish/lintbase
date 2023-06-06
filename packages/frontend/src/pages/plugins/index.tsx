@@ -11,6 +11,8 @@ import {
   TableRow,
 } from '@mui/material';
 import { prisma } from '@/server/db';
+import { TableComponents, TableVirtuoso } from 'react-virtuoso';
+import React from 'react';
 
 export async function getServerSideProps(context: { query: { q: string } }) {
   const { query } = context;
@@ -62,17 +64,133 @@ export async function getServerSideProps(context: { query: { q: string } }) {
   };
 }
 
+type PluginRow = {
+  name: string;
+  description: string;
+  rules: number;
+  countStars: number;
+  updatedAt: string;
+};
+
+interface ColumnData {
+  dataKey: keyof PluginRow;
+  label: string;
+  numeric?: boolean;
+}
+
+const columns: ColumnData[] = [
+  {
+    label: 'Name',
+    dataKey: 'name',
+  },
+  {
+    label: 'Description',
+    dataKey: 'description',
+  },
+  {
+    label: 'Rules',
+    dataKey: 'rules',
+    numeric: true,
+  },
+  {
+    label: 'Stars',
+    dataKey: 'countStars',
+    numeric: true,
+  },
+  {
+    label: 'Last Published',
+    dataKey: 'updatedAt',
+    numeric: true,
+  },
+];
+
+const VirtuosoTableComponents: TableComponents<PluginRow> = {
+  // eslint-disable-next-line react/display-name
+  Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
+    <TableContainer component={Paper} {...props} ref={ref} />
+  )),
+  Table: (props) => (
+    <Table
+      {...props}
+      sx={{ borderCollapse: 'separate', tableLayout: 'fixed' }}
+    />
+  ),
+  TableHead,
+  TableRow: ({ item: _item, ...props }) => <TableRow {...props} />,
+  // eslint-disable-next-line react/display-name
+  TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
+    <TableBody {...props} ref={ref} />
+  )),
+};
+
+function fixedHeaderContent() {
+  return (
+    <TableRow>
+      {columns.map((column) => (
+        <TableCell
+          key={column.dataKey}
+          variant="head"
+          align={column.numeric || false ? 'right' : 'left'}
+          sx={{
+            backgroundColor: 'background.paper',
+          }}
+        >
+          {column.label}
+        </TableCell>
+      ))}
+    </TableRow>
+  );
+}
+
+function rowContent(_index: number, row: PluginRow) {
+  return (
+    <React.Fragment>
+      {columns.map((column) => (
+        <TableCell
+          key={column.dataKey}
+          align={column.numeric || false ? 'right' : 'left'}
+        >
+          {column.dataKey === 'name' && (
+            <Link
+              href={`/npm/${encodeURIComponent(row.name)}`}
+              underline="none"
+            >
+              {row.name}
+            </Link>
+          )}
+          {column.dataKey !== 'name' && row[column.dataKey]}
+        </TableCell>
+      ))}
+    </React.Fragment>
+  );
+}
+
 export default function Plugins({
   data: { plugins },
 }: {
   data: { plugins: Plugin[] };
 }) {
+  const rows = plugins.map((plugin) => ({
+    name: plugin.name,
+    description: plugin.description,
+    rules: plugin.rules.length,
+    countStars: plugin.countStars,
+    updatedAt: new Date(plugin.updatedAt).toLocaleDateString(),
+  }));
   return (
     <div className="bg-gray-100 h-full">
       <Header />
 
       <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 max-w-4xl mx-auto">
-        <TableContainer component={Paper}>
+        <Paper className="h-screen">
+          <TableVirtuoso
+            data={rows}
+            components={VirtuosoTableComponents}
+            fixedHeaderContent={fixedHeaderContent}
+            itemContent={rowContent}
+          />
+        </Paper>
+        {/* <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
@@ -115,7 +233,7 @@ export default function Plugins({
               ))}
             </TableBody>
           </Table>
-        </TableContainer>
+        </TableContainer> */}
       </main>
     </div>
   );
