@@ -1,6 +1,27 @@
+import { TextField } from '@mui/material';
 import Link from 'next/link';
+import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 
 export default function Header() {
+  const router = useRouter();
+
+  const [searchValue, setSearchValue] = useState('');
+
+  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (searchValue) {
+      router.push(`${router.pathname}?q=${searchValue}`);
+    } else {
+      router.push(router.pathname);
+    }
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(event.target.value);
+  };
+
   return (
     <header className="sticky top-0 z-30 w-full px-2 py-4 bg-white sm:px-4 shadow-xl ">
       <div className="flex items-center justify-between mx-auto max-w-7xl">
@@ -11,6 +32,17 @@ export default function Header() {
         </Link>
         <div className="flex items-center space-x-1">
           <ul className="hidden space-x-2 md:inline-flex">
+            <li>
+              <form onSubmit={handleSearch}>
+                <TextField
+                  type="search"
+                  placeholder="Search"
+                  variant="standard"
+                  value={searchValue}
+                  onChange={handleChange}
+                ></TextField>
+              </form>
+            </li>
             <li>
               <Link
                 href="/plugins"

@@ -12,12 +12,33 @@ import {
 } from '@mui/material';
 import { prisma } from '@/server/db';
 
-export async function getStaticProps() {
+export async function getServerSideProps(context: { query: { q: string } }) {
+  const { query } = context;
+
+  // Access individual query parameters
+  const { q } = query;
+
   const plugins = await prisma.plugin.findMany({
     include: {
       rules: true,
       configs: true,
     },
+    where: q
+      ? {
+          OR: [
+            {
+              name: {
+                contains: q,
+              },
+            },
+            {
+              description: {
+                contains: q,
+              },
+            },
+          ],
+        }
+      : {},
   });
   const pluginsFixed = await plugins.map((plugin) => {
     return {

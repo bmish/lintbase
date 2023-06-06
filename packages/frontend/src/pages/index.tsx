@@ -4,12 +4,32 @@ import RuleCard from '@/components/RuleCard';
 import { Plugin, Rule } from '@/types';
 import { prisma } from '@/server/db';
 
-export async function getStaticProps() {
+export async function getServerSideProps(context: { query: { q: string } }) {
+  const { query } = context;
+
+  // Access individual query parameters
+  const { q } = query;
+
   const rules = await prisma.rule.findMany({
     include: {
       plugin: true,
     },
-    take: 25,
+    where: q
+      ? {
+          OR: [
+            {
+              name: {
+                contains: q,
+              },
+            },
+            {
+              description: {
+                contains: q,
+              },
+            },
+          ],
+        }
+      : {},
   });
   const rulesFixed = await rules.map((rule) => {
     return {
@@ -33,7 +53,22 @@ export async function getStaticProps() {
       rules: true,
       configs: true,
     },
-    take: 25,
+    where: q
+      ? {
+          OR: [
+            {
+              name: {
+                contains: q,
+              },
+            },
+            {
+              description: {
+                contains: q,
+              },
+            },
+          ],
+        }
+      : {},
   });
   const pluginsFixed = plugins.map((plugin) => ({
     ...plugin,
