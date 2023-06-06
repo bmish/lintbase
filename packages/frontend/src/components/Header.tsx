@@ -6,20 +6,16 @@ import { useRouter } from 'next/router';
 export default function Header() {
   const router = useRouter();
 
-  const [searchValue, setSearchValue] = useState('');
-
-  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (searchValue) {
-      router.push(`${router.pathname}?q=${searchValue}`);
-    } else {
-      router.push(router.pathname);
-    }
-  };
+  const [searchValue, setSearchValue] = useState(router.query.q || '');
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value);
+
+    if (event.target.value) {
+      router.push(`${router.pathname}?q=${event.target.value}`);
+    } else {
+      router.push(router.pathname);
+    }
   };
 
   return (
@@ -33,15 +29,13 @@ export default function Header() {
         <div className="flex items-center space-x-1">
           <ul className="hidden space-x-2 md:inline-flex">
             <li>
-              <form onSubmit={handleSearch}>
-                <TextField
-                  type="search"
-                  placeholder="Search"
-                  variant="standard"
-                  value={searchValue}
-                  onChange={handleChange}
-                ></TextField>
-              </form>
+              <TextField
+                type="search"
+                placeholder="Search"
+                variant="standard"
+                value={searchValue}
+                onChange={handleChange} // TODO: add debouncing
+              ></TextField>
             </li>
             <li>
               <Link
