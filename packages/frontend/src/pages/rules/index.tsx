@@ -22,6 +22,7 @@ export async function getServerSideProps(context: { query: { q: string } }) {
     include: {
       plugin: true,
     },
+    take: 50,
     where: q
       ? {
           OR: [

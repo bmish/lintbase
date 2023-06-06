@@ -14,6 +14,7 @@ export async function getServerSideProps(context: { query: { q: string } }) {
     include: {
       plugin: true,
     },
+    take: 50,
     where: q
       ? {
           OR: [
@@ -53,6 +54,7 @@ export async function getServerSideProps(context: { query: { q: string } }) {
       rules: true,
       configs: true,
     },
+    take: 50,
     where: q
       ? {
           OR: [
