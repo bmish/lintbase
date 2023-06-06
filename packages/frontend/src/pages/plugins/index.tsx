@@ -76,7 +76,7 @@ export default function Plugins({
                   key={plugin.name}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
-                  <TableCell component="th" scope="row">
+                  <TableCell scope="row">
                     <Link
                       href={`/npm/${encodeURIComponent(plugin.name)}`}
                       underline="none"

@@ -68,9 +68,9 @@ export default function Plugin({
               <TableHead>
                 <TableRow>
                   <TableCell scope="col">Configuration</TableCell>
-                  <TableCell scope="col" align="right">
+                  {/* <TableCell scope="col" align="right">
                     Description
-                  </TableCell>
+                  </TableCell> */}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -79,9 +79,7 @@ export default function Plugin({
                     key={`${plugin.name}/${config.name}`}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
-                    <TableCell component="th" scope="row">
-                      {config.name}
-                    </TableCell>
+                    <TableCell scope="row">{config.name}</TableCell>
                     {/* <TableCell align="right">{config.description}</TableCell> */}
                   </TableRow>
                 ))}
@@ -116,7 +114,7 @@ export default function Plugin({
                     key={`${plugin.name}/${rule.name}`}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
-                    <TableCell component="th" scope="row">
+                    <TableCell scope="row">
                       <Link
                         href={`/npm/${encodeURIComponent(
                           plugin.name
