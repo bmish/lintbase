@@ -60,7 +60,9 @@ export default function PluginCard({
           )}
 
           <Button size="small" href={plugin.linkPackageRegistry}>
-            Package Registry
+            {plugin.linkPackageRegistry.startsWith('https://www.npmjs.com/')
+              ? 'npm'
+              : 'Package Registry'}
           </Button>
         </CardActions>
       )}
