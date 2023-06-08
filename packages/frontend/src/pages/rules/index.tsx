@@ -7,23 +7,51 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TableFooter,
   TableHead,
+  TablePagination,
   TableRow,
 } from '@mui/material';
 import { prisma } from '@/server/db';
 import { fixRule } from '@/utils';
+import React from 'react';
+import { useRouter } from 'next/router';
 
-export async function getServerSideProps(context: { query: { q: string } }) {
+export async function getServerSideProps(context: {
+  query: { q: string; p: string; c: string };
+}) {
   const { query } = context;
 
   // Access individual query parameters
-  const { q } = query;
+  const { q, p, c } = query;
+  const currentPage = p ? Number(p) - 1 : 0;
+  const pageSize = c ? Number(c) : 25;
+
+  const ruleCount = await prisma.rule.count({
+    where: q
+      ? {
+          OR: [
+            {
+              name: {
+                contains: q,
+              },
+            },
+            {
+              description: {
+                contains: q,
+              },
+            },
+          ],
+        }
+      : {},
+  });
 
   const rules = await prisma.rule.findMany({
     include: {
       plugin: true,
     },
-    take: 50,
+    take: pageSize === -1 ? undefined : Number(pageSize),
+    skip: pageSize === -1 ? 0 : Number(currentPage) * Number(pageSize),
     where: q
       ? {
           OR: [
@@ -44,15 +72,56 @@ export async function getServerSideProps(context: { query: { q: string } }) {
   const rulesFixed = await rules.map((rule) => fixRule(rule));
 
   return {
-    props: { data: { rules: rulesFixed } },
+    props: { data: { rules: rulesFixed, ruleCount, currentPage, pageSize } },
   };
 }
 
 export default function Rules({
-  data: { rules },
+  data: { rules, ruleCount, currentPage, pageSize },
 }: {
-  data: { rules: Rule[] };
+  data: {
+    rules: Rule[];
+    ruleCount: number;
+    currentPage: number;
+    pageSize: number;
+  };
 }) {
+  const router = useRouter();
+
+  const handleChangePage = (
+    event: React.MouseEvent<HTMLButtonElement> | null,
+    newPage: number
+  ) => {
+    const newQueryParams = new URLSearchParams();
+    if (router.query.q) {
+      newQueryParams.append('q', String(router.query.q));
+    }
+    if (router.query.c) {
+      newQueryParams.append('c', String(router.query.c));
+    }
+    if (newPage > 0) {
+      newQueryParams.append('p', String(newPage + 1));
+    }
+    router.push(
+      `${router.pathname}${
+        newQueryParams.size > 0 ? '?' : ''
+      }${newQueryParams.toString()}`
+    );
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const pageSize = Number.parseInt(event.target.value, 10);
+    const newQueryParams = new URLSearchParams();
+    if (router.query.q) {
+      newQueryParams.append('q', String(router.query.q));
+    }
+    newQueryParams.append('c', String(pageSize));
+
+    router.push(`${router.pathname}?${newQueryParams.toString()}`);
+  };
+
   return (
     <div className="bg-gray-100 h-full">
       <Header />
@@ -106,6 +175,24 @@ export default function Rules({
                 </TableRow>
               ))}
             </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TablePagination
+                  rowsPerPageOptions={[
+                    5,
+                    10,
+                    25,
+                    50,
+                    { label: 'All', value: -1 },
+                  ]}
+                  count={ruleCount}
+                  page={currentPage}
+                  rowsPerPage={pageSize}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </TableRow>
+            </TableFooter>
           </Table>
         </TableContainer>
       </main>
