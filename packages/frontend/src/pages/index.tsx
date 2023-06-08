@@ -111,7 +111,7 @@ export default function index({
     <div className="bg-gray-100 h-full">
       <Header />
 
-      <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto min-h-full">
+      <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto min-h-screen">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           <div>
             <Typography variant="h6" className="mb-4 text-center">

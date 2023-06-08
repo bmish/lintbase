@@ -131,7 +131,7 @@ export default function Plugins({
     <div className="bg-gray-100 h-full">
       <Header />
 
-      <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto">
+      <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto min-h-screen">
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="plugin list">
             <TableHead>
