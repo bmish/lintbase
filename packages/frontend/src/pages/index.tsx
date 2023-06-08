@@ -11,6 +11,12 @@ export async function getServerSideProps() {
     include: {
       plugin: true,
     },
+    where: {
+      deprecated: false, // Don't advertise deprecated rules.
+      description: {
+        not: null, // Don't advertise rules without descriptions.
+      },
+    },
   });
   const rulesRandomFixed = randomlyPickItemsFromArray(rulesRandom, 5).map(
     (rule) => fixRule(rule)
@@ -46,6 +52,11 @@ export async function getServerSideProps() {
     include: {
       rules: true,
       configs: true,
+    },
+    where: {
+      description: {
+        not: null, // Don't advertise plugins without descriptions.
+      },
     },
   });
   const pluginsRandomFixed = randomlyPickItemsFromArray(pluginsRandom, 5).map(
