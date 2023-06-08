@@ -11,6 +11,7 @@ import {
   TableRow,
 } from '@mui/material';
 import { prisma } from '@/server/db';
+import { fixRule } from '@/utils';
 
 export async function getServerSideProps(context: { query: { q: string } }) {
   const { query } = context;
@@ -40,18 +41,7 @@ export async function getServerSideProps(context: { query: { q: string } }) {
         }
       : {},
   });
-  const rulesFixed = await rules.map((rule) => {
-    return {
-      ...rule,
-      plugin: {
-        ...rule.plugin,
-        createdAt: rule.plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
-        updatedAt: rule.plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
-      },
-      createdAt: rule.plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
-      updatedAt: rule.plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
-    };
-  });
+  const rulesFixed = await rules.map((rule) => fixRule(rule));
 
   return {
     props: { data: { rules: rulesFixed } },

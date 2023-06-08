@@ -3,144 +3,141 @@ import PluginCard from '@/components/PluginCard';
 import RuleCard from '@/components/RuleCard';
 import { Plugin, Rule } from '@/types';
 import { prisma } from '@/server/db';
+import { fixPlugin, fixRule } from '@/utils';
+import { Typography } from '@mui/material';
 
-export async function getServerSideProps(context: { query: { q: string } }) {
-  const { query } = context;
-
-  // Access individual query parameters
-  const { q } = query;
-
-  const rules = await prisma.rule.findMany({
+export async function getServerSideProps() {
+  const rulesRandom = await prisma.rule.findMany({
     include: {
       plugin: true,
     },
-    take: 50,
-    where: q
-      ? {
-          OR: [
-            {
-              name: {
-                contains: q,
-              },
-            },
-            {
-              description: {
-                contains: q,
-              },
-            },
-          ],
-        }
-      : {},
   });
-  const rulesFixed = await rules.map((rule) => {
-    return {
-      ...rule,
-      plugin: {
-        ...rule.plugin,
-        linkUs: `/npm/${encodeURIComponent(rule.plugin.name)}`,
-        createdAt: rule.plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
-        updatedAt: rule.plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
-      },
-      linkUs: `/npm/${encodeURIComponent(
-        rule.plugin.name
-      )}/${encodeURIComponent(rule.name)}`,
-      createdAt: rule.plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
-      updatedAt: rule.plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
-    };
-  });
+  const rulesRandomFixed = randomlyPickItemsFromArray(rulesRandom, 5).map(
+    (rule) => fixRule(rule)
+  );
 
-  const plugins = await prisma.plugin.findMany({
+  const pluginsPopular = await prisma.plugin.findMany({
     include: {
       rules: true,
       configs: true,
     },
-    take: 50,
-    where: q
-      ? {
-          OR: [
-            {
-              name: {
-                contains: q,
-              },
-            },
-            {
-              description: {
-                contains: q,
-              },
-            },
-          ],
-        }
-      : {},
+    take: 5,
+    orderBy: {
+      countWeeklyDownloads: 'desc',
+    },
   });
-  const pluginsFixed = plugins.map((plugin) => ({
-    ...plugin,
-    rules: plugin.rules.map((rule) => ({
-      ...rule,
-      createdAt: rule.createdAt.toISOString(), // Since DataTime can't be serialized by next.
-      updatedAt: rule.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
-      linkUs: `/npm/${encodeURIComponent(plugin.name)}/${encodeURIComponent(
-        rule.name
-      )}`,
-    })),
-    linkUs: `/npm/${encodeURIComponent(plugin.name)}`,
-    createdAt: plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
-    updatedAt: plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
-  }));
+  const pluginsPopularFixed = pluginsPopular.map((plugin) => fixPlugin(plugin));
+
+  const pluginsRecentlyUpdated = await prisma.plugin.findMany({
+    include: {
+      rules: true,
+      configs: true,
+    },
+    take: 5,
+    orderBy: {
+      updatedAt: 'desc',
+    },
+  });
+  const pluginsRecentlyUpdatedFixed = pluginsRecentlyUpdated.map((plugin) =>
+    fixPlugin(plugin)
+  );
+
+  const pluginsRandom = await prisma.plugin.findMany({
+    include: {
+      rules: true,
+      configs: true,
+    },
+  });
+  const pluginsRandomFixed = randomlyPickItemsFromArray(pluginsRandom, 5).map(
+    (plugin) => fixPlugin(plugin)
+  );
 
   return {
     props: {
       data: {
-        pluginsRandomSelection: pluginsFixed,
-        rulesRandomSelection: rulesFixed,
+        pluginsPopular: pluginsPopularFixed,
+        pluginsRecentlyUpdated: pluginsRecentlyUpdatedFixed,
+        pluginsRandom: pluginsRandomFixed,
+        rulesRandom: rulesRandomFixed,
       },
     },
   };
 }
 
-// function randomlyPickItemsFromArray<T>(array: T[], count: number): T[] {
-//   const indicesUsed = new Set<number>();
-//   const result: T[] = [];
-//   for (let i = 0; i < count; i++) {
-//     let index = Math.floor(Math.random() * array.length);
-//     while (indicesUsed.has(index)) {
-//       index = Math.floor(Math.random() * array.length);
-//     }
-//     indicesUsed.add(index);
-//     result.push(array[index]);
-//   }
-//   return result;
-// }
+function randomlyPickItemsFromArray<T>(array: T[], count: number): T[] {
+  const indicesUsed = new Set<number>();
+  const result: T[] = [];
+  for (let i = 0; i < count; i++) {
+    let index = Math.floor(Math.random() * array.length);
+    while (indicesUsed.has(index)) {
+      index = Math.floor(Math.random() * array.length);
+    }
+    indicesUsed.add(index);
+    result.push(array[index]);
+  }
+  return result;
+}
 
 export default function index({
-  data: { pluginsRandomSelection, rulesRandomSelection },
+  data: { pluginsPopular, pluginsRecentlyUpdated, pluginsRandom, rulesRandom },
 }: {
-  data: { pluginsRandomSelection: Plugin[]; rulesRandomSelection: Rule[] };
+  data: {
+    pluginsPopular: Plugin[];
+    pluginsRecentlyUpdated: Plugin[];
+    pluginsRandom: Plugin[];
+    rulesRandom: Rule[];
+  };
 }) {
   return (
     <div className="bg-gray-100 h-full">
       <Header />
 
-      <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 max-w-4xl mx-auto min-h-full">
-        <div className="flex">
-          <div className="w-1/2 p-4">
-            <h2 className="text-2xl font-bold mb-4 text-center">
-              Random Plugins
-            </h2>
+      <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto min-h-full">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div>
+            <Typography variant="h6" className="mb-4 text-center">
+              Popular Plugins
+            </Typography>
             <ul className="space-y-8">
-              {pluginsRandomSelection.map((p) => (
+              {pluginsPopular.map((p) => (
                 <li key={p.name}>
                   <PluginCard plugin={p}></PluginCard>
                 </li>
               ))}
             </ul>
           </div>
-
-          <div className="w-1/2 p-4">
-            <h2 className="text-2xl font-bold mb-4 text-center">
-              Random Rules
-            </h2>
+          <div>
+            <Typography variant="h6" className="mb-4 text-center">
+              Recently Updated
+            </Typography>
             <ul className="space-y-8">
-              {rulesRandomSelection.map((r) => (
+              {pluginsRecentlyUpdated.map((p) => (
+                <li key={p.name}>
+                  <PluginCard plugin={p}></PluginCard>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            {' '}
+            <Typography variant="h6" className="mb-4 text-center">
+              Random Plugins
+            </Typography>
+            <ul className="space-y-8">
+              {pluginsRandom.map((p) => (
+                <li key={p.name}>
+                  <PluginCard plugin={p}></PluginCard>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            {' '}
+            <Typography variant="h6" className="mb-4 text-center">
+              Random Rules
+            </Typography>
+            <ul className="space-y-8">
+              {rulesRandom.map((r) => (
                 <li key={`${r.plugin.name}/${r.name}`}>
                   <RuleCard rule={r}></RuleCard>
                 </li>

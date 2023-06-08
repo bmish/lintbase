@@ -15,6 +15,7 @@ import {
 import { prisma } from '@/server/db';
 import React from 'react';
 import { useRouter } from 'next/router';
+import { fixPlugin } from '@/utils';
 
 export async function getServerSideProps(context: {
   query: { q: string; p: string; c: string };
@@ -69,22 +70,7 @@ export async function getServerSideProps(context: {
         }
       : {},
   });
-  const pluginsFixed = await plugins.map((plugin) => {
-    return {
-      ...plugin,
-      rules: plugin.rules.map((rule) => ({
-        ...rule,
-        createdAt: rule.createdAt.toISOString(), // Since DataTime can't be serialized by next.
-        updatedAt: rule.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
-        linkUs: `/npm/${encodeURIComponent(plugin.name)}/${encodeURIComponent(
-          rule.name
-        )}`,
-      })),
-      linkUs: `/npm/${encodeURIComponent(plugin.name)}`,
-      createdAt: plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
-      updatedAt: plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
-    };
-  });
+  const pluginsFixed = await plugins.map((plugin) => fixPlugin(plugin));
 
   return {
     props: {

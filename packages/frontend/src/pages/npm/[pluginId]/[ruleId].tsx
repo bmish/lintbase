@@ -3,6 +3,7 @@ import Header from '@/components/Header';
 import RuleCard from '@/components/RuleCard';
 import { Rule as RuleType } from '@/types';
 import { prisma } from '@/server/db';
+import { fixRule } from '@/utils';
 
 interface IQueryParam {
   ruleId: string;
@@ -19,20 +20,7 @@ export async function getServerSideProps({ params }: { params: IQueryParam }) {
       plugin: true,
     },
   });
-  const ruleFixed = {
-    ...rule,
-    plugin: {
-      ...rule.plugin,
-      createdAt: rule.createdAt.toISOString(), // Since DataTime can't be serialized by next.
-      updatedAt: rule.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
-      linkUs: `/npm/${encodeURIComponent(rule.plugin.name)}`,
-    },
-    linkUs: `/npm/${encodeURIComponent(rule.plugin.name)}/${encodeURIComponent(
-      rule.name
-    )}`,
-    createdAt: rule.createdAt.toISOString(), // Since DataTime can't be serialized by next.
-    updatedAt: rule.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
-  };
+  const ruleFixed = fixRule(rule);
 
   return {
     props: { data: { rule: ruleFixed } },

@@ -1,4 +1,4 @@
-import { Plugin } from '@/types';
+import { Plugin, Rule } from '@/types';
 import { load } from '@lintbase/downloader';
 import type { TSESLint /* JSONSchema*/ } from '@typescript-eslint/utils';
 import path from 'node:path';
@@ -282,4 +282,38 @@ export async function loadPluginsToDb() {
       return [pluginNormalized];
     });
   }
+}
+
+export function fixRule(rule: Rule) {
+  return {
+    ...rule,
+    plugin: {
+      ...rule.plugin,
+      linkUs: `/npm/${encodeURIComponent(rule.plugin.name)}`,
+      createdAt: rule.plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
+      updatedAt: rule.plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
+    },
+    linkUs: `/npm/${encodeURIComponent(rule.plugin.name)}/${encodeURIComponent(
+      rule.name
+    )}`,
+    createdAt: rule.plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
+    updatedAt: rule.plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
+  };
+}
+
+export function fixPlugin(plugin: Plugin) {
+  return {
+    ...plugin,
+    rules: plugin.rules.map((rule) => ({
+      ...rule,
+      createdAt: rule.createdAt.toISOString(), // Since DataTime can't be serialized by next.
+      updatedAt: rule.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
+      linkUs: `/npm/${encodeURIComponent(plugin.name)}/${encodeURIComponent(
+        rule.name
+      )}`,
+    })),
+    linkUs: `/npm/${encodeURIComponent(plugin.name)}`,
+    createdAt: plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
+    updatedAt: plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
+  };
 }

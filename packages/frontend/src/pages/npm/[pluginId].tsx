@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { Plugin as PluginType } from '@/types';
 import { prisma } from '@/server/db';
+import { fixPlugin } from '@/utils';
 
 interface IQueryParam {
   pluginId: string;
@@ -30,20 +31,7 @@ export async function getServerSideProps({ params }: { params: IQueryParam }) {
       configs: true,
     },
   });
-  const pluginFixed = {
-    ...plugin,
-    rules: plugin.rules.map((rule) => ({
-      ...rule,
-      createdAt: rule.createdAt.toISOString(), // Since DataTime can't be serialized by next.
-      updatedAt: rule.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
-      linkUs: `/npm/${encodeURIComponent(plugin.name)}/${encodeURIComponent(
-        rule.name
-      )}`,
-    })),
-    linkUs: `/npm/${encodeURIComponent(plugin.name)}`,
-    createdAt: plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
-    updatedAt: plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
-  };
+  const pluginFixed = fixPlugin(plugin);
 
   return {
     props: { data: { plugin: pluginFixed } },
