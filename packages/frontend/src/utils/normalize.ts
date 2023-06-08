@@ -44,10 +44,16 @@ const EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS = new Set([
   'ember-template-lint-configurations',
 ]);
 
+type NpmRegistryInfo = {
+  time: Record<string | 'created' | 'modified', string>;
+};
+
 async function eslintPluginToNormalizedPlugin(
   pluginName: string,
   plugin: TSESLint.Linter.Plugin,
-  packageJson: PackageJson
+  packageJson: PackageJson,
+  npmDownloadsInfo: { downloads: number },
+  npmRegistryInfo: NpmRegistryInfo
 ): Promise<Plugin> {
   const pluginCreated = await prisma.plugin.create({
     include: {
@@ -74,11 +80,10 @@ async function eslintPluginToNormalizedPlugin(
       countWatching: Math.round(Math.random() * 100),
       countForks: Math.round(Math.random() * 100),
       countContributors: Math.round(Math.random() * 100),
-      countWeeklyDownloads: Math.round(Math.random() * 100),
+      countWeeklyDownloads: npmDownloadsInfo.downloads,
 
-      // TODO: get real data from npm/github
-      updatedAt: randomDate(new Date(2020, 0, 1), new Date()),
-      createdAt: randomDate(new Date(2020, 0, 1), new Date()),
+      updatedAt: new Date(npmRegistryInfo.time.modified),
+      createdAt: new Date(npmRegistryInfo.time.created),
 
       linkReadme: packageJson.homepage?.toString() || null,
 
@@ -138,7 +143,10 @@ async function eslintPluginToNormalizedPlugin(
       },
 
       versions: {
-        create: [], // TODO
+        create: Object.entries(npmRegistryInfo.time).map(([version, time]) => ({
+          version,
+          publishedAt: new Date(time),
+        })),
       },
     },
   });
@@ -149,7 +157,9 @@ async function eslintPluginToNormalizedPlugin(
 async function etlPluginToNormalizedPlugin(
   pluginName: string,
   plugin: EmberTemplateLint,
-  packageJson: PackageJson
+  packageJson: PackageJson,
+  npmDownloadsInfo: { downloads: number },
+  npmRegistryInfo: NpmRegistryInfo
 ): Promise<Plugin> {
   const pluginCreated = await prisma.plugin.create({
     include: {
@@ -171,11 +181,10 @@ async function etlPluginToNormalizedPlugin(
       countWatching: Math.round(Math.random() * 100),
       countForks: Math.round(Math.random() * 100),
       countContributors: Math.round(Math.random() * 100),
-      countWeeklyDownloads: Math.round(Math.random() * 100),
+      countWeeklyDownloads: npmDownloadsInfo.downloads,
 
-      // TODO: get real data from npm/github
-      updatedAt: randomDate(new Date(2020, 0, 1), new Date()),
-      createdAt: randomDate(new Date(2020, 0, 1), new Date()),
+      updatedAt: new Date(npmRegistryInfo.time.modified),
+      createdAt: new Date(npmRegistryInfo.time.created),
 
       linkReadme: packageJson.homepage?.toString() || null,
 
@@ -222,7 +231,10 @@ async function etlPluginToNormalizedPlugin(
       },
 
       versions: {
-        create: [], // TODO
+        create: Object.entries(npmRegistryInfo.time).map(([version, time]) => ({
+          version,
+          publishedAt: new Date(time),
+        })),
       },
     },
   });
@@ -259,14 +271,32 @@ export async function loadPluginsToDb() {
         readFileSync(pathPackageJson, { encoding: 'utf8' })
       ) as PackageJson;
 
+      // Get info from npm registry.
+      // https://github.com/npm/registry/blob/master/docs/download-counts.md
+      const npmDownloadsInfo = await fetch(
+        `https://api.npmjs.org/downloads/point/last-week/${pluginName}`
+      ).then((res) => res.json());
+
+      const npmRegistryInfo = await fetch(
+        `https://registry.npmjs.org/${pluginName}`
+      ).then((res) => res.json());
+
       const pluginNormalized =
         pluginType === 'eslint-plugin'
           ? await eslintPluginToNormalizedPlugin(
               pluginName,
               plugin,
-              packageJson
+              packageJson,
+              npmDownloadsInfo,
+              npmRegistryInfo
             )
-          : await etlPluginToNormalizedPlugin(pluginName, plugin, packageJson);
+          : await etlPluginToNormalizedPlugin(
+              pluginName,
+              plugin,
+              packageJson,
+              npmDownloadsInfo,
+              npmRegistryInfo
+            );
 
       if (
         pluginNormalized.configs.length === 0 &&
@@ -301,6 +331,10 @@ export function fixPlugin(plugin: Plugin) {
       ...rule,
       createdAt: rule.createdAt.toISOString(), // Since DataTime can't be serialized by next.
       updatedAt: rule.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
+    })),
+    versions: plugin.versions.map((version) => ({
+      ...version,
+      publishedAt: version.publishedAt.toISOString(), // Since DataTime can't be serialized by next.
     })),
     createdAt: plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
     updatedAt: plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.

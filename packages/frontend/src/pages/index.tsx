@@ -86,7 +86,7 @@ export async function getServerSideProps() {
 function randomlyPickItemsFromArray<T>(array: T[], count: number): T[] {
   const indicesUsed = new Set<number>();
   const result: T[] = [];
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < Math.min(array.length, count); i++) {
     let index = Math.floor(Math.random() * array.length);
     while (indicesUsed.has(index)) {
       index = Math.floor(Math.random() * array.length);
