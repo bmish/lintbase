@@ -32,7 +32,7 @@ export default function Rule({ data: { rule } }: { data: { rule: RuleType } }) {
     <div className="bg-gray-100 h-full">
       <Header />
 
-      <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 max-w-4xl mx-auto">
+      <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto">
         {rule && <RuleCard rule={rule} detailed={true}></RuleCard>}
       </main>
     </div>

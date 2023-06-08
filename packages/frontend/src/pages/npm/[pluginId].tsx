@@ -47,7 +47,7 @@ export default function Plugin({
     <div className="bg-gray-100 h-full">
       <Header />
 
-      <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 max-w-4xl mx-auto">
+      <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto">
         {plugin && <PluginCard plugin={plugin} detailed={true}></PluginCard>}
 
         {plugin && plugin.configs.length > 0 && (
