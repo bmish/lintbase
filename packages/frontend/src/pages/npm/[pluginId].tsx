@@ -54,7 +54,7 @@ export default function Plugin({
 
         {plugin && plugin.configs.length > 0 && (
           <TableContainer component={Paper} className="mt-8">
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <Table sx={{ minWidth: 650 }} aria-label="plugin config list">
               <TableHead>
                 <TableRow>
                   <TableCell scope="col">Configuration</TableCell>
@@ -80,7 +80,7 @@ export default function Plugin({
 
         {plugin && plugin.rules.length > 0 && (
           <TableContainer component={Paper} className="mt-8">
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <Table sx={{ minWidth: 650 }} aria-label="plugin rule list">
               <TableHead>
                 <TableRow>
                   <TableCell scope="col">Rule</TableCell>

@@ -130,7 +130,7 @@ export default function Rules({
 
       <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto">
         <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <Table sx={{ minWidth: 650 }} aria-label="rule list">
             <TableHead>
               <TableRow>
                 <TableCell scope="col">Name</TableCell>

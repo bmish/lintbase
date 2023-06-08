@@ -4,6 +4,15 @@ import RuleCard from '@/components/RuleCard';
 import { Rule as RuleType } from '@/types';
 import { prisma } from '@/server/db';
 import { fixRule } from '@/utils';
+import {
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material';
 
 interface IQueryParam {
   ruleId: string;
@@ -36,6 +45,28 @@ export default function Rule({ data: { rule } }: { data: { rule: RuleType } }) {
 
       <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto">
         {rule && <RuleCard rule={rule} detailed={true}></RuleCard>}
+
+        {rule && rule.options.length > 0 && (
+          <TableContainer component={Paper} className="mt-8">
+            <Table sx={{ minWidth: 650 }} aria-label="rule option list">
+              <TableHead>
+                <TableRow>
+                  <TableCell scope="col">Option</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rule.options.map((option) => (
+                  <TableRow
+                    key={`${rule.name}/${option.name}`}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  >
+                    <TableCell scope="row">{option.name}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </main>
     </div>
   );
