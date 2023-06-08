@@ -1,5 +1,5 @@
 import Header from '@/components/Header';
-import { Rule } from '@/types';
+import { Rule } from '@/utils/types';
 import {
   Link,
   Paper,
@@ -13,9 +13,10 @@ import {
   TableRow,
 } from '@mui/material';
 import { prisma } from '@/server/db';
-import { fixRule } from '@/utils';
+import { fixRule } from '@/utils/utils';
 import React from 'react';
 import { useRouter } from 'next/router';
+import { ruleToLinkUs } from '@/utils/dynamic-fields';
 
 export async function getServerSideProps(context: {
   query: { q: string; p: string; c: string };
@@ -156,9 +157,7 @@ export default function Rules({
                 >
                   <TableCell scope="row">
                     <Link
-                      href={`/npm/${encodeURIComponent(
-                        rule.plugin.name
-                      )}/${encodeURIComponent(rule.name)}`}
+                      href={ruleToLinkUs(rule, rule.plugin)}
                       underline="none"
                     >
                       {rule.name}

@@ -1,5 +1,5 @@
 import Header from '@/components/Header';
-import { Plugin } from '@/types';
+import { Plugin } from '@/utils/types';
 import {
   Link,
   Paper,
@@ -15,7 +15,8 @@ import {
 import { prisma } from '@/server/db';
 import React from 'react';
 import { useRouter } from 'next/router';
-import { fixPlugin } from '@/utils';
+import { fixPlugin } from '@/utils/utils';
+import { pluginToLinkUs } from '@/utils/dynamic-fields';
 
 export async function getServerSideProps(context: {
   query: { q: string; p: string; c: string };
@@ -158,10 +159,7 @@ export default function Plugins({
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   <TableCell scope="row">
-                    <Link
-                      href={`/npm/${encodeURIComponent(plugin.name)}`}
-                      underline="none"
-                    >
+                    <Link href={pluginToLinkUs(plugin)} underline="none">
                       {plugin.name}
                     </Link>
                   </TableCell>

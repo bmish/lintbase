@@ -1,4 +1,8 @@
-import { Plugin } from '@/types';
+import { Plugin } from '@/utils/types';
+import {
+  pluginToLinkPackageRegistry,
+  pluginToLinkUs,
+} from '@/utils/dynamic-fields';
 import {
   Button,
   Card,
@@ -25,7 +29,7 @@ export default function PluginCard({
         <Typography variant="h5" component="div">
           {detailed && plugin.name}
           {!detailed && (
-            <Link href={plugin.linkUs} underline="none">
+            <Link href={pluginToLinkUs(plugin)} underline="none">
               {plugin.name}
             </Link>
           )}
@@ -59,8 +63,10 @@ export default function PluginCard({
             </Button>
           )}
 
-          <Button size="small" href={plugin.linkPackageRegistry}>
-            {plugin.linkPackageRegistry.startsWith('https://www.npmjs.com/')
+          <Button size="small" href={pluginToLinkPackageRegistry(plugin)}>
+            {pluginToLinkPackageRegistry(plugin).startsWith(
+              'https://www.npmjs.com/'
+            )
               ? 'npm'
               : 'Package Registry'}
           </Button>

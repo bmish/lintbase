@@ -1,11 +1,11 @@
-import { Plugin, Rule } from '@/types';
+import { Plugin, Rule } from '@/utils/types';
 import { load } from '@lintbase/downloader';
-import type { TSESLint /* JSONSchema*/ } from '@typescript-eslint/utils';
+import type { TSESLint } from '@typescript-eslint/utils';
 import path from 'node:path';
 import { PackageJson } from 'type-fest';
 import { readFileSync } from 'node:fs';
-import { prisma } from './server/db';
-import { getAllNamedOptions } from './utils/eslint';
+import { prisma } from '../server/db';
+import { getAllNamedOptions } from './eslint';
 
 function randomDate(start: Date, end: Date) {
   return new Date(
@@ -80,8 +80,6 @@ async function eslintPluginToNormalizedPlugin(
       updatedAt: randomDate(new Date(2020, 0, 1), new Date()),
       createdAt: randomDate(new Date(2020, 0, 1), new Date()),
 
-      linkUs: `/npm/${encodeURIComponent(pluginName)}`,
-      linkPackageRegistry: `https://www.npmjs.com/package/${pluginName}`,
       linkReadme: packageJson.homepage?.toString() || null,
 
       rules: {
@@ -114,9 +112,6 @@ async function eslintPluginToNormalizedPlugin(
               requiresTypeChecking: rule.meta?.requiresTypeChecking || false,
               updatedAt: randomDate(new Date(2020, 0, 1), new Date()),
               createdAt: randomDate(new Date(2020, 0, 1), new Date()),
-              linkUs: `/npm/${encodeURIComponent(
-                pluginName
-              )}/${encodeURIComponent(ruleName)}`,
               linkRuleDoc: rule.meta?.docs?.url || null,
             };
 
@@ -187,8 +182,6 @@ async function etlPluginToNormalizedPlugin(
       updatedAt: randomDate(new Date(2020, 0, 1), new Date()),
       createdAt: randomDate(new Date(2020, 0, 1), new Date()),
 
-      linkUs: `/npm/${encodeURIComponent(pluginName)}`,
-      linkPackageRegistry: `https://www.npmjs.com/package/${pluginName}`,
       linkReadme: packageJson.homepage?.toString() || null,
 
       rules: {
@@ -205,9 +198,6 @@ async function etlPluginToNormalizedPlugin(
             requiresTypeChecking: false, // Not supported.
             updatedAt: randomDate(new Date(2020, 0, 1), new Date()), // TODO
             createdAt: randomDate(new Date(2020, 0, 1), new Date()), // TODO
-            linkUs: `/npm/${encodeURIComponent(
-              pluginName
-            )}/${encodeURIComponent(ruleName)}`,
             linkRuleDoc: null, // TODO
           };
 
@@ -301,13 +291,9 @@ export function fixRule(rule: Rule) {
     ...rule,
     plugin: {
       ...rule.plugin,
-      linkUs: `/npm/${encodeURIComponent(rule.plugin.name)}`,
       createdAt: rule.plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
       updatedAt: rule.plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
     },
-    linkUs: `/npm/${encodeURIComponent(rule.plugin.name)}/${encodeURIComponent(
-      rule.name
-    )}`,
     createdAt: rule.plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
     updatedAt: rule.plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
   };
@@ -320,11 +306,7 @@ export function fixPlugin(plugin: Plugin) {
       ...rule,
       createdAt: rule.createdAt.toISOString(), // Since DataTime can't be serialized by next.
       updatedAt: rule.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
-      linkUs: `/npm/${encodeURIComponent(plugin.name)}/${encodeURIComponent(
-        rule.name
-      )}`,
     })),
-    linkUs: `/npm/${encodeURIComponent(plugin.name)}`,
     createdAt: plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
     updatedAt: plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
   };

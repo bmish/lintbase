@@ -1,9 +1,9 @@
 import Header from '@/components/Header';
 import PluginCard from '@/components/PluginCard';
 import RuleCard from '@/components/RuleCard';
-import { Plugin, Rule } from '@/types';
+import { Plugin, Rule } from '@/utils/types';
 import { prisma } from '@/server/db';
-import { fixPlugin, fixRule } from '@/utils';
+import { fixPlugin, fixRule } from '@/utils/utils';
 import { Typography } from '@mui/material';
 
 export async function getServerSideProps() {

@@ -11,9 +11,10 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { Plugin as PluginType } from '@/types';
+import { Plugin as PluginType } from '@/utils/types';
 import { prisma } from '@/server/db';
-import { fixPlugin } from '@/utils';
+import { fixPlugin } from '@/utils/utils';
+import { ruleToLinkUs } from '@/utils/dynamic-fields';
 
 interface IQueryParam {
   pluginId: string;
@@ -105,12 +106,7 @@ export default function Plugin({
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell scope="row">
-                      <Link
-                        href={`/npm/${encodeURIComponent(
-                          plugin.name
-                        )}/${encodeURIComponent(rule.name)}`}
-                        underline="none"
-                      >
+                      <Link href={ruleToLinkUs(rule, plugin)} underline="none">
                         {rule.name}
                       </Link>
                     </TableCell>

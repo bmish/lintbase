@@ -40,7 +40,6 @@ model Rule {
   createdAt            DateTime
   updatedAt            DateTime
   linkRuleDoc          String?
-  linkUs               String // TODO: dynamically generate instead of storing in DB
   plugin               Plugin           @relation(fields: [pluginId], references: [id])
   pluginId             Int
 
@@ -88,9 +87,7 @@ model Plugin {
   countStars           Int
   countWatching        Int
   countWeeklyDownloads Int
-  linkPackageRegistry  String // TODO: dynamically generate instead of storing in DB
   linkReadme           String?
-  linkUs               String // TODO: dynamically generate instead of storing in DB
   rules                Rule[]
   configs              Config[]
   versions             PluginVersion[]

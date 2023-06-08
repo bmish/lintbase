@@ -1,9 +1,9 @@
 /* eslint filenames/match-exported:"off",unicorn/filename-case:"off" */
 import Header from '@/components/Header';
 import RuleCard from '@/components/RuleCard';
-import { Rule as RuleType } from '@/types';
+import { Rule as RuleType } from '@/utils/types';
 import { prisma } from '@/server/db';
-import { fixRule } from '@/utils';
+import { fixRule } from '@/utils/utils';
 import {
   Paper,
   Table,

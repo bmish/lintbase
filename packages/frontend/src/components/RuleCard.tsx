@@ -6,7 +6,8 @@ import {
   Link,
   Typography,
 } from '@mui/material';
-import { Rule } from '@/types';
+import { Rule } from '@/utils/types';
+import { pluginToLinkUs, ruleToLinkUs } from '@/utils/dynamic-fields';
 
 export default function RuleCard({
   rule,
@@ -25,7 +26,7 @@ export default function RuleCard({
         <Typography variant="h5" component="div">
           {detailed && rule.name}
           {!detailed && (
-            <Link href={rule.linkUs} underline="none">
+            <Link href={ruleToLinkUs(rule, rule.plugin)} underline="none">
               {rule.name}
             </Link>
           )}{' '}
@@ -49,7 +50,7 @@ export default function RuleCard({
 
       {detailed && (
         <CardActions>
-          <Button size="small" href={rule.plugin.linkUs}>
+          <Button size="small" href={pluginToLinkUs(rule.plugin)}>
             plugin
           </Button>
 
