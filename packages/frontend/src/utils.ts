@@ -103,7 +103,7 @@ async function eslintPluginToNormalizedPlugin(
             const ruleNormalized = {
               name: ruleName,
               description: rule.meta?.docs?.description || null,
-              fixable: rule.meta?.fixable || 'code',
+              fixable: rule.meta?.fixable || null,
               hasSuggestions: rule.meta?.hasSuggestions || false,
               ecosystem: 'node',
               type: rule.meta?.type || null,
