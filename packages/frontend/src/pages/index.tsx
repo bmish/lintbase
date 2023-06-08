@@ -10,6 +10,8 @@ export async function getServerSideProps() {
   const rulesRandom = await prisma.rule.findMany({
     include: {
       plugin: true,
+      options: true,
+      replacedBy: true,
     },
     where: {
       deprecated: false, // Don't advertise deprecated rules.
@@ -26,6 +28,8 @@ export async function getServerSideProps() {
     include: {
       rules: true,
       configs: true,
+      keywords: true,
+      versions: true,
     },
     take: 5,
     orderBy: {
@@ -38,6 +42,8 @@ export async function getServerSideProps() {
     include: {
       rules: true,
       configs: true,
+      keywords: true,
+      versions: true,
     },
     take: 5,
     orderBy: {
@@ -52,6 +58,8 @@ export async function getServerSideProps() {
     include: {
       rules: true,
       configs: true,
+      keywords: true,
+      versions: true,
     },
     where: {
       description: {

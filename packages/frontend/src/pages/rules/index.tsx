@@ -49,6 +49,8 @@ export async function getServerSideProps(context: {
   const rules = await prisma.rule.findMany({
     include: {
       plugin: true,
+      options: true,
+      replacedBy: true,
     },
     take: pageSize === -1 ? undefined : Number(pageSize),
     skip: pageSize === -1 ? 0 : Number(currentPage) * Number(pageSize),

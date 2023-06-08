@@ -31,20 +31,27 @@ export default function RuleCard({
           )}{' '}
           {rule.fixable ? '🔧' : ''}
           {rule.hasSuggestions ? '💡' : ''}
-          {/* {rule.options ? '⚙️' : ''} */}
+          {rule.options.length > 0 ? '⚙️' : ''}
           {rule.requiresTypeChecking ? '💭' : ''}
           {rule.type === 'layout' ? '📏' : ''}
           {rule.type === 'problem' ? '❗' : ''}
           {rule.type === 'suggestion' ? '📖' : ''}
           {rule.deprecated ? '❌' : ''}
         </Typography>
-        <Typography
-          sx={{ mb: 1.5, fontSize: 14 }}
-          color="text.secondary"
-        ></Typography>
+        {detailed && rule.options.length > 0 && (
+          <Typography sx={{ mb: 1.5, fontSize: 14 }} color="text.secondary">
+            Options: {rule.options.map((obj) => obj.name).join(' • ')}
+          </Typography>
+        )}
+        {detailed && rule.replacedBy.length > 0 && (
+          <Typography sx={{ mb: 1.5, fontSize: 14 }} color="text.secondary">
+            Replaced by: {rule.replacedBy.map((obj) => obj.name).join(', ')}
+          </Typography>
+        )}
 
         <Typography variant="body2">{rule.description}</Typography>
       </CardContent>
+
       {detailed && (
         <CardActions>
           <Button size="small" href={rule.plugin.linkUs}>

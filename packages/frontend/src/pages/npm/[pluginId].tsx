@@ -29,6 +29,8 @@ export async function getServerSideProps({ params }: { params: IQueryParam }) {
     include: {
       rules: true,
       configs: true,
+      keywords: true,
+      versions: true,
     },
   });
   const pluginFixed = fixPlugin(plugin);

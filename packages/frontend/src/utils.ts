@@ -5,20 +5,7 @@ import path from 'node:path';
 import { PackageJson } from 'type-fest';
 import { readFileSync } from 'node:fs';
 import { prisma } from './server/db';
-
-/**
- * Check if a rule schema is non-blank/empty and thus has actual options.
- * @param jsonSchema - the JSON schema to check
- * @returns - whether the schema has options
- */
-/*
-function hasOptions(jsonSchema: JSONSchema.JSONSchema4): boolean {
-  return (
-    (Array.isArray(jsonSchema) && jsonSchema.length > 0) ||
-    (typeof jsonSchema === 'object' && Object.keys(jsonSchema).length > 0)
-  );
-}
-*/
+import { getAllNamedOptions } from './utils/eslint';
 
 function randomDate(start: Date, end: Date) {
   return new Date(
@@ -26,7 +13,6 @@ function randomDate(start: Date, end: Date) {
   );
 }
 
-/*
 const IGNORED_KEYWORDS = new Set([
   'configs',
   'configuration',
@@ -57,7 +43,6 @@ const EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS = new Set([
   'ember-template-lint-configuration',
   'ember-template-lint-configurations',
 ]);
-*/
 
 async function eslintPluginToNormalizedPlugin(
   pluginName: string,
@@ -66,8 +51,15 @@ async function eslintPluginToNormalizedPlugin(
 ): Promise<Plugin> {
   const pluginCreated = await prisma.plugin.create({
     include: {
-      rules: true,
+      rules: {
+        include: {
+          options: true,
+          replacedBy: true,
+        },
+      },
       configs: true,
+      keywords: true,
+      versions: true,
     },
     data: {
       name: pluginName,
@@ -108,10 +100,16 @@ async function eslintPluginToNormalizedPlugin(
               ecosystem: 'node',
               type: rule.meta?.type || null,
               deprecated: rule.meta?.deprecated || false,
-              // replacedBy: rule.meta?.replacedBy || [],
+              replacedBy: {
+                create: (rule.meta?.replacedBy || []).map((name) => ({ name })),
+              },
               // @ts-expect-error -- category not an official property
               category: rule.meta?.docs?.category || null,
-              // options: hasOptions(rule.meta?.schema) ? [{}] : null,
+              options: {
+                create: getAllNamedOptions(rule.meta?.schema).map((option) => ({
+                  name: option,
+                })),
+              },
               // @ts-expect-error -- requiresTypeChecking not an official property
               requiresTypeChecking: rule.meta?.requiresTypeChecking || false,
               updatedAt: randomDate(new Date(2020, 0, 1), new Date()),
@@ -137,10 +135,16 @@ async function eslintPluginToNormalizedPlugin(
         }),
       },
 
-      // keywords:
-      //   packageJson.keywords?.filter(
-      //     (keyword) => !ESLINT_IGNORED_KEYWORDS.has(keyword)
-      //   ) || null,
+      keywords: {
+        create:
+          packageJson.keywords
+            ?.filter((keyword) => !ESLINT_IGNORED_KEYWORDS.has(keyword))
+            .map((keyword) => ({ keyword })) || [],
+      },
+
+      versions: {
+        create: [], // TODO
+      },
     },
   });
 
@@ -161,6 +165,8 @@ async function etlPluginToNormalizedPlugin(
     include: {
       rules: true,
       configs: true,
+      keywords: true,
+      versions: true,
     },
     data: {
       name: pluginName,
@@ -195,9 +201,7 @@ async function etlPluginToNormalizedPlugin(
             ecosystem: 'node',
             type: null, // Not supported.
             deprecated: false, // Not supported.
-            // replacedBy: [], // Not supported.
             category: null, // Not supported.
-            // options: null, // TODO
             requiresTypeChecking: false, // Not supported.
             updatedAt: randomDate(new Date(2020, 0, 1), new Date()), // TODO
             createdAt: randomDate(new Date(2020, 0, 1), new Date()), // TODO
@@ -222,12 +226,20 @@ async function etlPluginToNormalizedPlugin(
           }
         ),
       },
-    },
 
-    // keywords:
-    //   packageJson.keywords?.filter(
-    //     (keyword) => !EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS.has(keyword)
-    //   ) || null,
+      keywords: {
+        create:
+          packageJson.keywords
+            ?.filter(
+              (keyword) => !EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS.has(keyword)
+            )
+            .map((keyword) => ({ keyword })) || [],
+      },
+
+      versions: {
+        create: [], // TODO
+      },
+    },
   });
 
   return pluginCreated;

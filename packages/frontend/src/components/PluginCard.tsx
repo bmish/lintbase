@@ -42,11 +42,11 @@ export default function PluginCard({
               } • `}
             {plugin.countWeeklyDownloads} Weekly Downloads
           </Typography>
-          {/* {detailed && plugin.keywords && plugin.keywords.length > 0 && (
+          {detailed && plugin.keywords && plugin.keywords.length > 0 && (
             <Typography sx={{ fontSize: 14 }} color="text.secondary">
-              {plugin.keywords.join(' • ')}
+              {plugin.keywords.map((obj) => obj.keyword).join(' • ')}
             </Typography>
-          )} */}
+          )}
         </div>
 
         <Typography variant="body2">{plugin.description}</Typography>

@@ -10,8 +10,22 @@ datasource db {
   url      = "file:./dev.db"
 }
 
+model RuleOption {
+  id     Int    @id @default(autoincrement())
+  name   String
+  rule   Rule   @relation(fields: [ruleId], references: [id])
+  ruleId Int
+}
+
+model RuleReplacedBy {
+  id     Int    @id @default(autoincrement())
+  name   String
+  rule   Rule   @relation(fields: [ruleId], references: [id])
+  ruleId Int
+}
+
 model Rule {
-  id                   Int      @id @default(autoincrement())
+  id                   Int              @id @default(autoincrement())
   name                 String
   ecosystem            String // TODO: enum
   category             String?
@@ -19,15 +33,15 @@ model Rule {
   description          String?
   fixable              String?
   hasSuggestions       Boolean
-  // options           Json?
-  // replacedBy        String[]
+  options              RuleOption[]
+  replacedBy           RuleReplacedBy[]
   requiresTypeChecking Boolean
   type                 String?
   createdAt            DateTime
   updatedAt            DateTime
   linkRuleDoc          String?
   linkUs               String // TODO: dynamically generate instead of storing in DB
-  plugin               Plugin   @relation(fields: [pluginId], references: [id])
+  plugin               Plugin           @relation(fields: [pluginId], references: [id])
   pluginId             Int
 
   @@unique([name, pluginId])
@@ -43,13 +57,28 @@ model Config {
   @@unique([name, pluginId])
 }
 
+model PluginKeyword {
+  id       Int    @id @default(autoincrement())
+  keyword  String
+  plugin   Plugin @relation(fields: [pluginId], references: [id])
+  pluginId Int
+}
+
+model PluginVersion {
+  id          Int      @id @default(autoincrement())
+  version     String
+  publishedAt DateTime
+  plugin      Plugin   @relation(fields: [pluginId], references: [id])
+  pluginId    Int
+}
+
 model Plugin {
-  id                   Int      @id @default(autoincrement())
-  name                 String   @unique
+  id                   Int             @id @default(autoincrement())
+  name                 String          @unique
   ecosystem            String // TODO: enum
   linter               String // TODO: enum
   description          String? // TODO: multiple potential soures for this
-  // keywords          String[]
+  keywords             PluginKeyword[]
   createdAt            DateTime
   updatedAt            DateTime
   countContributors    Int
@@ -64,5 +93,5 @@ model Plugin {
   linkUs               String // TODO: dynamically generate instead of storing in DB
   rules                Rule[]
   configs              Config[]
-  // TODO: add version history
+  versions             PluginVersion[]
 }

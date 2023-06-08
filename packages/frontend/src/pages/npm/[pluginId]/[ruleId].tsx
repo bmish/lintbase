@@ -18,6 +18,8 @@ export async function getServerSideProps({ params }: { params: IQueryParam }) {
     },
     include: {
       plugin: true,
+      options: true,
+      replacedBy: true,
     },
   });
   const ruleFixed = fixRule(rule);
