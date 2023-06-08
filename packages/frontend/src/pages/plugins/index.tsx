@@ -15,7 +15,7 @@ import {
 import { prisma } from '@/server/db';
 import React from 'react';
 import { useRouter } from 'next/router';
-import { fixPlugin } from '@/utils/utils';
+import { fixPlugin } from '@/utils/normalize';
 import { pluginToLinkUs } from '@/utils/dynamic-fields';
 
 export async function getServerSideProps(context: {

@@ -3,7 +3,7 @@ import PluginCard from '@/components/PluginCard';
 import RuleCard from '@/components/RuleCard';
 import { Plugin, Rule } from '@/utils/types';
 import { prisma } from '@/server/db';
-import { fixPlugin, fixRule } from '@/utils/utils';
+import { fixPlugin, fixRule } from '@/utils/normalize';
 import { Typography } from '@mui/material';
 
 export async function getServerSideProps() {

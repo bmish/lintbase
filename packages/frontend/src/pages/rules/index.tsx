@@ -13,7 +13,7 @@ import {
   TableRow,
 } from '@mui/material';
 import { prisma } from '@/server/db';
-import { fixRule } from '@/utils/utils';
+import { fixRule } from '@/utils/normalize';
 import React from 'react';
 import { useRouter } from 'next/router';
 import { ruleToLinkUs } from '@/utils/dynamic-fields';

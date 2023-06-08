@@ -1,4 +1,4 @@
-import { Plugin, Rule } from '@/utils/types';
+import { Plugin, Rule, EmberTemplateLint } from '@/utils/types';
 import { load } from '@lintbase/downloader';
 import type { TSESLint } from '@typescript-eslint/utils';
 import path from 'node:path';
@@ -145,11 +145,6 @@ async function eslintPluginToNormalizedPlugin(
 
   return pluginCreated;
 }
-
-type EmberTemplateLint = {
-  configurations: Record<string, { rules: {} }>;
-  rules: Record<string, {}>;
-};
 
 async function etlPluginToNormalizedPlugin(
   pluginName: string,

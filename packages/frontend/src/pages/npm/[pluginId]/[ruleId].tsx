@@ -3,7 +3,7 @@ import Header from '@/components/Header';
 import RuleCard from '@/components/RuleCard';
 import { Rule as RuleType } from '@/utils/types';
 import { prisma } from '@/server/db';
-import { fixRule } from '@/utils/utils';
+import { fixRule } from '@/utils/normalize';
 import {
   Paper,
   Table,

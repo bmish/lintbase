@@ -24,3 +24,8 @@ export type Rule = PrismaRule & {
 export type Config = PrismaConfig & {
   plugin: PrismaPlugin;
 };
+
+export type EmberTemplateLint = {
+  configurations: Record<string, { rules: {} }>;
+  rules: Record<string, {}>;
+};

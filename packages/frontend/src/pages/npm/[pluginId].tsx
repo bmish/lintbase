@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { Plugin as PluginType } from '@/utils/types';
 import { prisma } from '@/server/db';
-import { fixPlugin } from '@/utils/utils';
+import { fixPlugin } from '@/utils/normalize';
 import { ruleToLinkUs } from '@/utils/dynamic-fields';
 
 interface IQueryParam {
