@@ -86,10 +86,22 @@ CREATE TABLE "Plugin" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "RuleOption_name_ruleId_key" ON "RuleOption"("name", "ruleId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "RuleReplacedBy_name_ruleId_key" ON "RuleReplacedBy"("name", "ruleId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Rule_name_pluginId_key" ON "Rule"("name", "pluginId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Config_name_pluginId_key" ON "Config"("name", "pluginId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PluginKeyword_keyword_pluginId_key" ON "PluginKeyword"("keyword", "pluginId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PluginVersion_version_pluginId_key" ON "PluginVersion"("version", "pluginId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Plugin_name_key" ON "Plugin"("name");

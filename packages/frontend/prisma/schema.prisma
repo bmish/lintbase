@@ -1,49 +1,50 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
-  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING") // used for migrations
+  provider          = "postgresql"
+  url               = env("POSTGRES_PRISMA_URL")
+  directUrl         = env("POSTGRES_URL_NON_POOLING")
+  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model RuleOption {
   id     Int    @id @default(autoincrement())
   name   String
-  rule   Rule   @relation(fields: [ruleId], references: [id])
   ruleId Int
+  rule   Rule   @relation(fields: [ruleId], references: [id])
+
+  @@unique([name, ruleId])
 }
 
 model RuleReplacedBy {
   id     Int    @id @default(autoincrement())
   name   String
-  rule   Rule   @relation(fields: [ruleId], references: [id])
   ruleId Int
+  rule   Rule   @relation(fields: [ruleId], references: [id])
+
+  @@unique([name, ruleId])
 }
 
 model Rule {
   id                   Int              @id @default(autoincrement())
   name                 String
-  ecosystem            String // TODO: enum
+  ecosystem            String
   category             String?
   deprecated           Boolean
   description          String?
   fixable              String?
   hasSuggestions       Boolean
-  options              RuleOption[]
-  replacedBy           RuleReplacedBy[]
   requiresTypeChecking Boolean
   type                 String?
   createdAt            DateTime
   updatedAt            DateTime
   linkRuleDoc          String?
-  plugin               Plugin           @relation(fields: [pluginId], references: [id])
   pluginId             Int
+  plugin               Plugin           @relation(fields: [pluginId], references: [id])
+  options              RuleOption[]
+  replacedBy           RuleReplacedBy[]
 
   @@unique([name, pluginId])
 }
@@ -51,9 +52,8 @@ model Rule {
 model Config {
   id       Int     @id @default(autoincrement())
   name     String
-  // description String? // TODO: try to get this from README or future config property?
-  Plugin   Plugin? @relation(fields: [pluginId], references: [id])
   pluginId Int?
+  Plugin   Plugin? @relation(fields: [pluginId], references: [id])
 
   @@unique([name, pluginId])
 }
@@ -61,25 +61,28 @@ model Config {
 model PluginKeyword {
   id       Int    @id @default(autoincrement())
   keyword  String
-  plugin   Plugin @relation(fields: [pluginId], references: [id])
   pluginId Int
+  plugin   Plugin @relation(fields: [pluginId], references: [id])
+
+  @@unique([keyword, pluginId])
 }
 
 model PluginVersion {
   id          Int      @id @default(autoincrement())
   version     String
   publishedAt DateTime
-  plugin      Plugin   @relation(fields: [pluginId], references: [id])
   pluginId    Int
+  plugin      Plugin   @relation(fields: [pluginId], references: [id])
+
+  @@unique([version, pluginId])
 }
 
 model Plugin {
   id                   Int             @id @default(autoincrement())
   name                 String          @unique
-  ecosystem            String // TODO: enum
-  linter               String // TODO: enum
-  description          String? // TODO: multiple potential soures for this
-  keywords             PluginKeyword[]
+  ecosystem            String
+  linter               String
+  description          String?
   createdAt            DateTime
   updatedAt            DateTime
   countContributors    Int
@@ -90,7 +93,8 @@ model Plugin {
   countWatching        Int
   countWeeklyDownloads Int
   linkReadme           String?
-  rules                Rule[]
   configs              Config[]
+  keywords             PluginKeyword[]
   versions             PluginVersion[]
+  rules                Rule[]
 }
