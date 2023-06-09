@@ -5,7 +5,7 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate && cd ../downloader && npm exec tsc",
     "start": "next start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
