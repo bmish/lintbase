@@ -12,7 +12,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
-    "@lintbase/downloader": "0.0.0",
+    "@lintbase/downloader": "file:./../downloader",
     "@mui/material": "^5.13.3",
     "@prisma/client": "^4.15.0",
     "@t3-oss/env-nextjs": "^0.4.0",

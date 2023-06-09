@@ -4,7 +4,7 @@
   "description": "LintBase workspace root.",
   "scripts": {
     "lint": "npm-run-all \"lint:*\"",
-    "lint:deps": "check-dependency-version-consistency",
+    "lint:deps": "check-dependency-version-consistency --ignore-dep @lintbase/downloader",
     "lint:deps:fix": "check-dependency-version-consistency --fix",
     "lint:package-json": "npmPkgJsonLint .",
     "test": "echo \"Error: no test specified\" && exit 1"
