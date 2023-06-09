@@ -1,4 +1,3 @@
-import Header from '@/components/Header';
 import { Rule } from '@/utils/types';
 import {
   Link,
@@ -127,8 +126,6 @@ export default function Rules({
 
   return (
     <div className="bg-gray-100 h-full">
-      <Header />
-
       <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto min-h-screen">
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="rule list">

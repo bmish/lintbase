@@ -1,5 +1,4 @@
 /* eslint filenames/match-exported:"off",unicorn/filename-case:"off" */
-import Header from '@/components/Header';
 import PluginCard from '@/components/PluginCard';
 import {
   Link,
@@ -48,8 +47,6 @@ export default function Plugin({
 }) {
   return (
     <div className="bg-gray-100 h-full">
-      <Header />
-
       <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto min-h-screen">
         {plugin && <PluginCard plugin={plugin} detailed={true}></PluginCard>}
 

@@ -1,5 +1,4 @@
 /* eslint filenames/match-exported:"off",unicorn/filename-case:"off" */
-import Header from '@/components/Header';
 import RuleCard from '@/components/RuleCard';
 import { Rule as RuleType } from '@/utils/types';
 import { prisma } from '@/server/db';
@@ -41,8 +40,6 @@ export async function getServerSideProps({ params }: { params: IQueryParam }) {
 export default function Rule({ data: { rule } }: { data: { rule: RuleType } }) {
   return (
     <div className="bg-gray-100 h-full">
-      <Header />
-
       <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto min-h-screen">
         {rule && <RuleCard rule={rule} detailed={true}></RuleCard>}
 

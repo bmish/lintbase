@@ -2,6 +2,7 @@ import { TextField } from '@mui/material';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
+import Image from 'next/image';
 
 export default function Header() {
   const router = useRouter();
@@ -28,10 +29,9 @@ export default function Header() {
     <header className="sticky top-0 z-30 w-full px-2 py-4 bg-white sm:px-4 shadow-xl ">
       <div className="flex items-center justify-between mx-auto max-w-7xl">
         <Link href="/">
-          <span className="text-2xl font-extrabold text-blue-600">
-            LINTBASE
-          </span>
+          <Image src={'/logo.png'} width={200} height={55} alt="Logo" />
         </Link>
+
         <div className="flex items-center space-x-1">
           <ul className="hidden space-x-2 md:inline-flex">
             <li>
