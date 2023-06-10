@@ -11,6 +11,7 @@ import {
   Link,
   Typography,
 } from '@mui/material';
+import millify from 'millify';
 
 export default function PluginCard({
   plugin,
@@ -44,7 +45,7 @@ export default function PluginCard({
               `${plugin.rules.length} Rule${
                 plugin.rules.length > 1 ? 's' : ''
               } • `}
-            {plugin.countWeeklyDownloads} Weekly Downloads
+            {millify(plugin.countWeeklyDownloads)} Weekly Downloads
           </Typography>
           {detailed && plugin.keywords && plugin.keywords.length > 0 && (
             <Typography sx={{ fontSize: 14 }} color="text.secondary">
