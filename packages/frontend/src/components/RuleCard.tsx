@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import { Rule } from '@/utils/types';
 import { pluginToLinkUs, ruleToLinkUs } from '@/utils/dynamic-fields';
+import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 
 export default function RuleCard({
   rule,
@@ -23,29 +24,36 @@ export default function RuleCard({
           {rule.ecosystem === 'node' ? 'Node.js' : rule.ecosystem} •{' '}
           {rule.plugin.name}
         </Typography>
-        <Typography variant="h5" component="div">
-          {detailed && rule.name}
-          {!detailed && (
-            <Link href={ruleToLinkUs(rule, rule.plugin)} underline="none">
-              {rule.name}
-            </Link>
-          )}{' '}
-          {rule.fixable ? '🔧' : ''}
-          {rule.hasSuggestions ? '💡' : ''}
-          {rule.options.length > 0 ? '⚙️' : ''}
-          {rule.requiresTypeChecking ? '💭' : ''}
-          {rule.type === 'layout' ? '📏' : ''}
-          {rule.type === 'problem' ? '❗' : ''}
-          {rule.type === 'suggestion' ? '📖' : ''}
-          {rule.deprecated ? '❌' : ''}
-        </Typography>
-        {detailed && rule.replacedBy.length > 0 && (
-          <Typography sx={{ mb: 1.5, fontSize: 14 }} color="text.secondary">
-            Replaced by: {rule.replacedBy.map((obj) => obj.name).join(', ')}
+        <div className="mb-4">
+          <Typography variant="h5" component="div">
+            {detailed && rule.name}
+            {!detailed && (
+              <Link href={ruleToLinkUs(rule, rule.plugin)} underline="none">
+                {rule.name}
+              </Link>
+            )}{' '}
+            {rule.fixable ? '🔧' : ''}
+            {rule.hasSuggestions ? '💡' : ''}
+            {rule.options.length > 0 ? '⚙️' : ''}
+            {rule.requiresTypeChecking ? '💭' : ''}
+            {rule.type === 'layout' ? '📏' : ''}
+            {rule.type === 'problem' ? '❗' : ''}
+            {rule.type === 'suggestion' ? '📖' : ''}
+            {rule.deprecated ? '❌' : ''}
+          </Typography>
+          {detailed && rule.replacedBy.length > 0 && (
+            <Typography sx={{ fontSize: 14 }} color="text.secondary">
+              Replaced by: {rule.replacedBy.map((obj) => obj.name).join(', ')}
+            </Typography>
+          )}
+        </div>
+
+        {rule.description && (
+          <Typography variant="body2" component={'div'}>
+            {/* eslint-disable-next-line react/no-children-prop -- false positive */}
+            <ReactMarkdown children={rule.description} />
           </Typography>
         )}
-
-        <Typography variant="body2">{rule.description}</Typography>
       </CardContent>
 
       {detailed && (

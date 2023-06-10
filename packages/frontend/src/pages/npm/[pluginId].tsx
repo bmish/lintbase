@@ -14,6 +14,7 @@ import { Plugin as PluginType } from '@/utils/types';
 import { prisma } from '@/server/db';
 import { fixPlugin } from '@/utils/normalize';
 import { ruleToLinkUs } from '@/utils/dynamic-fields';
+import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 
 interface IQueryParam {
   pluginId: string;
@@ -107,7 +108,12 @@ export default function Plugin({
                         {rule.name}
                       </Link>
                     </TableCell>
-                    <TableCell align="left">{rule.description}</TableCell>
+                    <TableCell align="left">
+                      {rule.description && (
+                        // eslint-disable-next-line react/no-children-prop -- false positive
+                        <ReactMarkdown children={rule.description} />
+                      )}
+                    </TableCell>
                     <TableCell align="right">
                       {rule.fixable ? '🔧' : ''}
                     </TableCell>

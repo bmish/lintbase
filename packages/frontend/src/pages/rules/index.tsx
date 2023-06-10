@@ -16,6 +16,7 @@ import { fixRule } from '@/utils/normalize';
 import React from 'react';
 import { useRouter } from 'next/router';
 import { ruleToLinkUs } from '@/utils/dynamic-fields';
+import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 
 export async function getServerSideProps(context: {
   query: { q: string; p: string; c: string };
@@ -160,7 +161,12 @@ export default function Rules({
                       {rule.name}
                     </Link>
                   </TableCell>
-                  <TableCell align="left">{rule.description}</TableCell>
+                  <TableCell align="left">
+                    {rule.description && (
+                      // eslint-disable-next-line react/no-children-prop -- false positive
+                      <ReactMarkdown children={rule.description} />
+                    )}
+                  </TableCell>
                   <TableCell align="right">
                     {rule.fixable ? '🔧' : ''}
                   </TableCell>
