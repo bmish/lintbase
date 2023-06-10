@@ -1,6 +1,6 @@
 import { TextField } from '@mui/material';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 
@@ -24,6 +24,20 @@ export default function Header() {
       router.push(newUrl);
     }
   };
+
+  useEffect(() => {
+    const handleRouteChange = (url: string) => {
+      if (!url.includes('q=')) {
+        setSearchValue('');
+      }
+    };
+
+    router.events.on('routeChangeComplete', handleRouteChange);
+
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [router]);
 
   return (
     <header className="sticky top-0 z-30 w-full px-2 py-4 bg-white sm:px-4 shadow-xl ">
