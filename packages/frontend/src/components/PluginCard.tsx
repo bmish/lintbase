@@ -49,11 +49,16 @@ export default function PluginCard({
             {millify(plugin.countWeeklyDownloads)} Wkly{' '}
             <GetAppIcon fontSize="inherit" />
           </Typography>
-          {detailed && plugin.keywords && plugin.keywords.length > 0 && (
-            <Typography sx={{ fontSize: 14 }} color="text.secondary">
-              {plugin.keywords.map((obj) => obj.keyword).join(' • ')}
-            </Typography>
-          )}
+          {detailed &&
+            plugin.keywords &&
+            plugin.keywords.length > 0 &&
+            !plugin.keywords.every((obj) =>
+              plugin.name.includes(obj.keyword)
+            ) && (
+              <Typography sx={{ fontSize: 14 }} color="text.secondary">
+                {plugin.keywords.map((obj) => obj.keyword).join(' • ')}
+              </Typography>
+            )}
         </div>
 
         <Typography variant="body2">{plugin.description}</Typography>
