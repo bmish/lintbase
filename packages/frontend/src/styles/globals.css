@@ -25,3 +25,7 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+a {
+  color: #2044E0 !important; /* Same color as logo */
+}
