@@ -12,6 +12,7 @@ import {
   Typography,
 } from '@mui/material';
 import millify from 'millify';
+import GetAppIcon from '@mui/icons-material/GetApp';
 
 export default function PluginCard({
   plugin,
@@ -45,7 +46,8 @@ export default function PluginCard({
               `${plugin.rules.length} Rule${
                 plugin.rules.length > 1 ? 's' : ''
               } • `}
-            {millify(plugin.countWeeklyDownloads)} Weekly Downloads
+            {millify(plugin.countWeeklyDownloads)} Wkly{' '}
+            <GetAppIcon fontSize="inherit" />
           </Typography>
           {detailed && plugin.keywords && plugin.keywords.length > 0 && (
             <Typography sx={{ fontSize: 14 }} color="text.secondary">
