@@ -67,7 +67,13 @@ export default function PluginCard({
         <CardActions>
           {plugin.linkReadme && (
             <Button size="small" href={plugin.linkReadme}>
-              README
+              {['readme', 'github.com'].some(
+                (str) =>
+                  plugin.linkReadme &&
+                  plugin.linkReadme.toLowerCase().includes(str)
+              )
+                ? 'README'
+                : 'Homepage'}
             </Button>
           )}
 
