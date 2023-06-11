@@ -46,9 +46,22 @@ CREATE TABLE "Config" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
-    "pluginId" INTEGER,
+    "pluginId" INTEGER NOT NULL,
 
     CONSTRAINT "Config_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "RuleConfig" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "severity" TEXT NOT NULL,
+    "pluginId" INTEGER NOT NULL,
+    "configId" INTEGER NOT NULL,
+    "ruleId" INTEGER NOT NULL,
+
+    CONSTRAINT "RuleConfig_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -111,6 +124,9 @@ CREATE UNIQUE INDEX "Rule_name_pluginId_key" ON "Rule"("name", "pluginId");
 CREATE UNIQUE INDEX "Config_name_pluginId_key" ON "Config"("name", "pluginId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "RuleConfig_ruleId_configId_key" ON "RuleConfig"("ruleId", "configId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "PluginKeyword_name_pluginId_key" ON "PluginKeyword"("name", "pluginId");
 
 -- CreateIndex
@@ -129,7 +145,16 @@ ALTER TABLE "RuleReplacedBy" ADD CONSTRAINT "RuleReplacedBy_ruleId_fkey" FOREIGN
 ALTER TABLE "Rule" ADD CONSTRAINT "Rule_pluginId_fkey" FOREIGN KEY ("pluginId") REFERENCES "Plugin"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Config" ADD CONSTRAINT "Config_pluginId_fkey" FOREIGN KEY ("pluginId") REFERENCES "Plugin"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Config" ADD CONSTRAINT "Config_pluginId_fkey" FOREIGN KEY ("pluginId") REFERENCES "Plugin"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RuleConfig" ADD CONSTRAINT "RuleConfig_pluginId_fkey" FOREIGN KEY ("pluginId") REFERENCES "Plugin"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RuleConfig" ADD CONSTRAINT "RuleConfig_configId_fkey" FOREIGN KEY ("configId") REFERENCES "Config"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RuleConfig" ADD CONSTRAINT "RuleConfig_ruleId_fkey" FOREIGN KEY ("ruleId") REFERENCES "Rule"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "PluginKeyword" ADD CONSTRAINT "PluginKeyword_pluginId_fkey" FOREIGN KEY ("pluginId") REFERENCES "Plugin"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

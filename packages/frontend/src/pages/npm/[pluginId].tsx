@@ -10,15 +10,31 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { Plugin as PluginType } from '@/utils/types';
 import { prisma } from '@/server/db';
 import { fixPlugin } from '@/utils/normalize';
 import { ruleToLinkUs } from '@/utils/dynamic-fields';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import { EMOJI_CONFIGS } from '@/utils/eslint';
+import { Prisma } from '@prisma/client';
 
 interface IQueryParam {
   pluginId: string;
 }
+
+const include = {
+  rules: {
+    include: {
+      ruleConfigs: {
+        include: {
+          config: true,
+        },
+      },
+    },
+  },
+  configs: true,
+  keywords: true,
+  versions: true,
+};
 
 export async function getServerSideProps({ params }: { params: IQueryParam }) {
   const { pluginId } = params;
@@ -27,12 +43,7 @@ export async function getServerSideProps({ params }: { params: IQueryParam }) {
     where: {
       name: pluginId,
     },
-    include: {
-      rules: true,
-      configs: true,
-      keywords: true,
-      versions: true,
-    },
+    include,
   });
   const pluginFixed = fixPlugin(plugin);
 
@@ -40,12 +51,18 @@ export async function getServerSideProps({ params }: { params: IQueryParam }) {
     props: { data: { plugin: pluginFixed } },
   };
 }
-
 export default function Plugin({
   data: { plugin },
 }: {
-  data: { plugin: PluginType };
+  data: {
+    plugin: Prisma.PluginGetPayload<{ include: typeof include }>;
+  };
 }) {
+  const relevantConfigEmojis = Object.entries(EMOJI_CONFIGS).filter(
+    ([config]) =>
+      plugin.configs.some((pluginConfig) => config === pluginConfig.name)
+  );
+
   return (
     <div className="bg-gray-100 h-full">
       <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto min-h-screen">
@@ -56,10 +73,9 @@ export default function Plugin({
             <Table sx={{ minWidth: 650 }} aria-label="plugin config list">
               <TableHead>
                 <TableRow>
-                  <TableCell scope="col">Configuration</TableCell>
-                  {/* <TableCell scope="col" align="right">
-                    Description
-                  </TableCell> */}
+                  <TableCell scope="col" colSpan={2}>
+                    Configuration
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -69,7 +85,13 @@ export default function Plugin({
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell scope="row">{config.name}</TableCell>
-                    {/* <TableCell align="right">{config.description}</TableCell> */}
+                    <TableCell align="right">
+                      {
+                        relevantConfigEmojis.find(
+                          ([commonConfig]) => commonConfig === config.name
+                        )?.[1]
+                      }
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -95,6 +117,11 @@ export default function Plugin({
                   <TableCell scope="col" align="right">
                     💭
                   </TableCell>
+                  {relevantConfigEmojis.map(([config, emoji]) => (
+                    <TableCell key={config} align="right">
+                      {emoji}
+                    </TableCell>
+                  ))}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -123,6 +150,15 @@ export default function Plugin({
                     <TableCell align="right">
                       {rule.requiresTypeChecking ? '💭' : ''}
                     </TableCell>
+                    {relevantConfigEmojis.map(([config, emoji]) => (
+                      <TableCell key={config} align="right">
+                        {rule.ruleConfigs.some(
+                          (ruleConfig) => ruleConfig.config.name === config
+                        )
+                          ? emoji
+                          : ''}
+                      </TableCell>
+                    ))}
                   </TableRow>
                 ))}
               </TableBody>

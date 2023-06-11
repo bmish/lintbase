@@ -52,6 +52,7 @@ export async function getServerSideProps(context: {
       plugin: true,
       options: true,
       replacedBy: true,
+      ruleConfigs: true,
     },
     take: pageSize === -1 ? undefined : Number(pageSize),
     skip: pageSize === -1 ? 0 : Number(currentPage) * Number(pageSize),

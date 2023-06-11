@@ -6,6 +6,7 @@ import {
   RuleOption as PrismaRuleOption,
   RuleReplacedBy as PrismaRuleReplacedBy,
   PluginVersion as PrismaPluginVersion,
+  RuleConfig as PrismaRuleConfig,
 } from '@prisma/client';
 
 export type Plugin = PrismaPlugin & {
@@ -19,6 +20,7 @@ export type Rule = PrismaRule & {
   plugin: PrismaPlugin;
   options: PrismaRuleOption[];
   replacedBy: PrismaRuleReplacedBy[];
+  ruleConfigs: PrismaRuleConfig[];
 };
 
 export type Config = PrismaConfig & {

@@ -27,3 +27,35 @@ export function getAllNamedOptions(
   });
   return options;
 }
+
+// Copied from: https://github.com/bmish/eslint-doc-generator/blob/e9594090e38a4a2e71e56ba0588a5c223435cd5f/lib/emojis.ts#L11
+const EMOJI_A11Y = '♿';
+const EMOJI_ERROR = '❗';
+const EMOJI_STYLE = '🎨';
+const EMOJI_TYPESCRIPT = '⌨️';
+const EMOJI_WARNING = '🚸';
+/** Default emojis for common configs. */
+export const EMOJI_CONFIGS = {
+  a11y: EMOJI_A11Y,
+  accessibility: EMOJI_A11Y,
+  all: '🌐',
+  error: EMOJI_ERROR,
+  errors: EMOJI_ERROR,
+  recommended: '✅',
+  strict: '🔒',
+  style: EMOJI_STYLE,
+  stylistic: EMOJI_STYLE,
+  ts: EMOJI_TYPESCRIPT,
+  type: EMOJI_TYPESCRIPT,
+  typed: EMOJI_TYPESCRIPT,
+  types: EMOJI_TYPESCRIPT,
+  typescript: EMOJI_TYPESCRIPT,
+  warning: EMOJI_WARNING,
+  warnings: EMOJI_WARNING,
+};
+
+export function getPluginPrefix(name: string): string {
+  return name.endsWith('/eslint-plugin')
+    ? name.split('/')[0] // Scoped plugin name like @my-scope/eslint-plugin.
+    : name.replace('eslint-plugin-', ''); // Unscoped name like eslint-plugin-foo or scoped name like @my-scope/eslint-plugin-foo.
+}

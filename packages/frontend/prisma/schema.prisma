@@ -47,6 +47,7 @@ model Rule {
   linkRuleDoc          String?
   pluginId             Int
   plugin               Plugin           @relation(fields: [pluginId], references: [id])
+  ruleConfigs          RuleConfig[]
   options              RuleOption[]
   replacedBy           RuleReplacedBy[]
 
@@ -54,14 +55,30 @@ model Rule {
 }
 
 model Config {
+  id          Int          @id @default(autoincrement())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  name        String
+  pluginId    Int
+  plugin      Plugin       @relation(fields: [pluginId], references: [id])
+  ruleConfigs RuleConfig[]
+
+  @@unique([name, pluginId])
+}
+
+model RuleConfig {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  name      String
-  pluginId  Int?
-  Plugin    Plugin?  @relation(fields: [pluginId], references: [id])
+  severity  String
+  pluginId  Int
+  configId  Int
+  ruleId    Int
+  plugin    Plugin   @relation(fields: [pluginId], references: [id])
+  config    Config   @relation(fields: [configId], references: [id])
+  rule      Rule     @relation(fields: [ruleId], references: [id])
 
-  @@unique([name, pluginId])
+  @@unique([ruleId, configId])
 }
 
 model PluginKeyword {
@@ -110,4 +127,5 @@ model Plugin {
   keywords             PluginKeyword[]
   versions             PluginVersion[]
   rules                Rule[]
+  ruleConfigs          RuleConfig[]
 }

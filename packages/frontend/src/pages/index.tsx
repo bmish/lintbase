@@ -11,6 +11,7 @@ export async function getServerSideProps() {
       plugin: true,
       options: true,
       replacedBy: true,
+      ruleConfigs: true,
     },
     where: {
       deprecated: false, // Don't advertise deprecated rules.

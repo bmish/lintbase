@@ -28,6 +28,7 @@ export async function getServerSideProps({ params }: { params: IQueryParam }) {
       plugin: true,
       options: true,
       replacedBy: true,
+      ruleConfigs: true,
     },
   });
   const ruleFixed = fixRule(rule);

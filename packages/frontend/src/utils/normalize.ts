@@ -5,7 +5,7 @@ import path from 'node:path';
 import { PackageJson } from 'type-fest';
 import { readFileSync } from 'node:fs';
 import { prisma } from '../server/db';
-import { getAllNamedOptions } from './eslint';
+import { getAllNamedOptions, getPluginPrefix } from './eslint';
 
 const IGNORED_KEYWORDS = new Set([
   'configs',
@@ -42,6 +42,44 @@ type NpmRegistryInfo = {
   time: Record<string | 'created' | 'modified', string>;
 };
 
+function severityNumberToString(severity: 0 | 1 | 2): 'off' | 'warn' | 'error' {
+  switch (severity) {
+    case 0: {
+      return 'off';
+    }
+    case 1: {
+      return 'warn';
+    }
+    case 2: {
+      return 'error';
+    }
+    default: {
+      return 'off';
+    }
+  }
+}
+
+function ruleEntryToStringSeverity(
+  ruleEntry: TSESLint.Linter.RuleEntry
+): 'off' | 'warn' | 'error' {
+  if (typeof ruleEntry === 'number') {
+    return severityNumberToString(ruleEntry);
+  }
+
+  if (typeof ruleEntry === 'string') {
+    return ruleEntry;
+  }
+
+  if (Array.isArray(ruleEntry)) {
+    if (typeof ruleEntry[0] === 'number') {
+      return severityNumberToString(ruleEntry[0]);
+    }
+    return ruleEntry[0];
+  }
+
+  return 'off';
+}
+
 async function eslintPluginToNormalizedPlugin(
   pluginName: string,
   plugin: TSESLint.Linter.Plugin,
@@ -49,6 +87,7 @@ async function eslintPluginToNormalizedPlugin(
   npmDownloadsInfo: { downloads: number },
   npmRegistryInfo: NpmRegistryInfo
 ): Promise<Plugin> {
+  // TODO: use createMany?
   const pluginCreated = await prisma.plugin.create({
     include: {
       rules: {
@@ -147,6 +186,48 @@ async function eslintPluginToNormalizedPlugin(
         })),
       },
     },
+  });
+
+  const pluginPrefix = getPluginPrefix(pluginName);
+  await prisma.ruleConfig.createMany({
+    data: Object.entries(plugin.configs || {}).flatMap(
+      ([configName, config]) => {
+        const configId = pluginCreated.configs.find(
+          (configCreated) => configCreated.name === configName
+        )?.id;
+        if (configId === undefined) {
+          return [];
+        }
+        return Object.entries(config.rules || {}).flatMap(
+          ([ruleName, ruleEntry]) => {
+            const ruleId = pluginCreated.rules.find(
+              (ruleCreated) =>
+                `${pluginPrefix}/${ruleCreated.name}` === ruleName
+            )?.id;
+            if (ruleId === undefined) {
+              return [];
+            }
+
+            if (ruleEntry === undefined) {
+              return [];
+            }
+            const severity = ruleEntryToStringSeverity(ruleEntry);
+            if (severity === undefined) {
+              // Should not happen.
+              return [];
+            }
+            return [
+              {
+                severity,
+                pluginId: pluginCreated.id,
+                configId,
+                ruleId,
+              },
+            ];
+          }
+        );
+      }
+    ),
   });
 
   return pluginCreated;
