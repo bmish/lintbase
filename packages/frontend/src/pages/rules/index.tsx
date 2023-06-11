@@ -23,54 +23,43 @@ const include = {
 };
 
 export async function getServerSideProps(context: {
-  query: { q: string; p: string; c: string };
+  query: { q: string; p: string; c: string; category: string };
 }) {
   const { query } = context;
 
   // Access individual query parameters
-  const { q, p, c } = query;
+  const { q, p, c, category } = query;
   const currentPage = p ? Number(p) - 1 : 0;
   const pageSize = c ? Number(c) : 25;
 
+  const categoryQuery = category ? { category } : {};
+  const where = q
+    ? {
+        OR: [
+          {
+            name: {
+              contains: q,
+            },
+          },
+          {
+            description: {
+              contains: q,
+            },
+          },
+        ],
+        ...categoryQuery,
+      }
+    : { ...categoryQuery };
+
   const ruleCount = await prisma.rule.count({
-    where: q
-      ? {
-          OR: [
-            {
-              name: {
-                contains: q,
-              },
-            },
-            {
-              description: {
-                contains: q,
-              },
-            },
-          ],
-        }
-      : {},
+    where,
   });
 
   const rules = await prisma.rule.findMany({
     include,
     take: Number(pageSize),
     skip: Number(currentPage) * Number(pageSize),
-    where: q
-      ? {
-          OR: [
-            {
-              name: {
-                contains: q,
-              },
-            },
-            {
-              description: {
-                contains: q,
-              },
-            },
-          ],
-        }
-      : {},
+    where,
   });
   const rulesFixed = await rules.map((rule) => fixRule(rule));
 

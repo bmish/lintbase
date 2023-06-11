@@ -11,6 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Prisma } from '@prisma/client';
+import Link from 'next/link';
 
 const includePlugins = {
   rules: true,
@@ -159,7 +160,15 @@ export default function index({
                 <TableBody>
                   {commonPluginKeywords.map((obj) => (
                     <TableRow key={obj.name}>
-                      <TableCell scope="col">{obj.name}</TableCell>
+                      <TableCell scope="col">
+                        <Link
+                          href={`/plugins/?keyword=${encodeURIComponent(
+                            obj.name
+                          )}`}
+                        >
+                          {obj.name}
+                        </Link>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -171,11 +180,22 @@ export default function index({
             <TableContainer component={Paper}>
               <Table aria-label="plugin list">
                 <TableBody>
-                  {commonRuleCategories.map((obj) => (
-                    <TableRow key={obj.category}>
-                      <TableCell scope="col">{obj.category}</TableCell>
-                    </TableRow>
-                  ))}
+                  {commonRuleCategories.map(
+                    (obj) =>
+                      obj.category && (
+                        <TableRow key={obj.category}>
+                          <TableCell scope="col">
+                            <Link
+                              href={`/rules/?category=${encodeURIComponent(
+                                obj.category
+                              )}`}
+                            >
+                              {obj.category}
+                            </Link>
+                          </TableCell>
+                        </TableRow>
+                      )
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>

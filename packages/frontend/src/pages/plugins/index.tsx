@@ -22,54 +22,53 @@ const include = {
 };
 
 export async function getServerSideProps(context: {
-  query: { q: string; p: string; c: string };
+  query: { q: string; p: string; c: string; keyword: string };
 }) {
   const { query } = context;
 
   // Access individual query parameters
-  const { q, p, c } = query;
+  const { q, p, c, keyword } = query;
   const currentPage = p ? Number(p) - 1 : 0;
   const pageSize = c ? Number(c) : 25;
 
+  const keywordQuery = keyword
+    ? {
+        keywords: {
+          some: {
+            name: {
+              equals: keyword,
+            },
+          },
+        },
+      }
+    : {};
+  const where = q
+    ? {
+        OR: [
+          {
+            name: {
+              contains: q,
+            },
+          },
+          {
+            description: {
+              contains: q,
+            },
+          },
+        ],
+        ...keywordQuery,
+      }
+    : { ...keywordQuery };
+
   const pluginCount = await prisma.plugin.count({
-    where: q
-      ? {
-          OR: [
-            {
-              name: {
-                contains: q,
-              },
-            },
-            {
-              description: {
-                contains: q,
-              },
-            },
-          ],
-        }
-      : {},
+    where,
   });
 
   const plugins = await prisma.plugin.findMany({
     include,
     take: Number(pageSize),
     skip: Number(currentPage) * Number(pageSize),
-    where: q
-      ? {
-          OR: [
-            {
-              name: {
-                contains: q,
-              },
-            },
-            {
-              description: {
-                contains: q,
-              },
-            },
-          ],
-        }
-      : {},
+    where,
   });
   const pluginsFixed = await plugins.map((plugin) => fixPlugin(plugin));
 
