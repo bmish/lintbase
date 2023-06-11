@@ -7,12 +7,6 @@ import { readFileSync } from 'node:fs';
 import { prisma } from '../server/db';
 import { getAllNamedOptions } from './eslint';
 
-function randomDate(start: Date, end: Date) {
-  return new Date(
-    start.getTime() + Math.random() * (end.getTime() - start.getTime())
-  );
-}
-
 const IGNORED_KEYWORDS = new Set([
   'configs',
   'configuration',
@@ -82,10 +76,16 @@ async function eslintPluginToNormalizedPlugin(
       countContributors: Math.round(Math.random() * 100),
       countWeeklyDownloads: npmDownloadsInfo.downloads,
 
-      updatedAt: new Date(npmRegistryInfo.time.modified),
-      createdAt: new Date(npmRegistryInfo.time.created),
+      packageCreatedAt: new Date(npmRegistryInfo.time.created),
+      packageUpdatedAt: new Date(npmRegistryInfo.time.modified),
 
-      linkReadme: packageJson.homepage?.toString() || null,
+      linkHomepage: packageJson.homepage?.toString() || null,
+      linkBugs:
+        typeof packageJson.bugs === 'object'
+          ? packageJson.bugs.url
+          : typeof packageJson.bugs === 'string'
+          ? packageJson.bugs
+          : null,
 
       rules: {
         create: Object.entries(plugin.rules || {}).flatMap(
@@ -115,8 +115,6 @@ async function eslintPluginToNormalizedPlugin(
               },
               // @ts-expect-error -- requiresTypeChecking not an official property
               requiresTypeChecking: rule.meta?.requiresTypeChecking || false,
-              updatedAt: randomDate(new Date(2020, 0, 1), new Date()),
-              createdAt: randomDate(new Date(2020, 0, 1), new Date()),
               linkRuleDoc: rule.meta?.docs?.url || null,
             };
 
@@ -139,7 +137,7 @@ async function eslintPluginToNormalizedPlugin(
         create:
           packageJson.keywords
             ?.filter((keyword) => !ESLINT_IGNORED_KEYWORDS.has(keyword))
-            .map((keyword) => ({ keyword })) || [],
+            .map((keyword) => ({ name: keyword })) || [],
       },
 
       versions: {
@@ -183,10 +181,11 @@ async function etlPluginToNormalizedPlugin(
       countContributors: Math.round(Math.random() * 100),
       countWeeklyDownloads: npmDownloadsInfo.downloads,
 
-      updatedAt: new Date(npmRegistryInfo.time.modified),
-      createdAt: new Date(npmRegistryInfo.time.created),
+      packageCreatedAt: new Date(npmRegistryInfo.time.created),
+      packageUpdatedAt: new Date(npmRegistryInfo.time.modified),
 
-      linkReadme: packageJson.homepage?.toString() || null,
+      linkHomepage: packageJson.homepage?.toString() || null,
+      linkBugs: packageJson.bugs?.toString() || null,
 
       rules: {
         create: Object.entries(plugin.rules || {}).map(([ruleName]) => {
@@ -200,8 +199,6 @@ async function etlPluginToNormalizedPlugin(
             deprecated: false, // Not supported.
             category: null, // Not supported.
             requiresTypeChecking: false, // Not supported.
-            updatedAt: randomDate(new Date(2020, 0, 1), new Date()), // TODO
-            createdAt: randomDate(new Date(2020, 0, 1), new Date()), // TODO
             linkRuleDoc: null, // TODO
           };
 
@@ -227,7 +224,7 @@ async function etlPluginToNormalizedPlugin(
             ?.filter(
               (keyword) => !EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS.has(keyword)
             )
-            .map((keyword) => ({ keyword })) || [],
+            .map((keyword) => ({ name: keyword })) || [],
       },
 
       versions: {
@@ -312,31 +309,29 @@ export async function loadPluginsToDb() {
 }
 
 export function fixRule(rule: Rule) {
-  return {
-    ...rule,
-    plugin: {
-      ...rule.plugin,
-      createdAt: rule.plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
-      updatedAt: rule.plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
-    },
-    createdAt: rule.plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
-    updatedAt: rule.plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
-  };
+  return fixAnyDatesInObject(rule);
 }
 
 export function fixPlugin(plugin: Plugin) {
-  return {
-    ...plugin,
-    rules: plugin.rules.map((rule) => ({
-      ...rule,
-      createdAt: rule.createdAt.toISOString(), // Since DataTime can't be serialized by next.
-      updatedAt: rule.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
-    })),
-    versions: plugin.versions.map((version) => ({
-      ...version,
-      publishedAt: version.publishedAt.toISOString(), // Since DataTime can't be serialized by next.
-    })),
-    createdAt: plugin.createdAt.toISOString(), // Since DataTime can't be serialized by next.
-    updatedAt: plugin.updatedAt.toISOString(), // Since DataTime can't be serialized by next.
-  };
+  return fixAnyDatesInObject(plugin);
+}
+
+function fixAnyDatesInObject(object: object): object {
+  return Object.fromEntries(
+    Object.entries(object).map(([key, value]) => {
+      if (value instanceof Date) {
+        return [key, value.toISOString()]; // Since DataTime can't be serialized by next.
+      }
+
+      if (Array.isArray(value)) {
+        return [key, value.map((item) => fixAnyDatesInObject(item))];
+      }
+
+      if (typeof value === 'object' && value !== null) {
+        return [key, fixAnyDatesInObject(value)];
+      }
+
+      return [key, value];
+    })
+  );
 }

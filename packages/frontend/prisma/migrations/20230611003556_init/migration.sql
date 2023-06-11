@@ -1,6 +1,8 @@
 -- CreateTable
 CREATE TABLE "RuleOption" (
     "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
     "ruleId" INTEGER NOT NULL,
 
@@ -10,6 +12,8 @@ CREATE TABLE "RuleOption" (
 -- CreateTable
 CREATE TABLE "RuleReplacedBy" (
     "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
     "ruleId" INTEGER NOT NULL,
 
@@ -19,6 +23,8 @@ CREATE TABLE "RuleReplacedBy" (
 -- CreateTable
 CREATE TABLE "Rule" (
     "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
     "ecosystem" TEXT NOT NULL,
     "category" TEXT,
@@ -28,8 +34,6 @@ CREATE TABLE "Rule" (
     "hasSuggestions" BOOLEAN NOT NULL,
     "requiresTypeChecking" BOOLEAN NOT NULL,
     "type" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
     "linkRuleDoc" TEXT,
     "pluginId" INTEGER NOT NULL,
 
@@ -39,6 +43,8 @@ CREATE TABLE "Rule" (
 -- CreateTable
 CREATE TABLE "Config" (
     "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
     "pluginId" INTEGER,
 
@@ -48,7 +54,9 @@ CREATE TABLE "Config" (
 -- CreateTable
 CREATE TABLE "PluginKeyword" (
     "id" SERIAL NOT NULL,
-    "keyword" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "name" TEXT NOT NULL,
     "pluginId" INTEGER NOT NULL,
 
     CONSTRAINT "PluginKeyword_pkey" PRIMARY KEY ("id")
@@ -57,6 +65,8 @@ CREATE TABLE "PluginKeyword" (
 -- CreateTable
 CREATE TABLE "PluginVersion" (
     "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "version" TEXT NOT NULL,
     "publishedAt" TIMESTAMP(3) NOT NULL,
     "pluginId" INTEGER NOT NULL,
@@ -67,12 +77,14 @@ CREATE TABLE "PluginVersion" (
 -- CreateTable
 CREATE TABLE "Plugin" (
     "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
     "ecosystem" TEXT NOT NULL,
     "linter" TEXT NOT NULL,
     "description" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "packageCreatedAt" TIMESTAMP(3) NOT NULL,
+    "packageUpdatedAt" TIMESTAMP(3) NOT NULL,
     "countContributors" INTEGER NOT NULL,
     "countForks" INTEGER NOT NULL,
     "countIssues" INTEGER NOT NULL,
@@ -80,7 +92,8 @@ CREATE TABLE "Plugin" (
     "countStars" INTEGER NOT NULL,
     "countWatching" INTEGER NOT NULL,
     "countWeeklyDownloads" INTEGER NOT NULL,
-    "linkReadme" TEXT,
+    "linkHomepage" TEXT,
+    "linkBugs" TEXT,
 
     CONSTRAINT "Plugin_pkey" PRIMARY KEY ("id")
 );
@@ -98,7 +111,7 @@ CREATE UNIQUE INDEX "Rule_name_pluginId_key" ON "Rule"("name", "pluginId");
 CREATE UNIQUE INDEX "Config_name_pluginId_key" ON "Config"("name", "pluginId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "PluginKeyword_keyword_pluginId_key" ON "PluginKeyword"("keyword", "pluginId");
+CREATE UNIQUE INDEX "PluginKeyword_name_pluginId_key" ON "PluginKeyword"("name", "pluginId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "PluginVersion_version_pluginId_key" ON "PluginVersion"("version", "pluginId");

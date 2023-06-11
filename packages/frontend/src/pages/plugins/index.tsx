@@ -164,7 +164,7 @@ export default function Plugins({
                   <TableCell align="right">{plugin.rules.length}</TableCell>
                   <TableCell align="right">{plugin.countStars}</TableCell>
                   <TableCell align="right">
-                    {new Date(plugin.updatedAt).toLocaleDateString()}
+                    {new Date(plugin.packageUpdatedAt).toLocaleDateString()}
                   </TableCell>
                 </TableRow>
               ))}

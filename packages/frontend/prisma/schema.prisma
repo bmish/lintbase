@@ -10,25 +10,31 @@ datasource db {
 }
 
 model RuleOption {
-  id     Int    @id @default(autoincrement())
-  name   String
-  ruleId Int
-  rule   Rule   @relation(fields: [ruleId], references: [id])
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  ruleId    Int
+  rule      Rule     @relation(fields: [ruleId], references: [id])
 
   @@unique([name, ruleId])
 }
 
 model RuleReplacedBy {
-  id     Int    @id @default(autoincrement())
-  name   String
-  ruleId Int
-  rule   Rule   @relation(fields: [ruleId], references: [id])
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  ruleId    Int
+  rule      Rule     @relation(fields: [ruleId], references: [id])
 
   @@unique([name, ruleId])
 }
 
 model Rule {
   id                   Int              @id @default(autoincrement())
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
   name                 String
   ecosystem            String
   category             String?
@@ -38,8 +44,6 @@ model Rule {
   hasSuggestions       Boolean
   requiresTypeChecking Boolean
   type                 String?
-  createdAt            DateTime
-  updatedAt            DateTime
   linkRuleDoc          String?
   pluginId             Int
   plugin               Plugin           @relation(fields: [pluginId], references: [id])
@@ -50,25 +54,31 @@ model Rule {
 }
 
 model Config {
-  id       Int     @id @default(autoincrement())
-  name     String
-  pluginId Int?
-  Plugin   Plugin? @relation(fields: [pluginId], references: [id])
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  pluginId  Int?
+  Plugin    Plugin?  @relation(fields: [pluginId], references: [id])
 
   @@unique([name, pluginId])
 }
 
 model PluginKeyword {
-  id       Int    @id @default(autoincrement())
-  keyword  String
-  pluginId Int
-  plugin   Plugin @relation(fields: [pluginId], references: [id])
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  pluginId  Int
+  plugin    Plugin   @relation(fields: [pluginId], references: [id])
 
-  @@unique([keyword, pluginId])
+  @@unique([name, pluginId])
 }
 
 model PluginVersion {
   id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   version     String
   publishedAt DateTime
   pluginId    Int
@@ -79,12 +89,14 @@ model PluginVersion {
 
 model Plugin {
   id                   Int             @id @default(autoincrement())
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
   name                 String          @unique
   ecosystem            String
   linter               String
   description          String?
-  createdAt            DateTime
-  updatedAt            DateTime
+  packageCreatedAt     DateTime
+  packageUpdatedAt     DateTime
   countContributors    Int
   countForks           Int
   countIssues          Int
@@ -92,7 +104,8 @@ model Plugin {
   countStars           Int
   countWatching        Int
   countWeeklyDownloads Int
-  linkReadme           String?
+  linkHomepage         String?
+  linkBugs             String?
   configs              Config[]
   keywords             PluginKeyword[]
   versions             PluginVersion[]

@@ -52,11 +52,9 @@ export default function PluginCard({
           {detailed &&
             plugin.keywords &&
             plugin.keywords.length > 0 &&
-            !plugin.keywords.every((obj) =>
-              plugin.name.includes(obj.keyword)
-            ) && (
+            !plugin.keywords.every((obj) => plugin.name.includes(obj.name)) && (
               <Typography sx={{ fontSize: 14 }} color="text.secondary">
-                {plugin.keywords.map((obj) => obj.keyword).join(' • ')}
+                {plugin.keywords.map((obj) => obj.name).join(' • ')}
               </Typography>
             )}
         </div>
@@ -65,15 +63,21 @@ export default function PluginCard({
       </CardContent>
       {detailed && (
         <CardActions>
-          {plugin.linkReadme && (
-            <Button size="small" href={plugin.linkReadme}>
+          {plugin.linkHomepage && (
+            <Button size="small" href={plugin.linkHomepage}>
               {['readme', 'github.com'].some(
                 (str) =>
-                  plugin.linkReadme &&
-                  plugin.linkReadme.toLowerCase().includes(str)
+                  plugin.linkHomepage &&
+                  plugin.linkHomepage.toLowerCase().includes(str)
               )
                 ? 'README'
                 : 'Homepage'}
+            </Button>
+          )}
+
+          {plugin.linkBugs && plugin.linkBugs !== plugin.linkHomepage && (
+            <Button size="small" href={plugin.linkBugs}>
+              Bugs
             </Button>
           )}
 

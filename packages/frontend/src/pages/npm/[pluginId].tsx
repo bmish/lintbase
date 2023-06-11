@@ -93,7 +93,7 @@ export default function Plugin({
                     💡
                   </TableCell>
                   <TableCell scope="col" align="right">
-                    Updated
+                    💭
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -121,7 +121,7 @@ export default function Plugin({
                       {rule.hasSuggestions ? '💡' : ''}
                     </TableCell>
                     <TableCell align="right">
-                      {new Date(rule.updatedAt).toLocaleDateString()}
+                      {rule.requiresTypeChecking ? '💭' : ''}
                     </TableCell>
                   </TableRow>
                 ))}

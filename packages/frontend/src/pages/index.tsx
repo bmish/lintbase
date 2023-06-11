@@ -46,7 +46,7 @@ export async function getServerSideProps() {
     },
     take: 5,
     orderBy: {
-      updatedAt: 'desc',
+      packageUpdatedAt: 'desc',
     },
   });
   const pluginsRecentlyUpdatedFixed = pluginsRecentlyUpdated.map((plugin) =>
