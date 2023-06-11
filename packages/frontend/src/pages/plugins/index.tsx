@@ -52,8 +52,8 @@ export async function getServerSideProps(context: {
 
   const plugins = await prisma.plugin.findMany({
     include,
-    take: pageSize === -1 ? undefined : Number(pageSize),
-    skip: pageSize === -1 ? 0 : Number(currentPage) * Number(pageSize),
+    take: Number(pageSize),
+    skip: Number(currentPage) * Number(pageSize),
     where: q
       ? {
           OR: [
@@ -171,13 +171,7 @@ export default function Plugins({
             <TableFooter>
               <TableRow>
                 <TablePagination
-                  rowsPerPageOptions={[
-                    5,
-                    10,
-                    25,
-                    50,
-                    { label: 'All', value: -1 },
-                  ]}
+                  rowsPerPageOptions={[5, 10, 25, 50]}
                   count={pluginCount}
                   page={currentPage}
                   rowsPerPage={pageSize}

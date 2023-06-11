@@ -1,15 +1,16 @@
 import PluginCard from '@/components/PluginCard';
-import RuleCard from '@/components/RuleCard';
 import { prisma } from '@/server/db';
-import { fixPlugin, fixRule } from '@/utils/normalize';
-import { Typography } from '@mui/material';
+import { fixPlugin } from '@/utils/normalize';
+import {
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Typography,
+} from '@mui/material';
 import { Prisma } from '@prisma/client';
-
-const includeRules = {
-  plugin: true,
-  options: true,
-  replacedBy: true,
-};
 
 const includePlugins = {
   rules: true,
@@ -19,18 +20,24 @@ const includePlugins = {
 };
 
 export async function getServerSideProps() {
-  const rulesRandom = await prisma.rule.findMany({
-    include: includeRules,
+  const commonRuleCategories = await prisma.rule.groupBy({
     where: {
-      deprecated: false, // Don't advertise deprecated rules.
-      description: {
-        not: null, // Don't advertise rules without descriptions.
+      deprecated: false, // Ignore deprecated rules.
+      category: {
+        notIn: ['Fill me in', 'base', 'recommended'],
+      },
+    },
+    take: 5,
+    by: ['category'],
+    _count: {
+      category: true,
+    },
+    orderBy: {
+      _count: {
+        category: 'desc',
       },
     },
   });
-  const rulesRandomFixed = randomlyPickItemsFromArray(rulesRandom, 5).map(
-    (rule) => fixRule(rule)
-  );
 
   const pluginsPopular = await prisma.plugin.findMany({
     include: includePlugins,
@@ -52,46 +59,43 @@ export async function getServerSideProps() {
     fixPlugin(plugin)
   );
 
-  const pluginsRandom = await prisma.plugin.findMany({
-    include: includePlugins,
+  const commonPluginKeywords = await prisma.pluginKeyword.groupBy({
     where: {
-      description: {
-        not: null, // Don't advertise plugins without descriptions.
+      name: {
+        notIn: ['ESLint', 'lint', 'javascript', 'node'],
+      },
+    },
+    take: 5,
+    by: ['name'],
+    _count: {
+      name: true,
+    },
+    orderBy: {
+      _count: {
+        name: 'desc',
       },
     },
   });
-  const pluginsRandomFixed = randomlyPickItemsFromArray(pluginsRandom, 5).map(
-    (plugin) => fixPlugin(plugin)
-  );
 
   return {
     props: {
       data: {
         pluginsPopular: pluginsPopularFixed,
         pluginsRecentlyUpdated: pluginsRecentlyUpdatedFixed,
-        pluginsRandom: pluginsRandomFixed,
-        rulesRandom: rulesRandomFixed,
+        commonPluginKeywords,
+        commonRuleCategories,
       },
     },
   };
 }
 
-function randomlyPickItemsFromArray<T>(array: T[], count: number): T[] {
-  const indicesUsed = new Set<number>();
-  const result: T[] = [];
-  for (let i = 0; i < Math.min(array.length, count); i++) {
-    let index = Math.floor(Math.random() * array.length);
-    while (indicesUsed.has(index)) {
-      index = Math.floor(Math.random() * array.length);
-    }
-    indicesUsed.add(index);
-    result.push(array[index]);
-  }
-  return result;
-}
-
 export default function index({
-  data: { pluginsPopular, pluginsRecentlyUpdated, pluginsRandom, rulesRandom },
+  data: {
+    pluginsPopular,
+    pluginsRecentlyUpdated,
+    commonPluginKeywords,
+    commonRuleCategories,
+  },
 }: {
   data: {
     pluginsPopular: Prisma.PluginGetPayload<{
@@ -100,16 +104,28 @@ export default function index({
     pluginsRecentlyUpdated: Prisma.PluginGetPayload<{
       include: typeof includePlugins;
     }>[];
-    pluginsRandom: Prisma.PluginGetPayload<{
-      include: typeof includePlugins;
-    }>[];
-    rulesRandom: Prisma.RuleGetPayload<{ include: typeof includeRules }>[];
+    commonPluginKeywords: Awaited<
+      Prisma.GetPluginGroupByPayload<{
+        by: ['name'];
+        _count: {
+          name: true;
+        };
+      }>
+    >;
+    commonRuleCategories: Awaited<
+      Prisma.GetRuleGroupByPayload<{
+        by: ['category'];
+        _count: {
+          category: true;
+        };
+      }>
+    >;
   };
 }) {
   return (
     <div className="bg-gray-100 h-full">
       <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto min-h-screen">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
           <div>
             <Typography variant="h6" className="mb-4 text-center">
               Popular Plugins
@@ -135,31 +151,36 @@ export default function index({
             </ul>
           </div>
           <div>
-            {' '}
             <Typography variant="h6" className="mb-4 text-center">
-              Random Plugins
+              Top Plugin Keywords
             </Typography>
-            <ul className="space-y-8">
-              {pluginsRandom.map((p) => (
-                <li key={p.name}>
-                  <PluginCard plugin={p}></PluginCard>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            {' '}
-            <Typography variant="h6" className="mb-4 text-center">
-              Random Rules
+            <TableContainer component={Paper}>
+              <Table aria-label="plugin list">
+                <TableBody>
+                  {commonPluginKeywords.map((obj) => (
+                    <TableRow key={obj.name}>
+                      <TableCell scope="col">{obj.name}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <Typography variant="h6" className="mb-4 text-center mt-8">
+              Top Rule Categories
             </Typography>
-            <ul className="space-y-8">
-              {rulesRandom.map((r) => (
-                <li key={`${r.plugin.name}/${r.name}`}>
-                  <RuleCard rule={r}></RuleCard>
-                </li>
-              ))}
-            </ul>
+            <TableContainer component={Paper}>
+              <Table aria-label="plugin list">
+                <TableBody>
+                  {commonRuleCategories.map((obj) => (
+                    <TableRow key={obj.category}>
+                      <TableCell scope="col">{obj.category}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </div>
+          <div></div>
         </div>
       </main>
     </div>
