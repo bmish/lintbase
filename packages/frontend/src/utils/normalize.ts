@@ -1,4 +1,4 @@
-import { Plugin, Rule, EmberTemplateLint } from '@/utils/types';
+import { EmberTemplateLint } from '@/utils/types';
 import { load } from '@lintbase/downloader';
 import type { TSESLint } from '@typescript-eslint/utils';
 import path from 'node:path';
@@ -6,6 +6,7 @@ import { PackageJson } from 'type-fest';
 import { readFileSync } from 'node:fs';
 import { prisma } from '../server/db';
 import { getAllNamedOptions, getPluginPrefix } from './eslint';
+import { Prisma } from '@prisma/client';
 
 const IGNORED_KEYWORDS = new Set([
   'configs',
@@ -80,26 +81,28 @@ function ruleEntryToStringSeverity(
   return 'off';
 }
 
+const pluginInclude = {
+  rules: {
+    include: {
+      options: true,
+      replacedBy: true,
+    },
+  },
+  configs: true,
+  keywords: true,
+  versions: true,
+};
+
 async function eslintPluginToNormalizedPlugin(
   pluginName: string,
   plugin: TSESLint.Linter.Plugin,
   packageJson: PackageJson,
   npmDownloadsInfo: { downloads: number },
   npmRegistryInfo: NpmRegistryInfo
-): Promise<Plugin> {
+): Promise<Prisma.PluginGetPayload<{ include: typeof pluginInclude }>> {
   // TODO: use createMany?
   const pluginCreated = await prisma.plugin.create({
-    include: {
-      rules: {
-        include: {
-          options: true,
-          replacedBy: true,
-        },
-      },
-      configs: true,
-      keywords: true,
-      versions: true,
-    },
+    include: pluginInclude,
     data: {
       name: pluginName,
       ecosystem: 'node',
@@ -239,14 +242,9 @@ async function etlPluginToNormalizedPlugin(
   packageJson: PackageJson,
   npmDownloadsInfo: { downloads: number },
   npmRegistryInfo: NpmRegistryInfo
-): Promise<Plugin> {
+): Promise<Prisma.PluginGetPayload<{ include: typeof pluginInclude }>> {
   const pluginCreated = await prisma.plugin.create({
-    include: {
-      rules: true,
-      configs: true,
-      keywords: true,
-      versions: true,
-    },
+    include: pluginInclude,
     data: {
       name: pluginName,
       ecosystem: 'node',
@@ -389,11 +387,11 @@ export async function loadPluginsToDb() {
   }
 }
 
-export function fixRule(rule: Rule) {
+export function fixRule(rule: Prisma.RuleGetPayload<{}>) {
   return fixAnyDatesInObject(rule);
 }
 
-export function fixPlugin(plugin: Plugin) {
+export function fixPlugin(plugin: Prisma.PluginGetPayload<{}>) {
   return fixAnyDatesInObject(plugin);
 }
 

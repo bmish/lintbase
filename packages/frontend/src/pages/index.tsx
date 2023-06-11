@@ -1,18 +1,26 @@
 import PluginCard from '@/components/PluginCard';
 import RuleCard from '@/components/RuleCard';
-import { Plugin, Rule } from '@/utils/types';
 import { prisma } from '@/server/db';
 import { fixPlugin, fixRule } from '@/utils/normalize';
 import { Typography } from '@mui/material';
+import { Prisma } from '@prisma/client';
+
+const includeRules = {
+  plugin: true,
+  options: true,
+  replacedBy: true,
+};
+
+const includePlugins = {
+  rules: true,
+  configs: true,
+  keywords: true,
+  versions: true,
+};
 
 export async function getServerSideProps() {
   const rulesRandom = await prisma.rule.findMany({
-    include: {
-      plugin: true,
-      options: true,
-      replacedBy: true,
-      ruleConfigs: true,
-    },
+    include: includeRules,
     where: {
       deprecated: false, // Don't advertise deprecated rules.
       description: {
@@ -25,12 +33,7 @@ export async function getServerSideProps() {
   );
 
   const pluginsPopular = await prisma.plugin.findMany({
-    include: {
-      rules: true,
-      configs: true,
-      keywords: true,
-      versions: true,
-    },
+    include: includePlugins,
     take: 5,
     orderBy: {
       countWeeklyDownloads: 'desc',
@@ -39,12 +42,7 @@ export async function getServerSideProps() {
   const pluginsPopularFixed = pluginsPopular.map((plugin) => fixPlugin(plugin));
 
   const pluginsRecentlyUpdated = await prisma.plugin.findMany({
-    include: {
-      rules: true,
-      configs: true,
-      keywords: true,
-      versions: true,
-    },
+    include: includePlugins,
     take: 5,
     orderBy: {
       packageUpdatedAt: 'desc',
@@ -55,12 +53,7 @@ export async function getServerSideProps() {
   );
 
   const pluginsRandom = await prisma.plugin.findMany({
-    include: {
-      rules: true,
-      configs: true,
-      keywords: true,
-      versions: true,
-    },
+    include: includePlugins,
     where: {
       description: {
         not: null, // Don't advertise plugins without descriptions.
@@ -101,10 +94,16 @@ export default function index({
   data: { pluginsPopular, pluginsRecentlyUpdated, pluginsRandom, rulesRandom },
 }: {
   data: {
-    pluginsPopular: Plugin[];
-    pluginsRecentlyUpdated: Plugin[];
-    pluginsRandom: Plugin[];
-    rulesRandom: Rule[];
+    pluginsPopular: Prisma.PluginGetPayload<{
+      include: typeof includePlugins;
+    }>[];
+    pluginsRecentlyUpdated: Prisma.PluginGetPayload<{
+      include: typeof includePlugins;
+    }>[];
+    pluginsRandom: Prisma.PluginGetPayload<{
+      include: typeof includePlugins;
+    }>[];
+    rulesRandom: Prisma.RuleGetPayload<{ include: typeof includeRules }>[];
   };
 }) {
   return (

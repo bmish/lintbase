@@ -1,4 +1,3 @@
-import { Plugin } from '@/utils/types';
 import {
   pluginToLinkPackageRegistry,
   pluginToLinkUs,
@@ -13,12 +12,15 @@ import {
 } from '@mui/material';
 import millify from 'millify';
 import GetAppIcon from '@mui/icons-material/GetApp';
+import { Prisma } from '@prisma/client';
 
 export default function PluginCard({
   plugin,
   detailed = false,
 }: {
-  plugin: Plugin;
+  plugin: Prisma.PluginGetPayload<{
+    include: { configs: true; keywords: true; rules: true };
+  }>;
   detailed?: boolean;
 }) {
   return (

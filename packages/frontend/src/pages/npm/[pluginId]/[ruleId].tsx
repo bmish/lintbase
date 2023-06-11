@@ -1,6 +1,5 @@
 /* eslint filenames/match-exported:"off",unicorn/filename-case:"off" */
 import RuleCard from '@/components/RuleCard';
-import { Rule as RuleType } from '@/utils/types';
 import { prisma } from '@/server/db';
 import { fixRule } from '@/utils/normalize';
 import {
@@ -12,10 +11,17 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
+import { Prisma } from '@prisma/client';
 
 interface IQueryParam {
   ruleId: string;
 }
+
+const include = {
+  plugin: true,
+  options: true,
+  replacedBy: true,
+};
 
 export async function getServerSideProps({ params }: { params: IQueryParam }) {
   const { ruleId } = params;
@@ -24,12 +30,7 @@ export async function getServerSideProps({ params }: { params: IQueryParam }) {
     where: {
       name: ruleId,
     },
-    include: {
-      plugin: true,
-      options: true,
-      replacedBy: true,
-      ruleConfigs: true,
-    },
+    include,
   });
   const ruleFixed = fixRule(rule);
 
@@ -38,7 +39,11 @@ export async function getServerSideProps({ params }: { params: IQueryParam }) {
   };
 }
 
-export default function Rule({ data: { rule } }: { data: { rule: RuleType } }) {
+export default function Rule({
+  data: { rule },
+}: {
+  data: { rule: Prisma.RuleGetPayload<{ include: typeof include }> };
+}) {
   return (
     <div className="bg-gray-100 h-full">
       <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto min-h-screen">

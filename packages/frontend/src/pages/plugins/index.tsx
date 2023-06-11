@@ -1,4 +1,3 @@
-import { Plugin } from '@/utils/types';
 import {
   Link,
   Paper,
@@ -16,6 +15,11 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import { fixPlugin } from '@/utils/normalize';
 import { pluginToLinkUs } from '@/utils/dynamic-fields';
+import { Prisma } from '@prisma/client';
+
+const include = {
+  rules: true,
+};
 
 export async function getServerSideProps(context: {
   query: { q: string; p: string; c: string };
@@ -47,12 +51,7 @@ export async function getServerSideProps(context: {
   });
 
   const plugins = await prisma.plugin.findMany({
-    include: {
-      rules: true,
-      configs: true,
-      keywords: true,
-      versions: true,
-    },
+    include,
     take: pageSize === -1 ? undefined : Number(pageSize),
     skip: pageSize === -1 ? 0 : Number(currentPage) * Number(pageSize),
     where: q
@@ -85,7 +84,7 @@ export default function Plugins({
   data: { plugins, pluginCount, currentPage, pageSize },
 }: {
   data: {
-    plugins: Plugin[];
+    plugins: Prisma.PluginGetPayload<{ include: typeof include }>[];
     pluginCount: number;
     currentPage: number;
     pageSize: number;

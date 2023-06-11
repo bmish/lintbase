@@ -1,4 +1,3 @@
-import { Rule } from '@/utils/types';
 import {
   Link,
   Paper,
@@ -17,6 +16,11 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import { ruleToLinkUs } from '@/utils/dynamic-fields';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import { Prisma } from '@prisma/client';
+
+const include = {
+  plugin: true,
+};
 
 export async function getServerSideProps(context: {
   query: { q: string; p: string; c: string };
@@ -48,12 +52,7 @@ export async function getServerSideProps(context: {
   });
 
   const rules = await prisma.rule.findMany({
-    include: {
-      plugin: true,
-      options: true,
-      replacedBy: true,
-      ruleConfigs: true,
-    },
+    include,
     take: pageSize === -1 ? undefined : Number(pageSize),
     skip: pageSize === -1 ? 0 : Number(currentPage) * Number(pageSize),
     where: q
@@ -84,7 +83,7 @@ export default function Rules({
   data: { rules, ruleCount, currentPage, pageSize },
 }: {
   data: {
-    rules: Rule[];
+    rules: Prisma.RuleGetPayload<{ include: typeof include }>[];
     ruleCount: number;
     currentPage: number;
     pageSize: number;

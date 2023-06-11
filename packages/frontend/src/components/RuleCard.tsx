@@ -6,15 +6,17 @@ import {
   Link,
   Typography,
 } from '@mui/material';
-import { Rule } from '@/utils/types';
 import { pluginToLinkUs, ruleToLinkUs } from '@/utils/dynamic-fields';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import { Prisma } from '@prisma/client';
 
 export default function RuleCard({
   rule,
   detailed = false,
 }: {
-  rule: Rule;
+  rule: Prisma.RuleGetPayload<{
+    include: { plugin: true; options: true; replacedBy: true };
+  }>;
   detailed?: boolean;
 }) {
   return (
