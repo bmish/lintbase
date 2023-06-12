@@ -146,6 +146,9 @@ export default function Rules({
                 <TableCell scope="col" align="right">
                   ⚙️
                 </TableCell>
+                <TableCell scope="col" align="right">
+                  ❌
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -185,6 +188,9 @@ export default function Rules({
                   </TableCell>
                   <TableCell align="right">
                     {rule.options.length > 0 ? '⚙️' : ''}
+                  </TableCell>
+                  <TableCell align="right">
+                    {rule.deprecated ? '❌' : ''}
                   </TableCell>
                 </TableRow>
               ))}

@@ -24,6 +24,7 @@ interface IQueryParam {
 const include = {
   rules: {
     include: {
+      options: true,
       ruleConfigs: {
         include: {
           config: true,
@@ -117,6 +118,15 @@ export default function Plugin({
                   <TableCell scope="col" align="right">
                     💭
                   </TableCell>
+                  <TableCell scope="col" align="right">
+                    🗂️
+                  </TableCell>
+                  <TableCell scope="col" align="right">
+                    ⚙️
+                  </TableCell>
+                  <TableCell scope="col" align="right">
+                    ❌
+                  </TableCell>
                   {relevantConfigEmojis.map(([config, emoji]) => (
                     <TableCell key={config} align="right">
                       {emoji}
@@ -149,6 +159,17 @@ export default function Plugin({
                     </TableCell>
                     <TableCell align="right">
                       {rule.requiresTypeChecking ? '💭' : ''}
+                    </TableCell>
+                    <TableCell align="right">
+                      {rule.type === 'layout' ? '📏' : ''}
+                      {rule.type === 'problem' ? '❗' : ''}
+                      {rule.type === 'suggestion' ? '📖' : ''}
+                    </TableCell>
+                    <TableCell align="right">
+                      {rule.options.length > 0 ? '⚙️' : ''}
+                    </TableCell>
+                    <TableCell align="right">
+                      {rule.deprecated ? '❌' : ''}
                     </TableCell>
                     {relevantConfigEmojis.map(([config, emoji]) => (
                       <TableCell key={config} align="right">
