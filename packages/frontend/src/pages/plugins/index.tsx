@@ -21,11 +21,11 @@ const include = {
   rules: true,
 };
 
-export async function getServerSideProps(context: {
+export async function getServerSideProps({
+  query,
+}: {
   query: { q: string; p: string; c: string; keyword: string };
 }) {
-  const { query } = context;
-
   // Access individual query parameters
   const { q, p, c, keyword } = query;
   const currentPage = p ? Number(p) - 1 : 0;

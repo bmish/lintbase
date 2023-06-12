@@ -22,11 +22,11 @@ const include = {
   plugin: true,
 };
 
-export async function getServerSideProps(context: {
+export async function getServerSideProps({
+  query,
+}: {
   query: { q: string; p: string; c: string; category: string };
 }) {
-  const { query } = context;
-
   // Access individual query parameters
   const { q, p, c, category } = query;
   const currentPage = p ? Number(p) - 1 : 0;
