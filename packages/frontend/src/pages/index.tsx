@@ -2,6 +2,7 @@ import PluginCard from '@/components/PluginCard';
 import { prisma } from '@/server/db';
 import { fixPlugin } from '@/utils/normalize';
 import {
+  Grid,
   Paper,
   Table,
   TableBody,
@@ -126,8 +127,8 @@ export default function index({
   return (
     <div className="bg-gray-100 h-full">
       <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto min-h-screen">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
-          <div>
+        <Grid container spacing={4} columns={{ xs: 2, sm: 4, md: 5 }}>
+          <Grid item xs={2}>
             <Typography variant="h6" className="mb-4 text-center">
               Popular Plugins
             </Typography>
@@ -138,8 +139,8 @@ export default function index({
                 </li>
               ))}
             </ul>
-          </div>
-          <div>
+          </Grid>
+          <Grid item xs={2}>
             <Typography variant="h6" className="mb-4 text-center">
               Recently Updated
             </Typography>
@@ -150,8 +151,8 @@ export default function index({
                 </li>
               ))}
             </ul>
-          </div>
-          <div>
+          </Grid>
+          <Grid item xs={2} md={1}>
             <Typography variant="h6" className="mb-4 text-center">
               Top Plugin Keywords
             </Typography>
@@ -174,6 +175,7 @@ export default function index({
                 </TableBody>
               </Table>
             </TableContainer>
+
             <Typography variant="h6" className="mb-4 text-center mt-8">
               Top Rule Categories
             </Typography>
@@ -199,9 +201,8 @@ export default function index({
                 </TableBody>
               </Table>
             </TableContainer>
-          </div>
-          <div></div>
-        </div>
+          </Grid>
+        </Grid>
       </main>
     </div>
   );
