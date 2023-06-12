@@ -22,62 +22,68 @@ const includePlugins = {
 };
 
 export async function getServerSideProps() {
-  const commonRuleCategories = await prisma.rule.groupBy({
-    where: {
-      deprecated: false, // Ignore deprecated rules.
-      category: {
-        notIn: ['Fill me in', 'base', 'recommended'],
+  const [
+    pluginsPopular,
+    pluginsRecentlyUpdated,
+    commonPluginKeywords,
+    commonRuleCategories,
+  ] = await Promise.all([
+    prisma.plugin.findMany({
+      include: includePlugins,
+      take: 5,
+      orderBy: {
+        countWeeklyDownloads: 'desc',
       },
-    },
-    take: 5,
-    by: ['category'],
-    _count: {
-      category: true,
-    },
-    orderBy: {
+    }),
+    prisma.plugin.findMany({
+      include: includePlugins,
+      take: 5,
+      orderBy: {
+        packageUpdatedAt: 'desc',
+      },
+    }),
+    prisma.pluginKeyword.groupBy({
+      where: {
+        name: {
+          notIn: ['ESLint', 'lint', 'javascript', 'node'],
+        },
+      },
+      take: 5,
+      by: ['name'],
       _count: {
-        category: 'desc',
+        name: true,
       },
-    },
-  });
+      orderBy: {
+        _count: {
+          name: 'desc',
+        },
+      },
+    }),
+    prisma.rule.groupBy({
+      where: {
+        deprecated: false, // Ignore deprecated rules.
+        category: {
+          notIn: ['Fill me in', 'base', 'recommended'],
+        },
+      },
+      take: 5,
+      by: ['category'],
+      _count: {
+        category: true,
+      },
+      orderBy: {
+        _count: {
+          category: 'desc',
+        },
+      },
+    }),
+  ]);
 
-  const pluginsPopular = await prisma.plugin.findMany({
-    include: includePlugins,
-    take: 5,
-    orderBy: {
-      countWeeklyDownloads: 'desc',
-    },
-  });
   const pluginsPopularFixed = pluginsPopular.map((plugin) => fixPlugin(plugin));
 
-  const pluginsRecentlyUpdated = await prisma.plugin.findMany({
-    include: includePlugins,
-    take: 5,
-    orderBy: {
-      packageUpdatedAt: 'desc',
-    },
-  });
   const pluginsRecentlyUpdatedFixed = pluginsRecentlyUpdated.map((plugin) =>
     fixPlugin(plugin)
   );
-
-  const commonPluginKeywords = await prisma.pluginKeyword.groupBy({
-    where: {
-      name: {
-        notIn: ['ESLint', 'lint', 'javascript', 'node'],
-      },
-    },
-    take: 5,
-    by: ['name'],
-    _count: {
-      name: true,
-    },
-    orderBy: {
-      _count: {
-        name: 'desc',
-      },
-    },
-  });
 
   return {
     props: {

@@ -60,16 +60,18 @@ export async function getServerSideProps(context: {
       }
     : { ...keywordQuery };
 
-  const pluginCount = await prisma.plugin.count({
-    where,
-  });
+  const [pluginCount, plugins] = await Promise.all([
+    prisma.plugin.count({
+      where,
+    }),
+    prisma.plugin.findMany({
+      include,
+      take: Number(pageSize),
+      skip: Number(currentPage) * Number(pageSize),
+      where,
+    }),
+  ]);
 
-  const plugins = await prisma.plugin.findMany({
-    include,
-    take: Number(pageSize),
-    skip: Number(currentPage) * Number(pageSize),
-    where,
-  });
   const pluginsFixed = await plugins.map((plugin) => fixPlugin(plugin));
 
   return {

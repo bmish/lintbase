@@ -51,16 +51,18 @@ export async function getServerSideProps(context: {
       }
     : { ...categoryQuery };
 
-  const ruleCount = await prisma.rule.count({
-    where,
-  });
+  const [ruleCount, rules] = await Promise.all([
+    prisma.rule.count({
+      where,
+    }),
+    prisma.rule.findMany({
+      include,
+      take: Number(pageSize),
+      skip: Number(currentPage) * Number(pageSize),
+      where,
+    }),
+  ]);
 
-  const rules = await prisma.rule.findMany({
-    include,
-    take: Number(pageSize),
-    skip: Number(currentPage) * Number(pageSize),
-    where,
-  });
   const rulesFixed = await rules.map((rule) => fixRule(rule));
 
   return {
