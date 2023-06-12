@@ -25,6 +25,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           href="/favicon-16x16.png"
         />
         <link rel="manifest" href="/site.webmanifest" />
+        <title>LintBase</title>
       </Head>
       <Header />
       <main>{children}</main>
