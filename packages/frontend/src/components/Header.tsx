@@ -12,11 +12,11 @@ export default function Header() {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value);
 
-    const SEARCHABLE_PATHS = ['/plugins', '/rules'];
+    const SEARCHABLE_PATHS = ['/db/plugins', '/db/rules'];
 
     const newUrl = SEARCHABLE_PATHS.includes(router.pathname)
       ? router.pathname
-      : '/plugins';
+      : '/db/plugins';
 
     if (event.target.value) {
       router.push(`${newUrl}?q=${event.target.value}`);
@@ -59,18 +59,10 @@ export default function Header() {
             </li>
             <li>
               <Link
-                href="/plugins"
+                href="/db"
                 className="px-4 py-2 font-semibold text-gray-600 rounded"
               >
-                Plugins
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/rules"
-                className="px-4 py-2 font-semibold text-gray-600 rounded"
-              >
-                Rules
+                Database
               </Link>
             </li>
             <li>

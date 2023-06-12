@@ -19,6 +19,7 @@ import { Prisma } from '@prisma/client';
 import { format } from 'timeago.js';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import millify from 'millify';
+import DatabaseNavigation from '@/components/DatabaseNavigation';
 
 const include = {
   rules: true,
@@ -136,6 +137,7 @@ export default function Plugins({
 
   return (
     <div className="bg-gray-100 h-full">
+      <DatabaseNavigation />
       <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto min-h-screen">
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="plugin list">
