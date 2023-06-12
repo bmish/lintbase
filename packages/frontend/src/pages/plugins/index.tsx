@@ -17,9 +17,12 @@ import { fixPlugin } from '@/utils/normalize';
 import { pluginToLinkUs } from '@/utils/dynamic-fields';
 import { Prisma } from '@prisma/client';
 import { format } from 'timeago.js';
+import GetAppIcon from '@mui/icons-material/GetApp';
+import millify from 'millify';
 
 const include = {
   rules: true,
+  configs: true,
 };
 
 export async function getServerSideProps({
@@ -143,10 +146,14 @@ export default function Plugins({
                   Rules
                 </TableCell>
                 <TableCell scope="col" align="right">
-                  Stars
+                  Configs
                 </TableCell>
                 <TableCell scope="col" align="right">
-                  Last Published
+                  Wkly
+                  <GetAppIcon fontSize="inherit" />
+                </TableCell>
+                <TableCell scope="col" align="right">
+                  Published
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -163,7 +170,10 @@ export default function Plugins({
                   </TableCell>
                   <TableCell align="left">{plugin.description}</TableCell>
                   <TableCell align="right">{plugin.rules.length}</TableCell>
-                  <TableCell align="right">{plugin.countStars}</TableCell>
+                  <TableCell align="right">{plugin.configs.length}</TableCell>
+                  <TableCell align="right">
+                    {millify(plugin.countWeeklyDownloads)}
+                  </TableCell>
                   <TableCell align="right">
                     {format(new Date(plugin.packageUpdatedAt))}
                   </TableCell>
