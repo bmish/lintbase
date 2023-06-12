@@ -16,6 +16,7 @@ import { useRouter } from 'next/router';
 import { fixPlugin } from '@/utils/normalize';
 import { pluginToLinkUs } from '@/utils/dynamic-fields';
 import { Prisma } from '@prisma/client';
+import { format } from 'timeago.js';
 
 const include = {
   rules: true,
@@ -164,7 +165,7 @@ export default function Plugins({
                   <TableCell align="right">{plugin.rules.length}</TableCell>
                   <TableCell align="right">{plugin.countStars}</TableCell>
                   <TableCell align="right">
-                    {new Date(plugin.packageUpdatedAt).toLocaleDateString()}
+                    {format(new Date(plugin.packageUpdatedAt))}
                   </TableCell>
                 </TableRow>
               ))}
