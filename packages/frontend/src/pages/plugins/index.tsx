@@ -73,6 +73,9 @@ export async function getServerSideProps({
       take: Number(pageSize),
       skip: Number(currentPage) * Number(pageSize),
       where,
+      orderBy: {
+        countWeeklyDownloads: 'desc',
+      },
     }),
   ]);
 
