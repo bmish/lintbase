@@ -20,6 +20,7 @@ import { Prisma } from '@prisma/client';
 
 const include = {
   plugin: true,
+  options: true,
 };
 
 export async function getServerSideProps({
@@ -136,6 +137,12 @@ export default function Rules({
                 <TableCell scope="col" align="right">
                   💭
                 </TableCell>
+                <TableCell scope="col" align="right">
+                  🗂️
+                </TableCell>
+                <TableCell scope="col" align="right">
+                  ⚙️
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -166,6 +173,15 @@ export default function Rules({
                   </TableCell>
                   <TableCell align="right">
                     {rule.requiresTypeChecking ? '💭' : ''}
+                  </TableCell>
+
+                  <TableCell align="right">
+                    {rule.type === 'layout' ? '📏' : ''}
+                    {rule.type === 'problem' ? '❗' : ''}
+                    {rule.type === 'suggestion' ? '📖' : ''}
+                  </TableCell>
+                  <TableCell align="right">
+                    {rule.options.length > 0 ? '⚙️' : ''}
                   </TableCell>
                 </TableRow>
               ))}
