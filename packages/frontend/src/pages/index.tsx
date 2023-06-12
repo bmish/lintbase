@@ -34,12 +34,18 @@ export async function getServerSideProps() {
       orderBy: {
         countWeeklyDownloads: 'desc',
       },
+      where: {
+        OR: [{ configs: { some: {} } }, { rules: { some: {} } }],
+      },
     }),
     prisma.plugin.findMany({
       include: includePlugins,
       take: 5,
       orderBy: {
         packageUpdatedAt: 'desc',
+      },
+      where: {
+        OR: [{ configs: { some: {} } }, { rules: { some: {} } }],
       },
     }),
     prisma.pluginKeyword.groupBy({
