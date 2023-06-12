@@ -99,7 +99,17 @@ async function eslintPluginToNormalizedPlugin(
   packageJson: PackageJson,
   npmDownloadsInfo: { downloads: number },
   npmRegistryInfo: NpmRegistryInfo
-): Promise<Prisma.PluginGetPayload<{ include: typeof pluginInclude }>> {
+): Promise<
+  Prisma.PluginGetPayload<{ include: typeof pluginInclude }> | undefined
+> {
+  if (
+    Object.keys(plugin.configs || {}).length === 0 &&
+    Object.keys(plugin.rules || {}).length === 0
+  ) {
+    // Probably not an actual plugin.
+    return undefined;
+  }
+
   // TODO: use createMany?
   const pluginCreated = await prisma.plugin.create({
     include: pluginInclude,
@@ -242,7 +252,16 @@ async function etlPluginToNormalizedPlugin(
   packageJson: PackageJson,
   npmDownloadsInfo: { downloads: number },
   npmRegistryInfo: NpmRegistryInfo
-): Promise<Prisma.PluginGetPayload<{ include: typeof pluginInclude }>> {
+): Promise<
+  Prisma.PluginGetPayload<{ include: typeof pluginInclude }> | undefined
+> {
+  if (
+    Object.keys(plugin.configurations || {}).length === 0 &&
+    Object.keys(plugin.rules || {}).length === 0
+  ) {
+    // Probably not an actual plugin.
+    return undefined;
+  }
   const pluginCreated = await prisma.plugin.create({
     include: pluginInclude,
     data: {
@@ -374,10 +393,7 @@ export async function loadPluginsToDb() {
               npmRegistryInfo
             );
 
-      if (
-        pluginNormalized.configs.length === 0 &&
-        pluginNormalized.rules.length === 0
-      ) {
+      if (!pluginNormalized) {
         // Probably not an actual plugin.
         return [];
       }
