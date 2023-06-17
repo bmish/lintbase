@@ -5,7 +5,11 @@ import path from 'node:path';
 import { PackageJson } from 'type-fest';
 import { readFileSync } from 'node:fs';
 import { prisma } from '../server/db';
-import { getAllNamedOptions, getPluginPrefix } from './eslint';
+import {
+  getAllNamedOptions,
+  getPluginPrefix,
+  ruleEntryToStringSeverity,
+} from './eslint';
 import { Prisma } from '@prisma/client';
 
 const IGNORED_KEYWORDS = new Set([
@@ -43,44 +47,6 @@ type NpmRegistryInfo = {
   time: Record<string | 'created' | 'modified', string>;
 };
 
-function severityNumberToString(severity: 0 | 1 | 2): 'off' | 'warn' | 'error' {
-  switch (severity) {
-    case 0: {
-      return 'off';
-    }
-    case 1: {
-      return 'warn';
-    }
-    case 2: {
-      return 'error';
-    }
-    default: {
-      return 'off';
-    }
-  }
-}
-
-function ruleEntryToStringSeverity(
-  ruleEntry: TSESLint.Linter.RuleEntry
-): 'off' | 'warn' | 'error' {
-  if (typeof ruleEntry === 'number') {
-    return severityNumberToString(ruleEntry);
-  }
-
-  if (typeof ruleEntry === 'string') {
-    return ruleEntry;
-  }
-
-  if (Array.isArray(ruleEntry)) {
-    if (typeof ruleEntry[0] === 'number') {
-      return severityNumberToString(ruleEntry[0]);
-    }
-    return ruleEntry[0];
-  }
-
-  return 'off';
-}
-
 const pluginInclude = {
   rules: {
     include: {
@@ -93,19 +59,20 @@ const pluginInclude = {
   versions: true,
 };
 
-async function eslintPluginToNormalizedPlugin(
+async function baseToNormalizedPlugin(
   pluginName: string,
-  plugin: TSESLint.Linter.Plugin,
+  ecosystem: string,
+  linter: string,
   packageJson: PackageJson,
   npmDownloadsInfo: { downloads: number },
-  npmRegistryInfo: NpmRegistryInfo
+  npmRegistryInfo: NpmRegistryInfo,
+  rules: Prisma.RuleCreateWithoutPluginInput[],
+  configs: Prisma.ConfigCreateWithoutPluginInput[],
+  keywordsToIgnore: Set<string>
 ): Promise<
   Prisma.PluginGetPayload<{ include: typeof pluginInclude }> | undefined
 > {
-  if (
-    Object.keys(plugin.configs || {}).length === 0 &&
-    Object.keys(plugin.rules || {}).length === 0
-  ) {
+  if (configs.length === 0 && rules.length === 0) {
     // Probably not an actual plugin.
     return undefined;
   }
@@ -115,8 +82,8 @@ async function eslintPluginToNormalizedPlugin(
     include: pluginInclude,
     data: {
       name: pluginName,
-      ecosystem: 'node',
-      linter: 'eslint',
+      ecosystem,
+      linter,
       description: packageJson.description || null,
 
       // TODO: get real data from npm/github
@@ -139,56 +106,14 @@ async function eslintPluginToNormalizedPlugin(
           ? packageJson.bugs
           : null,
 
-      rules: {
-        create: Object.entries(plugin.rules || {}).flatMap(
-          ([ruleName, rule]) => {
-            if (typeof rule !== 'object') {
-              // TODO: handle this case
-              return [];
-            }
+      rules: { create: rules },
 
-            const ruleNormalized = {
-              name: ruleName,
-              description: rule.meta?.docs?.description || null,
-              fixable: rule.meta?.fixable || null,
-              hasSuggestions: rule.meta?.hasSuggestions || false,
-              ecosystem: 'node',
-              type: rule.meta?.type || null,
-              deprecated: rule.meta?.deprecated || false,
-              replacedBy: {
-                create: (rule.meta?.replacedBy || []).map((name) => ({ name })),
-              },
-              // @ts-expect-error -- category not an official property
-              category: rule.meta?.docs?.category || null,
-              options: {
-                create: getAllNamedOptions(rule.meta?.schema).map((option) => ({
-                  name: option,
-                })),
-              },
-              // @ts-expect-error -- requiresTypeChecking not an official property
-              requiresTypeChecking: rule.meta?.requiresTypeChecking || false,
-              linkRuleDoc: rule.meta?.docs?.url || null,
-            };
-
-            return [ruleNormalized];
-          }
-        ),
-      },
-
-      configs: {
-        create: Object.entries(plugin.configs || {}).map(([configName]) => {
-          const config = {
-            name: configName,
-          };
-
-          return config;
-        }),
-      },
+      configs: { create: configs },
 
       keywords: {
         create:
           packageJson.keywords
-            ?.filter((keyword) => !ESLINT_IGNORED_KEYWORDS.has(keyword))
+            ?.filter((keyword) => !keywordsToIgnore.has(keyword))
             .map((keyword) => ({ name: keyword })) || [],
       },
 
@@ -200,6 +125,77 @@ async function eslintPluginToNormalizedPlugin(
       },
     },
   });
+
+  return pluginCreated;
+}
+
+async function eslintPluginToNormalizedPlugin(
+  pluginName: string,
+  plugin: TSESLint.Linter.Plugin,
+  packageJson: PackageJson,
+  npmDownloadsInfo: { downloads: number },
+  npmRegistryInfo: NpmRegistryInfo
+): Promise<
+  Prisma.PluginGetPayload<{ include: typeof pluginInclude }> | undefined
+> {
+  const rules = Object.entries(plugin.rules || {}).flatMap(
+    ([ruleName, rule]) => {
+      if (typeof rule !== 'object') {
+        // TODO: handle this case
+        return [];
+      }
+
+      const ruleNormalized = {
+        name: ruleName,
+        description: rule.meta?.docs?.description || null,
+        fixable: rule.meta?.fixable || null,
+        hasSuggestions: rule.meta?.hasSuggestions || false,
+        ecosystem: 'node',
+        type: rule.meta?.type || null,
+        deprecated: rule.meta?.deprecated || false,
+        replacedBy: {
+          create: (rule.meta?.replacedBy || []).map((name) => ({ name })),
+        },
+        // @ts-expect-error -- category not an official property
+        category: rule.meta?.docs?.category || null,
+        options: {
+          create: getAllNamedOptions(rule.meta?.schema).map((option) => ({
+            name: option,
+          })),
+        },
+        // @ts-expect-error -- requiresTypeChecking not an official property
+        requiresTypeChecking: rule.meta?.requiresTypeChecking || false,
+        linkRuleDoc: rule.meta?.docs?.url || null,
+      };
+
+      return [ruleNormalized];
+    }
+  );
+
+  const configs = Object.entries(plugin.configs || {}).map(([configName]) => {
+    const config = {
+      name: configName,
+    };
+
+    return config;
+  });
+
+  const pluginCreated = await baseToNormalizedPlugin(
+    pluginName,
+    'node',
+    'eslint',
+    packageJson,
+    npmDownloadsInfo,
+    npmRegistryInfo,
+    rules,
+    configs,
+    ESLINT_IGNORED_KEYWORDS
+  );
+
+  if (!pluginCreated) {
+    // Probably not an actual plugin.
+    return undefined;
+  }
 
   const pluginPrefix = getPluginPrefix(pluginName);
   await prisma.ruleConfig.createMany({
@@ -246,7 +242,7 @@ async function eslintPluginToNormalizedPlugin(
   return pluginCreated;
 }
 
-async function etlPluginToNormalizedPlugin(
+async function emberTemplateLintPluginToNormalizedPlugin(
   pluginName: string,
   plugin: EmberTemplateLint,
   packageJson: PackageJson,
@@ -255,84 +251,46 @@ async function etlPluginToNormalizedPlugin(
 ): Promise<
   Prisma.PluginGetPayload<{ include: typeof pluginInclude }> | undefined
 > {
-  if (
-    Object.keys(plugin.configurations || {}).length === 0 &&
-    Object.keys(plugin.rules || {}).length === 0
-  ) {
-    // Probably not an actual plugin.
-    return undefined;
-  }
-  const pluginCreated = await prisma.plugin.create({
-    include: pluginInclude,
-    data: {
-      name: pluginName,
+  const rules = Object.entries(plugin.rules || {}).map(([ruleName]) => {
+    const ruleNormalized = {
+      name: ruleName,
+      description: null, // TODO
+      fixable: null, // TODO
+      hasSuggestions: false, // Not supported.
       ecosystem: 'node',
-      linter: 'ember-template-lint',
-      description: packageJson.description || null,
+      type: null, // Not supported.
+      deprecated: false, // Not supported.
+      category: null, // Not supported.
+      requiresTypeChecking: false, // Not supported.
+      linkRuleDoc: null, // TODO
+    };
 
-      // TODO: get real data from npm/github
-      countPrs: Math.round(Math.random() * 100),
-      countIssues: Math.round(Math.random() * 100),
-      countStars: Math.round(Math.random() * 100),
-      countWatching: Math.round(Math.random() * 100),
-      countForks: Math.round(Math.random() * 100),
-      countContributors: Math.round(Math.random() * 100),
-      countWeeklyDownloads: npmDownloadsInfo.downloads,
-
-      packageCreatedAt: new Date(npmRegistryInfo.time.created),
-      packageUpdatedAt: new Date(npmRegistryInfo.time.modified),
-
-      linkHomepage: packageJson.homepage?.toString() || null,
-      linkBugs: packageJson.bugs?.toString() || null,
-
-      rules: {
-        create: Object.entries(plugin.rules || {}).map(([ruleName]) => {
-          const ruleNormalized = {
-            name: ruleName,
-            description: null, // TODO
-            fixable: null, // TODO
-            hasSuggestions: false, // Not supported.
-            ecosystem: 'node',
-            type: null, // Not supported.
-            deprecated: false, // Not supported.
-            category: null, // Not supported.
-            requiresTypeChecking: false, // Not supported.
-            linkRuleDoc: null, // TODO
-          };
-
-          return ruleNormalized;
-        }),
-      },
-
-      configs: {
-        create: Object.entries(plugin.configurations || {}).map(
-          ([configName]) => {
-            const config = {
-              name: configName,
-            };
-
-            return config;
-          }
-        ),
-      },
-
-      keywords: {
-        create:
-          packageJson.keywords
-            ?.filter(
-              (keyword) => !EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS.has(keyword)
-            )
-            .map((keyword) => ({ name: keyword })) || [],
-      },
-
-      versions: {
-        create: Object.entries(npmRegistryInfo.time).map(([version, time]) => ({
-          version,
-          publishedAt: new Date(time),
-        })),
-      },
-    },
+    return ruleNormalized;
   });
+
+  const configs = Object.entries(plugin.configurations || {}).map(
+    ([configName]) => {
+      const config = {
+        name: configName,
+      };
+
+      return config;
+    }
+  );
+
+  const pluginCreated = await baseToNormalizedPlugin(
+    pluginName,
+    'node',
+    'ember-template-lint',
+    packageJson,
+    npmDownloadsInfo,
+    npmRegistryInfo,
+    rules,
+    configs,
+    EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS
+  );
+
+  // TODO: create RuleConfigs
 
   return pluginCreated;
 }
@@ -385,7 +343,7 @@ export async function loadPluginsToDb() {
               npmDownloadsInfo,
               npmRegistryInfo
             )
-          : await etlPluginToNormalizedPlugin(
+          : await emberTemplateLintPluginToNormalizedPlugin(
               pluginName,
               plugin,
               packageJson,
