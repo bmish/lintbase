@@ -19,7 +19,6 @@ const includePlugins = {
   rules: true,
   configs: true,
   keywords: true,
-  versions: true,
 };
 
 export async function getServerSideProps() {
