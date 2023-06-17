@@ -133,7 +133,7 @@ CREATE UNIQUE INDEX "PluginKeyword_name_pluginId_key" ON "PluginKeyword"("name",
 CREATE UNIQUE INDEX "PluginVersion_version_pluginId_key" ON "PluginVersion"("version", "pluginId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Plugin_name_key" ON "Plugin"("name");
+CREATE UNIQUE INDEX "Plugin_name_ecosystem_linter_key" ON "Plugin"("name", "ecosystem", "linter");
 
 -- AddForeignKey
 ALTER TABLE "RuleOption" ADD CONSTRAINT "RuleOption_ruleId_fkey" FOREIGN KEY ("ruleId") REFERENCES "Rule"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

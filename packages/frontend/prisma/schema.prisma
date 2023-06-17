@@ -108,7 +108,7 @@ model Plugin {
   id                   Int             @id @default(autoincrement())
   createdAt            DateTime        @default(now())
   updatedAt            DateTime        @updatedAt
-  name                 String          @unique
+  name                 String
   ecosystem            String
   linter               String
   description          String?
@@ -128,4 +128,6 @@ model Plugin {
   versions             PluginVersion[]
   rules                Rule[]
   ruleConfigs          RuleConfig[]
+
+  @@unique([name, ecosystem, linter])
 }

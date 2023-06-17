@@ -59,6 +59,10 @@ const pluginInclude = {
   versions: true,
 };
 
+function stringArrayToUnique(array: readonly string[]): readonly string[] {
+  return [...new Set(array)];
+}
+
 async function baseToNormalizedPlugin(
   pluginName: string,
   ecosystem: string,
@@ -111,10 +115,9 @@ async function baseToNormalizedPlugin(
       configs: { create: configs },
 
       keywords: {
-        create:
-          packageJson.keywords
-            ?.filter((keyword) => !keywordsToIgnore.has(keyword))
-            .map((keyword) => ({ name: keyword })) || [],
+        create: stringArrayToUnique(packageJson.keywords || [])
+          .filter((keyword) => !keywordsToIgnore.has(keyword))
+          .map((keyword) => ({ name: keyword })),
       },
 
       versions: {
@@ -127,6 +130,18 @@ async function baseToNormalizedPlugin(
   });
 
   return pluginCreated;
+}
+
+function normalizeFixable(
+  val: boolean | string | null | undefined
+): 'code' | 'whitespace' | null {
+  if (val === 'code' || val === true || val === 'true') {
+    return 'code';
+  }
+  if (val === 'whitespace') {
+    return 'whitespace';
+  }
+  return null;
 }
 
 async function eslintPluginToNormalizedPlugin(
@@ -148,18 +163,22 @@ async function eslintPluginToNormalizedPlugin(
       const ruleNormalized = {
         name: ruleName,
         description: rule.meta?.docs?.description || null,
-        fixable: rule.meta?.fixable || null,
+        fixable: normalizeFixable(rule.meta?.fixable),
         hasSuggestions: rule.meta?.hasSuggestions || false,
         ecosystem: 'node',
         type: rule.meta?.type || null,
         deprecated: rule.meta?.deprecated || false,
         replacedBy: {
-          create: (rule.meta?.replacedBy || []).map((name) => ({ name })),
+          create: stringArrayToUnique(rule.meta?.replacedBy || []).map(
+            (name) => ({ name })
+          ),
         },
         // @ts-expect-error -- category not an official property
         category: rule.meta?.docs?.category || null,
         options: {
-          create: getAllNamedOptions(rule.meta?.schema).map((option) => ({
+          create: stringArrayToUnique(
+            getAllNamedOptions(rule.meta?.schema)
+          ).map((option) => ({
             name: option,
           })),
         },
@@ -315,53 +334,61 @@ export async function loadPluginsToDb() {
         ? load<TSESLint.Linter.Plugin>(downloadPath)
         : load<EmberTemplateLint>(downloadPath);
 
-    const pluginsCreatedForThisType = await Object.entries(
-      pluginRecord
-    ).flatMap(async ([pluginName, plugin]) => {
-      const pathPackageJson = path.join(
-        downloadPath,
-        'node_modules',
-        pluginName,
-        'package.json'
-      );
-      const packageJson = JSON.parse(
-        readFileSync(pathPackageJson, { encoding: 'utf8' })
-      ) as PackageJson;
+    const pluginsCreatedForThisType = await Promise.all(
+      Object.entries(pluginRecord).flatMap(async ([pluginName, plugin]) => {
+        const pathPackageJson = path.join(
+          downloadPath,
+          'node_modules',
+          pluginName,
+          'package.json'
+        );
+        const packageJson = JSON.parse(
+          readFileSync(pathPackageJson, { encoding: 'utf8' })
+        ) as PackageJson;
 
-      // Get info from npm registry.
-      // https://github.com/npm/registry/blob/master/docs/download-counts.md
-      const npmDownloadsInfo = await fetch(
-        `https://api.npmjs.org/downloads/point/last-week/${pluginName}`
-      ).then((res) => res.json());
+        let npmDownloadsInfo;
+        let npmRegistryInfo;
+        try {
+          // Get info from npm registry.
+          // https://github.com/npm/registry/blob/master/docs/download-counts.md
+          npmDownloadsInfo = await fetch(
+            `https://api.npmjs.org/downloads/point/last-week/${pluginName}`
+          ).then((res) => res.json());
 
-      const npmRegistryInfo = await fetch(
-        `https://registry.npmjs.org/${pluginName}`
-      ).then((res) => res.json());
+          npmRegistryInfo = await fetch(
+            `https://registry.npmjs.org/${pluginName}`
+          ).then((res) => res.json());
+        } catch {
+          // eslint-disable-next-line no-console
+          console.log(`Fetching npm info failed for ${pluginName}.`);
+          return [];
+        }
 
-      const pluginNormalized =
-        pluginType === 'eslint-plugin'
-          ? await eslintPluginToNormalizedPlugin(
-              pluginName,
-              plugin,
-              packageJson,
-              npmDownloadsInfo,
-              npmRegistryInfo
-            )
-          : await emberTemplateLintPluginToNormalizedPlugin(
-              pluginName,
-              plugin,
-              packageJson,
-              npmDownloadsInfo,
-              npmRegistryInfo
-            );
+        const pluginNormalized =
+          pluginType === 'eslint-plugin'
+            ? await eslintPluginToNormalizedPlugin(
+                pluginName,
+                plugin,
+                packageJson,
+                npmDownloadsInfo,
+                npmRegistryInfo
+              )
+            : await emberTemplateLintPluginToNormalizedPlugin(
+                pluginName,
+                plugin,
+                packageJson,
+                npmDownloadsInfo,
+                npmRegistryInfo
+              );
 
-      if (!pluginNormalized) {
-        // Probably not an actual plugin.
-        return [];
-      }
+        if (!pluginNormalized) {
+          // Probably not an actual plugin.
+          return [];
+        }
 
-      return [pluginNormalized];
-    });
+        return [pluginNormalized];
+      })
+    );
 
     pluginsCreated.push(...pluginsCreatedForThisType);
   }
