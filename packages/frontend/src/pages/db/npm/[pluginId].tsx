@@ -34,7 +34,6 @@ const include = {
   },
   configs: true,
   keywords: true,
-  versions: true,
 };
 
 export async function getServerSideProps({ params }: { params: IQueryParam }) {

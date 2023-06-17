@@ -1,4 +1,4 @@
-import { fixPlugin, loadPluginsToDb } from '@/utils/normalize';
+import { fixPlugin } from '@/utils/normalize';
 import {
   Paper,
   Table,

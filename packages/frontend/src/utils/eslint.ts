@@ -97,3 +97,15 @@ export function ruleEntryToStringSeverity(
 
   return 'off';
 }
+
+export function normalizeFixable(
+  val: boolean | string | null | undefined
+): 'code' | 'whitespace' | null {
+  if (val === 'code' || val === true || val === 'true') {
+    return 'code';
+  }
+  if (val === 'whitespace') {
+    return 'whitespace';
+  }
+  return null;
+}

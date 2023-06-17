@@ -8,9 +8,11 @@ import { prisma } from '../server/db';
 import {
   getAllNamedOptions,
   getPluginPrefix,
+  normalizeFixable,
   ruleEntryToStringSeverity,
 } from './eslint';
 import { Prisma } from '@prisma/client';
+import { uniqueArrayItems } from './javascript';
 
 const IGNORED_KEYWORDS = new Set([
   'configs',
@@ -58,11 +60,6 @@ const pluginInclude = {
   keywords: true,
   versions: true,
 };
-
-function stringArrayToUnique(array: readonly string[]): readonly string[] {
-  return [...new Set(array)];
-}
-
 async function baseToNormalizedPlugin(
   pluginName: string,
   ecosystem: string,
@@ -81,7 +78,6 @@ async function baseToNormalizedPlugin(
     return undefined;
   }
 
-  // TODO: use createMany?
   const pluginCreated = await prisma.plugin.create({
     include: pluginInclude,
     data: {
@@ -115,7 +111,7 @@ async function baseToNormalizedPlugin(
       configs: { create: configs },
 
       keywords: {
-        create: stringArrayToUnique(packageJson.keywords || [])
+        create: uniqueArrayItems(packageJson.keywords || [])
           .filter((keyword) => !keywordsToIgnore.has(keyword))
           .map((keyword) => ({ name: keyword })),
       },
@@ -130,18 +126,6 @@ async function baseToNormalizedPlugin(
   });
 
   return pluginCreated;
-}
-
-function normalizeFixable(
-  val: boolean | string | null | undefined
-): 'code' | 'whitespace' | null {
-  if (val === 'code' || val === true || val === 'true') {
-    return 'code';
-  }
-  if (val === 'whitespace') {
-    return 'whitespace';
-  }
-  return null;
 }
 
 async function eslintPluginToNormalizedPlugin(
@@ -169,18 +153,18 @@ async function eslintPluginToNormalizedPlugin(
         type: rule.meta?.type || null,
         deprecated: rule.meta?.deprecated || false,
         replacedBy: {
-          create: stringArrayToUnique(rule.meta?.replacedBy || []).map(
-            (name) => ({ name })
-          ),
+          create: uniqueArrayItems(rule.meta?.replacedBy || []).map((name) => ({
+            name,
+          })),
         },
         // @ts-expect-error -- category not an official property
         category: rule.meta?.docs?.category || null,
         options: {
-          create: stringArrayToUnique(
-            getAllNamedOptions(rule.meta?.schema)
-          ).map((option) => ({
-            name: option,
-          })),
+          create: uniqueArrayItems(getAllNamedOptions(rule.meta?.schema)).map(
+            (option) => ({
+              name: option,
+            })
+          ),
         },
         // @ts-expect-error -- requiresTypeChecking not an official property
         requiresTypeChecking: rule.meta?.requiresTypeChecking || false,
