@@ -298,6 +298,8 @@ async function emberTemplateLintPluginToNormalizedPlugin(
 export async function loadPluginsToDb() {
   const pluginTypes = ['eslint-plugin', 'ember-template-lint-plugin'];
 
+  const pluginsCreated = [];
+
   for (const pluginType of pluginTypes) {
     const downloadPath = path.join(
       process.cwd(),
@@ -313,7 +315,9 @@ export async function loadPluginsToDb() {
         ? load<TSESLint.Linter.Plugin>(downloadPath)
         : load<EmberTemplateLint>(downloadPath);
 
-    await Object.entries(pluginRecord).flatMap(async ([pluginName, plugin]) => {
+    const pluginsCreatedForThisType = await Object.entries(
+      pluginRecord
+    ).flatMap(async ([pluginName, plugin]) => {
       const pathPackageJson = path.join(
         downloadPath,
         'node_modules',
@@ -358,7 +362,11 @@ export async function loadPluginsToDb() {
 
       return [pluginNormalized];
     });
+
+    pluginsCreated.push(...pluginsCreatedForThisType);
   }
+
+  return pluginsCreated;
 }
 
 export function fixRule(rule: Prisma.RuleGetPayload<{}>) {
@@ -387,4 +395,26 @@ function fixAnyDatesInObject(object: object): object {
       return [key, value];
     })
   );
+}
+
+/**
+ * https://www.prisma.io/docs/concepts/components/prisma-client/crud#deleting-all-data-with-raw-sql--truncate
+ */
+export async function deleteAllData() {
+  const tablenames = await prisma.$queryRaw<
+    Array<{ tablename: string }>
+  >`SELECT tablename FROM pg_tables WHERE schemaname='public'`;
+
+  const tables = tablenames
+    .map(({ tablename }) => tablename)
+    .filter((name) => name !== '_prisma_migrations')
+    .map((name) => `"public"."${name}"`)
+    .join(', ');
+
+  try {
+    await prisma.$executeRawUnsafe(`TRUNCATE TABLE ${tables} CASCADE;`);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.log({ error });
+  }
 }
