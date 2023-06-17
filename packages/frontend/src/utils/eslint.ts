@@ -54,10 +54,19 @@ export const EMOJI_CONFIGS = {
   warnings: EMOJI_WARNING,
 };
 
-export function getPluginPrefix(name: string): string {
-  return name.endsWith('/eslint-plugin')
-    ? name.split('/')[0] // Scoped plugin name like @my-scope/eslint-plugin.
-    : name.replace('eslint-plugin-', ''); // Unscoped name like eslint-plugin-foo or scoped name like @my-scope/eslint-plugin-foo.
+export function getPluginPrefix(name: string): string | undefined {
+  if (name.endsWith('/eslint-plugin')) {
+    // Scoped plugin name like @my-scope/eslint-plugin.
+    return name.split('/')[0];
+  }
+
+  if (name.includes('eslint-plugin-')) {
+    // Unscoped name like eslint-plugin-foo or scoped name like @my-scope/eslint-plugin-foo.
+    return name.replace('eslint-plugin-', '');
+  }
+
+  // base package name like eslint.
+  return undefined;
 }
 
 function severityNumberToString(severity: 0 | 1 | 2): 'off' | 'warn' | 'error' {

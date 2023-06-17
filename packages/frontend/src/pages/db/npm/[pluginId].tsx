@@ -173,7 +173,9 @@ export default function Plugin({
                     {relevantConfigEmojis.map(([config, emoji]) => (
                       <TableCell key={config} align="right">
                         {rule.ruleConfigs.some(
-                          (ruleConfig) => ruleConfig.config.name === config
+                          (ruleConfig) =>
+                            ruleConfig.config.name === config &&
+                            ruleConfig.severity !== 'off'
                         )
                           ? emoji
                           : ''}

@@ -47,7 +47,10 @@ async function installPackages(
 ) {
   const packageJson = {
     dependencies: Object.fromEntries(
-      packageInfos.map((pkg) => [pkg.name, `^${pkg.version}`])
+      packageInfos.map((pkg) => [
+        pkg.name,
+        pkg.version === 'latest' ? pkg.version : `^${pkg.version}`,
+      ])
     ),
   };
 

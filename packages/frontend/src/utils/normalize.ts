@@ -1,7 +1,7 @@
 import { EmberTemplateLint } from '@/utils/types';
 import { load } from '@lintbase/downloader';
 import type { TSESLint } from '@typescript-eslint/utils';
-import path from 'node:path';
+import path, { join } from 'node:path';
 import { PackageJson } from 'type-fest';
 import { readFileSync } from 'node:fs';
 import { prisma } from '../server/db';
@@ -13,6 +13,9 @@ import {
 } from './eslint';
 import { Prisma } from '@prisma/client';
 import { uniqueArrayItems } from './javascript';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
 
 const IGNORED_KEYWORDS = new Set([
   'configs',
@@ -58,7 +61,7 @@ const pluginInclude = {
   },
   configs: true,
   keywords: true,
-  versions: true,
+  // versions: true,
 };
 async function baseToNormalizedPlugin(
   pluginName: string,
@@ -116,12 +119,13 @@ async function baseToNormalizedPlugin(
           .map((keyword) => ({ name: keyword })),
       },
 
-      versions: {
-        create: Object.entries(npmRegistryInfo.time).map(([version, time]) => ({
-          version,
-          publishedAt: new Date(time),
-        })),
-      },
+      // TODO: too expensive when some plugins have thousands of versions.
+      // versions: {
+      //   create: Object.entries(npmRegistryInfo.time).map(([version, time]) => ({
+      //     version,
+      //     publishedAt: new Date(time),
+      //   })),
+      // },
     },
   });
 
@@ -214,7 +218,9 @@ async function eslintPluginToNormalizedPlugin(
           ([ruleName, ruleEntry]) => {
             const ruleId = pluginCreated.rules.find(
               (ruleCreated) =>
-                `${pluginPrefix}/${ruleCreated.name}` === ruleName
+                (pluginPrefix
+                  ? `${pluginPrefix}/${ruleCreated.name}`
+                  : ruleCreated.name) === ruleName
             )?.id;
             if (ruleId === undefined) {
               return [];
@@ -299,7 +305,11 @@ async function emberTemplateLintPluginToNormalizedPlugin(
 }
 
 export async function loadPluginsToDb() {
-  const pluginTypes = ['eslint-plugin', 'ember-template-lint-plugin'];
+  const pluginTypes = [
+    'eslint', // base package
+    'eslint-plugin',
+    'ember-template-lint-plugin',
+  ];
 
   const pluginsCreated = [];
 
@@ -313,10 +323,53 @@ export async function loadPluginsToDb() {
       pluginType
     );
 
-    const pluginRecord =
-      pluginType === 'eslint-plugin'
-        ? load<TSESLint.Linter.Plugin>(downloadPath)
-        : load<EmberTemplateLint>(downloadPath);
+    let pluginRecord;
+
+    switch (pluginType) {
+      case 'eslint-plugin': {
+        pluginRecord = load<TSESLint.Linter.Plugin>(downloadPath);
+        break;
+      }
+      case 'ember-template-lint-plugin': {
+        pluginRecord = load<EmberTemplateLint>(downloadPath);
+        break;
+      }
+      case 'eslint': {
+        pluginRecord = load<TSESLint.Linter.Plugin>(downloadPath);
+        const pathPackage = path.join(downloadPath, 'node_modules', pluginType);
+
+        // Rules/configs are not exported like they are with plugins. Have to manually retrieve them.
+
+        // Convert from LazyLoadingRuleMap to standard object.
+        pluginRecord.eslint.rules = Object.fromEntries(
+          // eslint-disable-next-line import/no-dynamic-require
+          require(join(pathPackage, 'lib', 'rules')).entries()
+        );
+
+        // ESLint core rules have a `recommended` property that we can build the config from.
+        pluginRecord.eslint.configs = {
+          recommended: {
+            rules: Object.fromEntries(
+              Object.entries(pluginRecord.eslint.rules).map(
+                ([ruleName, rule]) => [
+                  ruleName,
+                  typeof rule === 'object'
+                    ? rule.meta.docs?.recommended
+                      ? 'error'
+                      : 'off'
+                    : 'off',
+                ]
+              )
+            ),
+          },
+        };
+
+        break;
+      }
+      default: {
+        throw new Error(`Unknown plugin type: ${pluginType}`);
+      }
+    }
 
     const pluginsCreatedForThisType = await Promise.all(
       Object.entries(pluginRecord).flatMap(async ([pluginName, plugin]) => {
@@ -348,22 +401,23 @@ export async function loadPluginsToDb() {
           return [];
         }
 
-        const pluginNormalized =
-          pluginType === 'eslint-plugin'
-            ? await eslintPluginToNormalizedPlugin(
-                pluginName,
-                plugin,
-                packageJson,
-                npmDownloadsInfo,
-                npmRegistryInfo
-              )
-            : await emberTemplateLintPluginToNormalizedPlugin(
-                pluginName,
-                plugin,
-                packageJson,
-                npmDownloadsInfo,
-                npmRegistryInfo
-              );
+        const pluginNormalized = ['eslint-plugin', 'eslint'].includes(
+          pluginType
+        )
+          ? await eslintPluginToNormalizedPlugin(
+              pluginName,
+              plugin,
+              packageJson,
+              npmDownloadsInfo,
+              npmRegistryInfo
+            )
+          : await emberTemplateLintPluginToNormalizedPlugin(
+              pluginName,
+              plugin,
+              packageJson,
+              npmDownloadsInfo,
+              npmRegistryInfo
+            );
 
         if (!pluginNormalized) {
           // Probably not an actual plugin.
