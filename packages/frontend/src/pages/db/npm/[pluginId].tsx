@@ -17,6 +17,15 @@ import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { EMOJI_CONFIGS } from '@/utils/eslint';
 import { Prisma } from '@prisma/client';
 import Head from 'next/head';
+import EmojiHasSuggestions from '@/components/EmojiHasSuggestions';
+import EmojiFixable from '@/components/EmojiFixable';
+import EmojiRequiresTypeChecking from '@/components/EmojiRequiresTypeChecking';
+import EmojiTypeLayout from '@/components/EmojiTypeLayout';
+import EmojiTypeProblem from '@/components/EmojiTypeProblem';
+import EmojiTypeSuggestion from '@/components/EmojiTypeSuggestion';
+import EmojiOptions from '@/components/EmojiOptions';
+import EmojiDeprecated from '@/components/EmojiDeprecated';
+import EmojiType from '@/components/EmojiType';
 
 interface IQueryParam {
   pluginId: string;
@@ -94,7 +103,7 @@ export default function Plugin({
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell scope="row">{config.name}</TableCell>
-                    <TableCell align="right">
+                    <TableCell align="right" title={config.name}>
                       {
                         relevantConfigEmojis.find(
                           ([commonConfig]) => commonConfig === config.name
@@ -118,25 +127,25 @@ export default function Plugin({
                     Description
                   </TableCell>
                   <TableCell scope="col" align="right">
-                    🔧
+                    <EmojiFixable />
                   </TableCell>
                   <TableCell scope="col" align="right">
-                    💡
+                    <EmojiHasSuggestions />
                   </TableCell>
                   <TableCell scope="col" align="right">
-                    💭
+                    <EmojiRequiresTypeChecking />
                   </TableCell>
                   <TableCell scope="col" align="right">
-                    🗂️
+                    <EmojiType />
                   </TableCell>
                   <TableCell scope="col" align="right">
-                    ⚙️
+                    <EmojiOptions />
                   </TableCell>
                   <TableCell scope="col" align="right">
-                    ❌
+                    <EmojiDeprecated />
                   </TableCell>
                   {relevantConfigEmojis.map(([config, emoji]) => (
-                    <TableCell key={config} align="right">
+                    <TableCell key={config} align="right" title={config}>
                       {emoji}
                     </TableCell>
                   ))}
@@ -160,27 +169,35 @@ export default function Plugin({
                       )}
                     </TableCell>
                     <TableCell align="right">
-                      {rule.fixable ? '🔧' : ''}
+                      {rule.fixable ? <EmojiFixable /> : ''}
                     </TableCell>
                     <TableCell align="right">
-                      {rule.hasSuggestions ? '💡' : ''}
+                      {rule.hasSuggestions ? <EmojiHasSuggestions /> : ''}
                     </TableCell>
                     <TableCell align="right">
-                      {rule.requiresTypeChecking ? '💭' : ''}
+                      {rule.requiresTypeChecking ? (
+                        <EmojiRequiresTypeChecking />
+                      ) : (
+                        ''
+                      )}
                     </TableCell>
                     <TableCell align="right">
-                      {rule.type === 'layout' ? '📏' : ''}
-                      {rule.type === 'problem' ? '❗' : ''}
-                      {rule.type === 'suggestion' ? '📖' : ''}
+                      {rule.type === 'layout' ? <EmojiTypeLayout /> : ''}
+                      {rule.type === 'problem' ? <EmojiTypeProblem /> : ''}
+                      {rule.type === 'suggestion' ? (
+                        <EmojiTypeSuggestion />
+                      ) : (
+                        ''
+                      )}
                     </TableCell>
                     <TableCell align="right">
-                      {rule.options.length > 0 ? '⚙️' : ''}
+                      {rule.options.length > 0 ? <EmojiOptions /> : ''}
                     </TableCell>
                     <TableCell align="right">
-                      {rule.deprecated ? '❌' : ''}
+                      {rule.deprecated ? <EmojiDeprecated /> : ''}
                     </TableCell>
                     {relevantConfigEmojis.map(([config, emoji]) => (
-                      <TableCell key={config} align="right">
+                      <TableCell key={config} align="right" title={config}>
                         {rule.ruleConfigs.some(
                           (ruleConfig) =>
                             ruleConfig.config.name === config &&

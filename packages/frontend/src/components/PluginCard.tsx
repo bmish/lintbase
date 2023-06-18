@@ -50,7 +50,7 @@ export default function PluginCard({
                 plugin.rules.length > 1 ? 's' : ''
               } • `}
             {millify(plugin.countWeeklyDownloads)} Wkly{' '}
-            <GetAppIcon fontSize="inherit" />
+            <GetAppIcon fontSize="inherit" titleAccess="Downloads" />
           </Typography>
           {detailed &&
             plugin.keywords &&

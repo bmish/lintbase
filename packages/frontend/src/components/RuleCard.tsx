@@ -9,6 +9,14 @@ import {
 import { pluginToLinkUs, ruleToLinkUs } from '@/utils/dynamic-fields';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { Prisma } from '@prisma/client';
+import EmojiFixable from './EmojiFixable';
+import EmojiHasSuggestions from './EmojiHasSuggestions';
+import EmojiOptions from './EmojiOptions';
+import EmojiRequiresTypeChecking from './EmojiRequiresTypeChecking';
+import EmojiTypeLayout from './EmojiTypeLayout';
+import EmojiTypeProblem from './EmojiTypeProblem';
+import EmojiTypeSuggestion from './EmojiTypeSuggestion';
+import EmojiDeprecated from './EmojiDeprecated';
 
 export default function RuleCard({
   rule,
@@ -34,14 +42,14 @@ export default function RuleCard({
                 {rule.name}
               </Link>
             )}{' '}
-            {rule.fixable ? '🔧' : ''}
-            {rule.hasSuggestions ? '💡' : ''}
-            {rule.options.length > 0 ? '⚙️' : ''}
-            {rule.requiresTypeChecking ? '💭' : ''}
-            {rule.type === 'layout' ? '📏' : ''}
-            {rule.type === 'problem' ? '❗' : ''}
-            {rule.type === 'suggestion' ? '📖' : ''}
-            {rule.deprecated ? '❌' : ''}
+            {rule.fixable ? <EmojiFixable /> : ''}
+            {rule.hasSuggestions ? <EmojiHasSuggestions /> : ''}
+            {rule.options.length > 0 ? <EmojiOptions /> : ''}
+            {rule.requiresTypeChecking ? <EmojiRequiresTypeChecking /> : ''}
+            {rule.type === 'layout' ? <EmojiTypeLayout /> : ''}
+            {rule.type === 'problem' ? <EmojiTypeProblem /> : ''}
+            {rule.type === 'suggestion' ? <EmojiTypeSuggestion /> : ''}
+            {rule.deprecated ? <EmojiDeprecated /> : ''}
           </Typography>
           {detailed && rule.replacedBy.length > 0 && (
             <Typography sx={{ fontSize: 14 }} color="text.secondary">

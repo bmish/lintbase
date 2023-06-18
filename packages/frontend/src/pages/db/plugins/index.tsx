@@ -160,7 +160,7 @@ export default function Plugins({
                 </TableCell>
                 <TableCell scope="col" align="right">
                   Wkly
-                  <GetAppIcon fontSize="inherit" />
+                  <GetAppIcon fontSize="inherit" titleAccess="Downloads" />
                 </TableCell>
                 <TableCell scope="col" align="right">
                   Published

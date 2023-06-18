@@ -19,6 +19,15 @@ import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { Prisma } from '@prisma/client';
 import DatabaseNavigation from '@/components/DatabaseNavigation';
 import Head from 'next/head';
+import EmojiFixable from '@/components/EmojiFixable';
+import EmojiHasSuggestions from '@/components/EmojiHasSuggestions';
+import EmojiRequiresTypeChecking from '@/components/EmojiRequiresTypeChecking';
+import EmojiTypeLayout from '@/components/EmojiTypeLayout';
+import EmojiTypeProblem from '@/components/EmojiTypeProblem';
+import EmojiTypeSuggestion from '@/components/EmojiTypeSuggestion';
+import EmojiOptions from '@/components/EmojiOptions';
+import EmojiDeprecated from '@/components/EmojiDeprecated';
+import EmojiType from '@/components/EmojiType';
 
 const include = {
   plugin: true,
@@ -138,23 +147,23 @@ export default function Rules({
                 <TableCell scope="col" align="left">
                   Description
                 </TableCell>
-                <TableCell scope="col" align="right">
-                  🔧
+                <TableCell scope="col" align="right" title="Fixable">
+                  <EmojiFixable />
                 </TableCell>
                 <TableCell scope="col" align="right">
-                  💡
+                  <EmojiHasSuggestions />
                 </TableCell>
                 <TableCell scope="col" align="right">
-                  💭
+                  <EmojiRequiresTypeChecking />
                 </TableCell>
                 <TableCell scope="col" align="right">
-                  🗂️
+                  <EmojiType />
                 </TableCell>
                 <TableCell scope="col" align="right">
-                  ⚙️
+                  <EmojiOptions />
                 </TableCell>
                 <TableCell scope="col" align="right">
-                  ❌
+                  <EmojiDeprecated />
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -179,25 +188,29 @@ export default function Rules({
                     )}
                   </TableCell>
                   <TableCell align="right">
-                    {rule.fixable ? '🔧' : ''}
+                    {rule.fixable ? <EmojiFixable /> : ''}
                   </TableCell>
                   <TableCell align="right">
-                    {rule.hasSuggestions ? '💡' : ''}
+                    {rule.hasSuggestions ? <EmojiHasSuggestions /> : ''}
                   </TableCell>
                   <TableCell align="right">
-                    {rule.requiresTypeChecking ? '💭' : ''}
+                    {rule.requiresTypeChecking ? (
+                      <EmojiRequiresTypeChecking />
+                    ) : (
+                      ''
+                    )}
                   </TableCell>
 
                   <TableCell align="right">
-                    {rule.type === 'layout' ? '📏' : ''}
-                    {rule.type === 'problem' ? '❗' : ''}
-                    {rule.type === 'suggestion' ? '📖' : ''}
+                    {rule.type === 'layout' ? <EmojiTypeLayout /> : ''}
+                    {rule.type === 'problem' ? <EmojiTypeProblem /> : ''}
+                    {rule.type === 'suggestion' ? <EmojiTypeSuggestion /> : ''}
                   </TableCell>
                   <TableCell align="right">
-                    {rule.options.length > 0 ? '⚙️' : ''}
+                    {rule.options.length > 0 ? <EmojiOptions /> : ''}
                   </TableCell>
                   <TableCell align="right">
-                    {rule.deprecated ? '❌' : ''}
+                    {rule.deprecated ? <EmojiDeprecated /> : ''}
                   </TableCell>
                 </TableRow>
               ))}
