@@ -147,7 +147,11 @@ export default function Plugin({
                     <EmojiDeprecated />
                   </TableCell>
                   {relevantConfigEmojis.map(([config, emoji]) => (
-                    <TableCell key={config} align="right" title={config}>
+                    <TableCell
+                      key={config}
+                      align="right"
+                      title={`Config: ${config}`}
+                    >
                       {emoji}
                     </TableCell>
                   ))}
