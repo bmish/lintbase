@@ -16,6 +16,7 @@ import { ruleToLinkUs } from '@/utils/dynamic-fields';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { EMOJI_CONFIGS } from '@/utils/eslint';
 import { Prisma } from '@prisma/client';
+import Head from 'next/head';
 
 interface IQueryParam {
   pluginId: string;
@@ -65,6 +66,14 @@ export default function Plugin({
 
   return (
     <div className="bg-gray-100 h-full">
+      <Head>
+        <title>LintBase: {plugin.name}</title>
+        <meta
+          property="og:title"
+          content={`LintBase: ${plugin.name}`}
+          key="title"
+        />
+      </Head>
       <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto min-h-screen">
         {plugin && <PluginCard plugin={plugin} detailed={true}></PluginCard>}
 

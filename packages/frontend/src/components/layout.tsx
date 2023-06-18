@@ -26,6 +26,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         />
         <link rel="manifest" href="/site.webmanifest" />
         <title>LintBase</title>
+        <meta property="og:title" content="LintBase" key="title" />
       </Head>
       <Header />
       <main>{children}</main>

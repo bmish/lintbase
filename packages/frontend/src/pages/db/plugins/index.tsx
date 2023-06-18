@@ -20,6 +20,7 @@ import { format } from 'timeago.js';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import millify from 'millify';
 import DatabaseNavigation from '@/components/DatabaseNavigation';
+import Head from 'next/head';
 
 const include = {
   rules: true,
@@ -137,6 +138,10 @@ export default function Plugins({
 
   return (
     <div className="bg-gray-100 h-full">
+      <Head>
+        <title>LintBase Plugins</title>
+        <meta property="og:title" content="LintBase Plugins" key="title" />
+      </Head>
       <DatabaseNavigation />
       <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto min-h-screen">
         <TableContainer component={Paper}>

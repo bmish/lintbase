@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { Prisma } from '@prisma/client';
 import Link from 'next/link';
+import Head from 'next/head';
 
 const includePlugins = {
   rules: true,
@@ -132,6 +133,10 @@ export default function index({
 }) {
   return (
     <div className="bg-gray-100 h-full">
+      <Head>
+        <title>LintBase Database</title>
+        <meta property="og:title" content="LintBase Database" key="title" />
+      </Head>
       <DatabaseNavigation />
       <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto min-h-screen">
         <Grid container spacing={4} columns={{ xs: 2, sm: 4, md: 5 }}>

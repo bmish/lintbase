@@ -12,6 +12,7 @@ import {
   TableRow,
 } from '@mui/material';
 import { Prisma } from '@prisma/client';
+import Head from 'next/head';
 
 interface IQueryParam {
   ruleId: string;
@@ -46,6 +47,16 @@ export default function Rule({
 }) {
   return (
     <div className="bg-gray-100 h-full">
+      <Head>
+        <title>
+          LintBase: {rule.plugin.name}: {rule.name}
+        </title>
+        <meta
+          property="og:title"
+          content={`LintBase: ${rule.plugin.name}: ${rule.name}`}
+          key="title"
+        />
+      </Head>
       <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto min-h-screen">
         {rule && <RuleCard rule={rule} detailed={true}></RuleCard>}
 

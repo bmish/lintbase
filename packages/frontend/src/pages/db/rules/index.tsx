@@ -18,6 +18,7 @@ import { ruleToLinkUs } from '@/utils/dynamic-fields';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { Prisma } from '@prisma/client';
 import DatabaseNavigation from '@/components/DatabaseNavigation';
+import Head from 'next/head';
 
 const include = {
   plugin: true,
@@ -123,6 +124,10 @@ export default function Rules({
 
   return (
     <div className="bg-gray-100 h-full">
+      <Head>
+        <title>LintBase Rules</title>
+        <meta property="og:title" content="LintBase Rules" key="title" />
+      </Head>
       <DatabaseNavigation />
       <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto min-h-screen">
         <TableContainer component={Paper}>
