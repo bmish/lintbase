@@ -14,6 +14,22 @@ import millify from 'millify';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import { Prisma } from '@prisma/client';
 
+function getRepositoryLink(linkRepository: string | null): string | undefined {
+  if (!linkRepository) {
+    return undefined;
+  }
+  if (linkRepository.includes('github:') || /^\w+\/\w+$/.test(linkRepository)) {
+    return `https://github.com/${linkRepository.replace('github:', '')}`;
+  }
+  if (
+    linkRepository.startsWith('https://') &&
+    linkRepository.endsWith('.git')
+  ) {
+    return linkRepository.replace('.git', '');
+  }
+  return undefined;
+}
+
 // eslint-disable-next-line complexity
 export default function PluginCard({
   plugin,
@@ -24,6 +40,8 @@ export default function PluginCard({
   }>;
   detailed?: boolean;
 }) {
+  const repositoryLink = getRepositoryLink(plugin.linkRepository);
+
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
@@ -78,19 +96,11 @@ export default function PluginCard({
             </Button>
           )}
 
-          {(plugin.linkRepository?.includes('github:') ||
-            plugin.linkRepository?.match(/^\w+\/\w+$/)) &&
-            !plugin.linkHomepage?.includes('github.com') && (
-              <Button
-                size="small"
-                href={`https://github.com/${plugin.linkRepository.replace(
-                  'github:',
-                  ''
-                )}`}
-              >
-                Repository
-              </Button>
-            )}
+          {!plugin.linkHomepage?.includes('github.com') && repositoryLink && (
+            <Button size="small" href={repositoryLink}>
+              Repository
+            </Button>
+          )}
 
           {plugin.linkBugs && plugin.linkBugs !== plugin.linkHomepage && (
             <Button size="small" href={plugin.linkBugs}>
