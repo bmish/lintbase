@@ -26,6 +26,8 @@ import EmojiTypeSuggestion from '@/components/EmojiTypeSuggestion';
 import EmojiOptions from '@/components/EmojiOptions';
 import EmojiDeprecated from '@/components/EmojiDeprecated';
 import EmojiType from '@/components/EmojiType';
+import EmojiSeverityWarn from '@/components/EmojiSeverityWarn';
+import EmojiSeverityOff from '@/components/EmojiSeverityOff';
 
 interface IQueryParam {
   pluginId: string;
@@ -197,14 +199,34 @@ export default function Plugin({
                       {rule.deprecated ? <EmojiDeprecated /> : ''}
                     </TableCell>
                     {relevantConfigEmojis.map(([config, emoji]) => (
-                      <TableCell key={config} align="right" title={config}>
+                      <TableCell key={config} align="right">
                         {rule.ruleConfigs.some(
                           (ruleConfig) =>
                             ruleConfig.config.name === config &&
-                            ruleConfig.severity !== 'off'
-                        )
-                          ? emoji
-                          : ''}
+                            ruleConfig.severity === 'error'
+                        ) ? (
+                          <span title={`Errors in ${config}`}>{emoji}</span>
+                        ) : (
+                          ''
+                        )}
+                        {rule.ruleConfigs.some(
+                          (ruleConfig) =>
+                            ruleConfig.config.name === config &&
+                            ruleConfig.severity === 'warn'
+                        ) ? (
+                          <EmojiSeverityWarn config={config} />
+                        ) : (
+                          ''
+                        )}
+                        {rule.ruleConfigs.some(
+                          (ruleConfig) =>
+                            ruleConfig.config.name === config &&
+                            ruleConfig.severity === 'off'
+                        ) ? (
+                          <EmojiSeverityOff config={config} />
+                        ) : (
+                          ''
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>
