@@ -61,6 +61,15 @@ export async function getServerSideProps({
               contains: q,
             },
           },
+          {
+            keywords: {
+              some: {
+                name: {
+                  contains: q,
+                },
+              },
+            },
+          },
         ],
         ...keywordQuery,
       }
