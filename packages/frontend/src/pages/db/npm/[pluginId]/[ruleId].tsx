@@ -55,6 +55,9 @@ export default function Rule({
               <TableHead>
                 <TableRow>
                   <TableCell scope="col">Option</TableCell>
+                  <TableCell scope="col" align="right">
+                    Type
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -64,6 +67,9 @@ export default function Rule({
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell scope="row">{option.name}</TableCell>
+                    <TableCell scope="row" align="right">
+                      {option.type}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

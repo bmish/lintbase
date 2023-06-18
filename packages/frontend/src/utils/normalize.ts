@@ -12,7 +12,7 @@ import {
   ruleEntryToStringSeverity,
 } from './eslint';
 import { Prisma } from '@prisma/client';
-import { uniqueArrayItems } from './javascript';
+import { uniqueItems } from './javascript';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -114,7 +114,7 @@ async function baseToNormalizedPlugin(
       configs: { create: configs },
 
       keywords: {
-        create: uniqueArrayItems(packageJson.keywords || [])
+        create: uniqueItems(packageJson.keywords || [])
           .filter((keyword) => !keywordsToIgnore.has(keyword))
           .map((keyword) => ({ name: keyword })),
       },
@@ -157,18 +157,17 @@ async function eslintPluginToNormalizedPlugin(
         type: rule.meta?.type || null,
         deprecated: rule.meta?.deprecated || false,
         replacedBy: {
-          create: uniqueArrayItems(rule.meta?.replacedBy || []).map((name) => ({
+          create: uniqueItems(rule.meta?.replacedBy || []).map((name) => ({
             name,
           })),
         },
         // @ts-expect-error -- category not an official property
         category: rule.meta?.docs?.category || null,
         options: {
-          create: uniqueArrayItems(getAllNamedOptions(rule.meta?.schema)).map(
-            (option) => ({
-              name: option,
-            })
-          ),
+          create: uniqueItems(
+            getAllNamedOptions(rule.meta?.schema),
+            'name'
+          ).map((obj) => ({ name: obj.name, type: obj.type })),
         },
         // @ts-expect-error -- requiresTypeChecking not an official property
         requiresTypeChecking: rule.meta?.requiresTypeChecking || false,

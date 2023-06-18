@@ -4,6 +4,7 @@ CREATE TABLE "RuleOption" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
+    "type" TEXT,
     "ruleId" INTEGER NOT NULL,
 
     CONSTRAINT "RuleOption_pkey" PRIMARY KEY ("id")

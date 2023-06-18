@@ -8,7 +8,7 @@ import traverse from 'json-schema-traverse';
  */
 export function getAllNamedOptions(
   jsonSchema: JSONSchema.JSONSchema4 | undefined | null
-): readonly string[] {
+): readonly { name: string; type?: string }[] {
   if (!jsonSchema) {
     return [];
   }
@@ -19,10 +19,15 @@ export function getAllNamedOptions(
     );
   }
 
-  const options: string[] = [];
+  const options: { name: string; type?: string }[] = [];
   traverse(jsonSchema, (js: JSONSchema.JSONSchema4) => {
     if (js.properties) {
-      options.push(...Object.keys(js.properties));
+      options.push(
+        ...Object.entries(js.properties).map(([key, value]) => ({
+          name: key,
+          type: value.type ? value.type.toString() : undefined,
+        }))
+      );
     }
   });
   return options;
