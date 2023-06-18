@@ -10,6 +10,7 @@ import {
 import { prisma } from '@/server/db';
 import { Prisma } from '@prisma/client';
 import Link from 'next/link';
+import Footer from '@/components/Footer';
 
 export async function getServerSideProps() {
   const pluginsPopular = await prisma.plugin.findMany({
@@ -95,11 +96,7 @@ export default function index({
           </h1>
         </div>
       </section>
-      <section>
-        <div className="container mx-auto py-10 max-w-3xl text-center">
-          Copyright © 2023 LintBase
-        </div>
-      </section>
+      <Footer />
     </div>
   );
 }
