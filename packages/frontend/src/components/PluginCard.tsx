@@ -14,6 +14,7 @@ import millify from 'millify';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import { Prisma } from '@prisma/client';
 
+// eslint-disable-next-line complexity
 export default function PluginCard({
   plugin,
   detailed = false,
@@ -76,6 +77,20 @@ export default function PluginCard({
                 : 'Homepage'}
             </Button>
           )}
+
+          {(plugin.linkRepository?.includes('github:') ||
+            plugin.linkRepository?.match(/^\w+\/\w+$/)) &&
+            !plugin.linkHomepage?.includes('github.com') && (
+              <Button
+                size="small"
+                href={`https://github.com/${plugin.linkRepository.replace(
+                  'github:',
+                  ''
+                )}`}
+              >
+                Repository
+              </Button>
+            )}
 
           {plugin.linkBugs && plugin.linkBugs !== plugin.linkHomepage && (
             <Button size="small" href={plugin.linkBugs}>

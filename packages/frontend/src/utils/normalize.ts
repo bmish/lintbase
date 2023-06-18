@@ -101,6 +101,17 @@ async function baseToNormalizedPlugin(
       packageCreatedAt: new Date(npmRegistryInfo.time.created),
       packageUpdatedAt: new Date(npmRegistryInfo.time.modified),
 
+      linkRepository:
+        typeof packageJson.repository === 'object'
+          ? packageJson.repository.url
+          : typeof packageJson.repository === 'string'
+          ? packageJson.repository
+          : null,
+      repositoryDirectory:
+        typeof packageJson.repository === 'object'
+          ? packageJson.repository.directory
+          : null,
+
       linkHomepage: packageJson.homepage?.toString() || null,
       linkBugs:
         typeof packageJson.bugs === 'object'
@@ -108,6 +119,8 @@ async function baseToNormalizedPlugin(
           : typeof packageJson.bugs === 'string'
           ? packageJson.bugs
           : null,
+      emailBugs:
+        typeof packageJson.bugs === 'object' ? packageJson.bugs.email : null,
 
       rules: { create: rules },
 

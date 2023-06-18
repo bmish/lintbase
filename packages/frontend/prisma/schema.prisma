@@ -122,8 +122,11 @@ model Plugin {
   countStars           Int
   countWatching        Int
   countWeeklyDownloads Int
+  repositoryDirectory  String?
+  linkRepository       String?
   linkHomepage         String?
   linkBugs             String?
+  emailBugs            String?
   configs              Config[]
   keywords             PluginKeyword[]
   versions             PluginVersion[]

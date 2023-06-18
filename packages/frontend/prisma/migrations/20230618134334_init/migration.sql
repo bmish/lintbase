@@ -106,8 +106,11 @@ CREATE TABLE "Plugin" (
     "countStars" INTEGER NOT NULL,
     "countWatching" INTEGER NOT NULL,
     "countWeeklyDownloads" INTEGER NOT NULL,
+    "repositoryDirectory" TEXT,
+    "linkRepository" TEXT,
     "linkHomepage" TEXT,
     "linkBugs" TEXT,
+    "emailBugs" TEXT,
 
     CONSTRAINT "Plugin_pkey" PRIMARY KEY ("id")
 );
