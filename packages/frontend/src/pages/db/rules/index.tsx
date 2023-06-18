@@ -218,7 +218,7 @@ export default function Rules({
             <TableFooter>
               <TableRow>
                 <TablePagination
-                  rowsPerPageOptions={[5, 10, 25, 50]}
+                  rowsPerPageOptions={[10, 25, 50]}
                   count={ruleCount}
                   page={currentPage}
                   rowsPerPage={pageSize}
