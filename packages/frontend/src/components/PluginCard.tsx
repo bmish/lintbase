@@ -13,6 +13,7 @@ import {
 import millify from 'millify';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import { Prisma } from '@prisma/client';
+import { format } from 'timeago.js';
 
 function getRepositoryLink(linkRepository: string | null): string | undefined {
   if (!linkRepository) {
@@ -68,7 +69,13 @@ export default function PluginCard({
                 plugin.rules.length > 1 ? 's' : ''
               } • `}
             {millify(plugin.countWeeklyDownloads)} Wkly{' '}
-            <GetAppIcon fontSize="inherit" titleAccess="Downloads" />
+            <GetAppIcon fontSize="inherit" titleAccess="Downloads" /> •{' '}
+            <time
+              dateTime={new Date(plugin.packageUpdatedAt).toISOString()}
+              title={new Date(plugin.packageUpdatedAt).toUTCString()}
+            >
+              {format(new Date(plugin.packageUpdatedAt))}
+            </time>
           </Typography>
           {detailed &&
             plugin.keywords &&

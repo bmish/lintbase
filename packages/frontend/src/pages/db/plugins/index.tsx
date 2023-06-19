@@ -194,7 +194,12 @@ export default function Plugins({
                     {millify(plugin.countWeeklyDownloads)}
                   </TableCell>
                   <TableCell align="right">
-                    {format(new Date(plugin.packageUpdatedAt))}
+                    <time
+                      dateTime={new Date(plugin.packageUpdatedAt).toISOString()}
+                      title={new Date(plugin.packageUpdatedAt).toUTCString()}
+                    >
+                      {format(new Date(plugin.packageUpdatedAt))}
+                    </time>
                   </TableCell>
                 </TableRow>
               ))}
