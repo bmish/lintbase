@@ -29,11 +29,19 @@ async function downloadJSON<T>(url: string): Promise<T> {
 }
 
 async function searchPackages(searchText: string): Promise<PackageInfo[]> {
-  const data = await downloadJSON<NpmSearchResult>(
-    `https://registry.npmjs.org/-/v1/search?text=${searchText}&size=1000`
-  );
+  // https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md
+  const PAGE_SIZE = 250; // Max page size from npm.
+  const data: { package: PackageInfo }[] = [];
+  for (let page = 0; page < 4; page += 1) {
+    const dataPage = await downloadJSON<NpmSearchResult>(
+      `https://registry.npmjs.org/-/v1/search?text=${searchText}&size=${PAGE_SIZE}&from=${
+        page * PAGE_SIZE
+      }`
+    );
+    data.push(...dataPage.objects);
+  }
 
-  const packageInfos = data.objects.map((pkg) => ({
+  const packageInfos = data.map((pkg) => ({
     name: pkg.package.name,
     version: pkg.package.version,
   }));

@@ -14,6 +14,7 @@ import {
 import { Prisma } from '@prisma/client';
 import { uniqueItems } from './javascript';
 import { createRequire } from 'node:module';
+import pLimit from 'p-limit';
 
 const require = createRequire(import.meta.url);
 
@@ -386,61 +387,81 @@ export async function loadPluginsToDb() {
       }
     }
 
+    // Rate-limit to avoid hitting npm's rate limit.
+    const limitNpm = pLimit(10);
+
+    const npmInfo = await Promise.all(
+      Object.keys(pluginRecord).map((pluginName) =>
+        limitNpm(async () => {
+          let npmDownloadsInfo;
+          let npmRegistryInfo;
+          console.log('Fetching npm info for', pluginName);
+          try {
+            // Get info from npm registry.
+            // https://github.com/npm/registry/blob/master/docs/download-counts.md
+            npmDownloadsInfo = (await fetch(
+              `https://api.npmjs.org/downloads/point/last-week/${pluginName}`
+            ).then((res) => res.json())) as { downloads: number };
+
+            npmRegistryInfo = (await fetch(
+              `https://registry.npmjs.org/${pluginName}`
+            ).then((res) => res.json())) as NpmRegistryInfo;
+          } catch {
+            // eslint-disable-next-line no-console
+            console.log(`Fetching npm info failed for ${pluginName}.`);
+            return {};
+          }
+          return { npmDownloadsInfo, npmRegistryInfo };
+        })
+      )
+    );
+
     const pluginsCreatedForThisType = await Promise.all(
-      Object.entries(pluginRecord).flatMap(async ([pluginName, plugin]) => {
-        const pathPackageJson = path.join(
-          downloadPath,
-          'node_modules',
-          pluginName,
-          'package.json'
-        );
-        const packageJson = JSON.parse(
-          readFileSync(pathPackageJson, { encoding: 'utf8' })
-        ) as PackageJson;
+      Object.entries(pluginRecord).flatMap(
+        async ([pluginName, plugin], index) => {
+          const pathPackageJson = path.join(
+            downloadPath,
+            'node_modules',
+            pluginName,
+            'package.json'
+          );
+          const packageJson = JSON.parse(
+            readFileSync(pathPackageJson, { encoding: 'utf8' })
+          ) as PackageJson;
 
-        let npmDownloadsInfo;
-        let npmRegistryInfo;
-        try {
-          // Get info from npm registry.
-          // https://github.com/npm/registry/blob/master/docs/download-counts.md
-          npmDownloadsInfo = await fetch(
-            `https://api.npmjs.org/downloads/point/last-week/${pluginName}`
-          ).then((res) => res.json());
+          const { npmDownloadsInfo, npmRegistryInfo } = npmInfo[index];
+          if (!npmDownloadsInfo || !npmRegistryInfo) {
+            // eslint-disable-next-line no-console
+            console.log(`Skipping ${pluginName} due to missing npm info.`);
+            return [];
+          }
 
-          npmRegistryInfo = await fetch(
-            `https://registry.npmjs.org/${pluginName}`
-          ).then((res) => res.json());
-        } catch {
-          // eslint-disable-next-line no-console
-          console.log(`Fetching npm info failed for ${pluginName}.`);
-          return [];
+          const pluginNormalized = ['eslint-plugin', 'eslint'].includes(
+            pluginType
+          )
+            ? await eslintPluginToNormalizedPlugin(
+                pluginName,
+                plugin,
+                packageJson,
+                npmDownloadsInfo,
+                npmRegistryInfo
+              )
+            : await emberTemplateLintPluginToNormalizedPlugin(
+                pluginName,
+                plugin,
+                packageJson,
+                npmDownloadsInfo,
+                npmRegistryInfo
+              );
+
+          if (!pluginNormalized) {
+            // Probably not an actual plugin.
+            return [];
+          }
+
+          return [pluginNormalized];
         }
-
-        const pluginNormalized = ['eslint-plugin', 'eslint'].includes(
-          pluginType
-        )
-          ? await eslintPluginToNormalizedPlugin(
-              pluginName,
-              plugin,
-              packageJson,
-              npmDownloadsInfo,
-              npmRegistryInfo
-            )
-          : await emberTemplateLintPluginToNormalizedPlugin(
-              pluginName,
-              plugin,
-              packageJson,
-              npmDownloadsInfo,
-              npmRegistryInfo
-            );
-
-        if (!pluginNormalized) {
-          // Probably not an actual plugin.
-          return [];
-        }
-
-        return [pluginNormalized];
-      })
+      )
     );
 
     pluginsCreated.push(...pluginsCreatedForThisType);
