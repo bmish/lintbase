@@ -42,25 +42,69 @@ export default function index({
     <div className="bg-gray-100 h-full">
       <section className="bg-gray-800 text-white">
         <div className="container mx-auto py-20 max-w-3xl">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6 text-center">
+            Take your adoption of linting to the next level.
+          </h1>
+        </div>
+      </section>
+
+      <section className="container mx-auto py-12 px-6 max-w-3xl">
+        <section className="text-center">
+          <h2 className="text-2xl font-semibold text-gray-900">
+            Improve app quality
+          </h2>
+          <p className="mt-4 text-gray-700">
+            Automatically enforce best practices and detect common mistakes.
+          </p>
+        </section>
+
+        <section className="mt-12 text-center">
+          <h2 className="text-2xl font-semibold text-gray-900">
             Boost developer productivity
+          </h2>
+          <p className="mt-4 text-gray-700">
+            Supercharge your development workflow with instantaneous feedback
+            and shorter feedback loops.
+          </p>
+        </section>
+
+        <section className="mt-12 text-center">
+          <h2 className="text-2xl font-semibold text-gray-900">
+            Keep your app modern and up-to-date
+          </h2>
+          <p className="mt-4 text-gray-700">
+            Detect and automatically fix usage of deprecated syntax to
+            facilitate dependency, framework, and language upgrades.
+          </p>
+        </section>
+      </section>
+
+      <section className="bg-gray-800 text-white ">
+        <div className="container mx-auto py-20 max-w-3xl ">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
+            AI-powered lint builder
           </h1>
           <p className="text-xl sm:text-2xl mb-8">
-            Supercharge your development workflow with our powerful linting and
-            static analysis tools.
+            Design and build linting targeted at developers working in your
+            codebases or consumers of your libraries with the help of AI-powered
+            suggestions (coming soon).
           </p>
         </div>
       </section>
+
       <section>
         <div className="flex flex-col md:flex-row max-w-3xl mx-auto">
           <div className="md:w-1/2 py-12 md:py-24 bg-gray-100">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Comprehensive database
+              Comprehensive lint database
             </h2>
             <p className="text-gray-700 text-lg mb-6">
-              Discover the right lint plugins and rules tailored to your
-              project&apos;s needs. Easily navigate and explore a vast
-              collection of linting options to enhance your codebase.
+              Discover the right linting plugins and rules to apply to your
+              codebases.
+            </p>
+            <p className="text-gray-700 text-lg mb-6">
+              Identify codebases missing important lint coverage and gain other
+              unique insights (coming soon).
             </p>
             <Link
               href="/db"
@@ -89,13 +133,7 @@ export default function index({
           </div>
         </div>
       </section>
-      <section className="bg-gray-800 text-white">
-        <div className="container mx-auto py-20 max-w-3xl">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
-            More soon...
-          </h1>
-        </div>
-      </section>
+
       <Footer />
     </div>
   );
