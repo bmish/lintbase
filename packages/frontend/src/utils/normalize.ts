@@ -396,10 +396,12 @@ export async function loadPluginsToDb() {
         limitNpm(async () => {
           let npmDownloadsInfo;
           let npmRegistryInfo;
+          // eslint-disable-next-line no-console
           console.log('Fetching npm info for', pluginName);
           try {
             // Get info from npm registry.
             // https://github.com/npm/registry/blob/master/docs/download-counts.md
+            // TODO: consider using bulk queries to reduce number of requests.
             npmDownloadsInfo = (await fetch(
               `https://api.npmjs.org/downloads/point/last-week/${pluginName}`
             ).then((res) => res.json())) as { downloads: number };
