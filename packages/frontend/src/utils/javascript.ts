@@ -1,3 +1,16 @@
+export function asArray<T>(
+  value: T | readonly T[] | undefined | null
+): readonly T[] {
+  // eslint-disable-next-line unicorn/no-instanceof-array -- incorrect TypeScript narrowing
+  if (value instanceof Array) {
+    return value;
+  }
+  if (value === undefined || value === null) {
+    return [];
+  }
+  return [value];
+}
+
 export function uniqueItems<T>(
   array: readonly T[],
   basedOnProperty?: string

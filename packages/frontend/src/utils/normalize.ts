@@ -12,7 +12,7 @@ import {
   ruleEntryToStringSeverity,
 } from './eslint';
 import { Prisma } from '@prisma/client';
-import { uniqueItems } from './javascript';
+import { asArray, uniqueItems } from './javascript';
 import { createRequire } from 'node:module';
 import pLimit from 'p-limit';
 
@@ -174,7 +174,8 @@ async function eslintPluginToNormalizedPlugin(
         type: rule.meta?.type || null,
         deprecated: rule.meta?.deprecated || false,
         replacedBy: {
-          create: uniqueItems(rule.meta?.replacedBy || []).map((name) => ({
+          // asArray in case user has mistakenly added a string instead of an array.
+          create: uniqueItems(asArray(rule.meta?.replacedBy)).map((name) => ({
             name,
           })),
         },
