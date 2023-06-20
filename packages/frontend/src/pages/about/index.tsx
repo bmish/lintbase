@@ -1,3 +1,4 @@
+import Footer from '@/components/Footer';
 import {
   Button,
   Card,
@@ -49,6 +50,8 @@ export default function About() {
             </Card>
           </Grid>
         </Grid>
+
+        <Footer />
       </main>
     </div>
   );

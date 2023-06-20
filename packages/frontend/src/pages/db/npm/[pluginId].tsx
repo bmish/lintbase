@@ -28,6 +28,7 @@ import EmojiDeprecated from '@/components/EmojiDeprecated';
 import EmojiType from '@/components/EmojiType';
 import EmojiSeverityWarn from '@/components/EmojiSeverityWarn';
 import EmojiSeverityOff from '@/components/EmojiSeverityOff';
+import Footer from '@/components/Footer';
 
 interface IQueryParam {
   pluginId: string;
@@ -85,7 +86,7 @@ export default function Plugin({
           key="title"
         />
       </Head>
-      <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto min-h-screen">
+      <main className="flex-grow overflow-y-auto bg-gray-100 pt-8 px-6 mx-auto min-h-screen">
         {plugin && <PluginCard plugin={plugin} detailed={true}></PluginCard>}
 
         {plugin && plugin.configs.length > 0 && (
@@ -239,6 +240,8 @@ export default function Plugin({
             </Table>
           </TableContainer>
         )}
+
+        <Footer />
       </main>
     </div>
   );

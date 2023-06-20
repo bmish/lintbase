@@ -15,6 +15,7 @@ import {
 import { Prisma } from '@prisma/client';
 import Link from 'next/link';
 import Head from 'next/head';
+import Footer from '@/components/Footer';
 
 const includePlugins = {
   rules: true,
@@ -138,7 +139,7 @@ export default function index({
         <meta property="og:title" content="LintBase Database" key="title" />
       </Head>
       <DatabaseNavigation />
-      <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto min-h-screen">
+      <main className="flex-grow overflow-y-auto bg-gray-100 pt-8 px-6 mx-auto min-h-screen">
         <Grid container spacing={4} columns={{ xs: 2, sm: 4, md: 5 }}>
           <Grid item xs={2}>
             <Typography variant="h6" className="mb-4 text-center">
@@ -215,6 +216,8 @@ export default function index({
             </TableContainer>
           </Grid>
         </Grid>
+
+        <Footer />
       </main>
     </div>
   );

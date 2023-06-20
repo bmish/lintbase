@@ -28,6 +28,7 @@ import EmojiTypeSuggestion from '@/components/EmojiTypeSuggestion';
 import EmojiOptions from '@/components/EmojiOptions';
 import EmojiDeprecated from '@/components/EmojiDeprecated';
 import EmojiType from '@/components/EmojiType';
+import Footer from '@/components/Footer';
 
 const include = {
   plugin: true,
@@ -138,7 +139,7 @@ export default function Rules({
         <meta property="og:title" content="LintBase Rules" key="title" />
       </Head>
       <DatabaseNavigation />
-      <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto min-h-screen">
+      <main className="flex-grow overflow-y-auto bg-gray-100 pt-8 px-6 mx-auto min-h-screen">
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="rule list">
             <TableHead>
@@ -229,6 +230,8 @@ export default function Rules({
             </TableFooter>
           </Table>
         </TableContainer>
+
+        <Footer />
       </main>
     </div>
   );

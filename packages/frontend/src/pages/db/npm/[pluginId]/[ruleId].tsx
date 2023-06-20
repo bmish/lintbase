@@ -1,4 +1,5 @@
 /* eslint filenames/match-exported:"off",unicorn/filename-case:"off" */
+import Footer from '@/components/Footer';
 import RuleCard from '@/components/RuleCard';
 import { prisma } from '@/server/db';
 import { fixRule } from '@/utils/normalize';
@@ -57,7 +58,8 @@ export default function Rule({
           key="title"
         />
       </Head>
-      <main className="flex-grow overflow-y-auto bg-gray-100 py-8 px-6 mx-auto min-h-screen">
+
+      <main className="flex-grow overflow-y-auto bg-gray-100 pt-8 px-6 mx-auto min-h-screen">
         {rule && <RuleCard rule={rule} detailed={true}></RuleCard>}
 
         {rule && rule.options.length > 0 && (
@@ -87,6 +89,8 @@ export default function Rule({
             </Table>
           </TableContainer>
         )}
+
+        <Footer />
       </main>
     </div>
   );
