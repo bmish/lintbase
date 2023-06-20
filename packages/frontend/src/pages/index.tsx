@@ -42,41 +42,45 @@ export default function index({
     <div className="bg-gray-100 h-full">
       <section className="bg-gray-800 text-white">
         <div className="container mx-auto py-20 max-w-3xl">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6 text-center">
-            Take your adoption of linting to the next level.
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6 text-left">
+            Take your adoption of linting to the next level
           </h1>
+          <p className="text-xl sm:text-2xl mb-8">
+            Make developer tools like linting your superpower.
+          </p>
         </div>
       </section>
 
-      <section className="container mx-auto py-12 px-6 max-w-3xl">
-        <section className="text-center">
-          <h2 className="text-2xl font-semibold text-gray-900">
-            Improve app quality
-          </h2>
-          <p className="mt-4 text-gray-700">
-            Automatically enforce best practices and detect common mistakes.
-          </p>
-        </section>
+      <section className="container mx-auto py-20 px-6 max-w-3xl">
+        <div className="flex flex-col md:flex-row max-w-3xl mx-auto space-x-8">
+          <div className="md:w-1/3 bg-gray-100">
+            <h2 className="text-2xl font-semibold text-gray-900">
+              Improve app quality
+            </h2>
+            <p className="mt-4 text-gray-700">
+              Automatically enforce best practices and detect common mistakes.
+            </p>
+          </div>
+          <div className="md:w-1/3 bg-gray-100">
+            <h2 className="text-2xl font-semibold text-gray-900">
+              Boost developer productivity
+            </h2>
+            <p className="mt-4 text-gray-700">
+              Supercharge your development workflow with instant feedback and
+              shorter feedback loops.
+            </p>
+          </div>
 
-        <section className="mt-12 text-center">
-          <h2 className="text-2xl font-semibold text-gray-900">
-            Boost developer productivity
-          </h2>
-          <p className="mt-4 text-gray-700">
-            Supercharge your development workflow with instantaneous feedback
-            and shorter feedback loops.
-          </p>
-        </section>
-
-        <section className="mt-12 text-center">
-          <h2 className="text-2xl font-semibold text-gray-900">
-            Keep your app modern and up-to-date
-          </h2>
-          <p className="mt-4 text-gray-700">
-            Detect and automatically fix usage of deprecated syntax to
-            facilitate dependency, framework, and language upgrades.
-          </p>
-        </section>
+          <div className="md:w-1/3 bg-gray-100">
+            <h2 className="text-2xl font-semibold text-gray-900">
+              Keep your app modern and up-to-date
+            </h2>
+            <p className="mt-4 text-gray-700">
+              Detect and automatically fix usage of deprecated syntax to
+              facilitate dependency, framework, and language upgrades.
+            </p>
+          </div>
+        </div>
       </section>
 
       <section className="bg-gray-800 text-white ">
