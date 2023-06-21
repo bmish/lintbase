@@ -106,7 +106,7 @@ export default function index({
       <section className=" bg-gray-100 text-black ">
         <div className="container mx-auto py-20 px-8 md:px-0  max-w-3xl ">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
-            Gain unique insights
+            Unique quality insights
           </h1>
           <p className="text-xl sm:text-2xl mb-8 text-gray-700">
             Identify gaps in lint coverage. Better gauge the health of your
