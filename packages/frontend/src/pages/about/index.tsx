@@ -21,7 +21,7 @@ export default function About() {
           <Grid item xs={12} md={6}>
             <Card>
               <CardContent>
-                <Typography variant="h6" className="mb-4">
+                <Typography variant="h6" marginBottom={2}>
                   Message us
                 </Typography>
                 <p>
@@ -37,7 +37,7 @@ export default function About() {
           <Grid item xs={12} md={6}>
             <Card>
               <CardContent>
-                <Typography variant="h6" className="mb-4">
+                <Typography variant="h6" marginBottom={2}>
                   Signup for announcements
                 </Typography>
                 <p>Hear about our latest developments...</p>

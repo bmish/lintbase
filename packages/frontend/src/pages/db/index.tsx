@@ -142,7 +142,7 @@ export default function index({
       <main className="flex-grow overflow-y-auto bg-gray-100 pt-8 px-6 mx-auto min-h-screen">
         <Grid container spacing={4} columns={{ xs: 2, sm: 4, md: 5 }}>
           <Grid item xs={2}>
-            <Typography variant="h6" className="mb-4 text-center">
+            <Typography variant="h6" className="text-center" marginBottom={2}>
               Popular Plugins
             </Typography>
             <ul className="space-y-8">
@@ -154,7 +154,7 @@ export default function index({
             </ul>
           </Grid>
           <Grid item xs={2}>
-            <Typography variant="h6" className="mb-4 text-center">
+            <Typography variant="h6" className="text-center" marginBottom={2}>
               Recently Updated
             </Typography>
             <ul className="space-y-8">
@@ -166,7 +166,7 @@ export default function index({
             </ul>
           </Grid>
           <Grid item xs={2} md={1}>
-            <Typography variant="h6" className="mb-4 text-center">
+            <Typography variant="h6" className="text-center" marginBottom={2}>
               Top Plugin Keywords
             </Typography>
             <TableContainer component={Paper}>
@@ -189,7 +189,12 @@ export default function index({
               </Table>
             </TableContainer>
 
-            <Typography variant="h6" className="mb-4 text-center mt-8">
+            <Typography
+              variant="h6"
+              className="text-center"
+              marginBottom={2}
+              marginTop={4}
+            >
               Top Rule Categories
             </Typography>
             <TableContainer component={Paper}>
