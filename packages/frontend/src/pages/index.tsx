@@ -51,51 +51,6 @@ export default function index({
         </div>
       </section>
 
-      <section className="container mx-auto py-20 px-6 max-w-3xl">
-        <div className="flex flex-col md:flex-row max-w-3xl mx-auto space-x-8">
-          <div className="md:w-1/3 bg-gray-100">
-            <h2 className="text-2xl font-semibold text-gray-900">
-              Improve app quality
-            </h2>
-            <p className="mt-4 text-gray-700">
-              Automatically enforce best practices and detect common mistakes.
-            </p>
-          </div>
-          <div className="md:w-1/3 bg-gray-100">
-            <h2 className="text-2xl font-semibold text-gray-900">
-              Boost developer productivity
-            </h2>
-            <p className="mt-4 text-gray-700">
-              Supercharge your development workflow with instant feedback and
-              shorter feedback loops.
-            </p>
-          </div>
-
-          <div className="md:w-1/3 bg-gray-100">
-            <h2 className="text-2xl font-semibold text-gray-900">
-              Keep your app modern and up-to-date
-            </h2>
-            <p className="mt-4 text-gray-700">
-              Detect and automatically fix usage of deprecated syntax to
-              facilitate dependency, framework, and language upgrades.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-gray-800 text-white ">
-        <div className="container mx-auto py-20 max-w-3xl ">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
-            AI-powered lint builder
-          </h1>
-          <p className="text-xl sm:text-2xl mb-8">
-            Design and build linting targeted at developers working in your
-            codebases or consumers of your libraries with the help of AI-powered
-            suggestions (coming soon).
-          </p>
-        </div>
-      </section>
-
       <section>
         <div className="flex flex-col md:flex-row max-w-3xl mx-auto">
           <div className="md:w-1/2 py-12 md:py-24 bg-gray-100">
@@ -103,13 +58,10 @@ export default function index({
               Comprehensive lint database
             </h2>
             <p className="text-gray-700 text-lg mb-6">
-              Discover the right linting plugins and rules to apply to your
+              Discover powerful linting plugins and rules to apply to your
               codebases.
             </p>
-            <p className="text-gray-700 text-lg mb-6">
-              Identify codebases missing important lint coverage and gain other
-              unique insights (coming soon).
-            </p>
+
             <Link
               href="/db"
               className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
@@ -134,6 +86,61 @@ export default function index({
                 </TableBody>
               </Table>
             </TableContainer>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-gray-800 text-white ">
+        <div className="container mx-auto py-20 max-w-3xl ">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
+            AI-powered lint builder
+          </h1>
+          <p className="text-xl sm:text-2xl mb-8">
+            Design and build linting targeted at your developers or consumers of
+            your libraries, SDKs, APIs, etc with the help of AI-powered
+            suggestions (coming soon).
+          </p>
+        </div>
+      </section>
+
+      <section className=" bg-gray-100 text-black ">
+        <div className="container mx-auto py-20 max-w-3xl ">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
+            Gain unique insights
+          </h1>
+          <p className="text-xl sm:text-2xl mb-8 text-gray-700">
+            Identify gaps in lint coverage. Better gauge the health of your
+            codebases and lint tooling (coming soon).
+          </p>
+        </div>
+      </section>
+
+      <section className="bg-gray-800 text-white ">
+        <div className="container mx-auto py-20 max-w-3xl flex flex-col md:flex-row  space-x-8">
+          <div className="md:w-1/3">
+            <h2 className="text-2xl font-semibold">Improve app quality</h2>
+            <p className="mt-4 ">
+              Automatically enforce best practices and detect common mistakes.
+            </p>
+          </div>
+          <div className="md:w-1/3">
+            <h2 className="text-2xl font-semibold ">
+              Boost developer productivity
+            </h2>
+            <p className="mt-4 ">
+              Supercharge your development workflow with instant feedback and
+              shorter feedback loops.
+            </p>
+          </div>
+
+          <div className="md:w-1/3 ">
+            <h2 className="text-2xl font-semibold ">
+              Keep your app modern and up-to-date
+            </h2>
+            <p className="mt-4">
+              Detect and automatically fix usage of deprecated syntax to
+              facilitate dependency, framework, and language upgrades.
+            </p>
           </div>
         </div>
       </section>
