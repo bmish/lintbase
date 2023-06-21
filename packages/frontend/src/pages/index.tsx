@@ -41,7 +41,7 @@ export default function index({
   return (
     <div className="bg-gray-100 h-full">
       <section className="bg-gray-800 text-white">
-        <div className="container mx-auto py-20 max-w-3xl">
+        <div className="container mx-auto py-20 px-8 md:px-0 max-w-3xl">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6 text-left">
             Take your adoption of linting to the next level
           </h1>
@@ -53,7 +53,7 @@ export default function index({
 
       <section>
         <div className="flex flex-col md:flex-row max-w-3xl mx-auto">
-          <div className="md:w-1/2 py-12 md:py-24 bg-gray-100">
+          <div className="md:w-1/2 py-12 md:py-24 px-8 md:px-0  bg-gray-100">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Comprehensive lint database
             </h2>
@@ -69,7 +69,7 @@ export default function index({
               Explore
             </Link>
           </div>
-          <div className="md:w-1/2 py-12 md:py-24 md:px-12">
+          <div className="md:w-1/2 pb-12 md:py-24  md:px-12">
             <TableContainer component={Paper} className="max-w-xs mx-auto">
               <Table aria-label="plugin list">
                 <TableBody>
@@ -91,7 +91,7 @@ export default function index({
       </section>
 
       <section className="bg-gray-800 text-white ">
-        <div className="container mx-auto py-20 max-w-3xl ">
+        <div className="container mx-auto py-20 px-8 md:px-0  max-w-3xl ">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
             AI-powered lint builder
           </h1>
@@ -104,7 +104,7 @@ export default function index({
       </section>
 
       <section className=" bg-gray-100 text-black ">
-        <div className="container mx-auto py-20 max-w-3xl ">
+        <div className="container mx-auto py-20 px-8 md:px-0  max-w-3xl ">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
             Gain unique insights
           </h1>
@@ -116,7 +116,7 @@ export default function index({
       </section>
 
       <section className="bg-gray-800 text-white ">
-        <div className="container mx-auto py-20 max-w-3xl flex flex-col md:flex-row  space-x-8">
+        <div className="container mx-auto py-20 px-8 md:px-0 max-w-3xl flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8">
           <div className="md:w-1/3">
             <h2 className="text-2xl font-semibold">Improve app quality</h2>
             <p className="mt-4 ">
