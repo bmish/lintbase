@@ -128,7 +128,9 @@ export default function index({
                   ))}
                   <TableRow>
                     <TableCell align="center">
-                      <Link href="/db/plugins">See more top plugins...</Link>
+                      <Link href="/db/plugins" className="brand-blue">
+                        See more top plugins...
+                      </Link>
                     </TableCell>
                   </TableRow>
                 </TableBody>

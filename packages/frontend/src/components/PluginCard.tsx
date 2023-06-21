@@ -53,7 +53,11 @@ export default function PluginCard({
         <Typography variant="h5" component="div">
           {detailed && plugin.name}
           {!detailed && (
-            <Link href={pluginToLinkUs(plugin)} underline="none">
+            <Link
+              href={pluginToLinkUs(plugin)}
+              underline="none"
+              className="brand-blue"
+            >
               {plugin.name}
             </Link>
           )}
@@ -92,7 +96,11 @@ export default function PluginCard({
       {detailed && (
         <CardActions>
           {plugin.linkHomepage && (
-            <Button size="small" href={plugin.linkHomepage}>
+            <Button
+              size="small"
+              href={plugin.linkHomepage}
+              className="brand-blue"
+            >
               {['readme', 'github.com'].some(
                 (str) =>
                   plugin.linkHomepage &&
@@ -104,18 +112,22 @@ export default function PluginCard({
           )}
 
           {!plugin.linkHomepage?.includes('github.com') && repositoryLink && (
-            <Button size="small" href={repositoryLink}>
+            <Button size="small" href={repositoryLink} className="brand-blue">
               Repository
             </Button>
           )}
 
           {plugin.linkBugs && plugin.linkBugs !== plugin.linkHomepage && (
-            <Button size="small" href={plugin.linkBugs}>
+            <Button size="small" href={plugin.linkBugs} className="brand-blue">
               Bugs
             </Button>
           )}
 
-          <Button size="small" href={pluginToLinkPackageRegistry(plugin)}>
+          <Button
+            size="small"
+            href={pluginToLinkPackageRegistry(plugin)}
+            className="brand-blue"
+          >
             {pluginToLinkPackageRegistry(plugin).startsWith(
               'https://www.npmjs.com/'
             )

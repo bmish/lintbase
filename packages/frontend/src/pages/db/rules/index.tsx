@@ -178,6 +178,7 @@ export default function Rules({
                     <Link
                       href={ruleToLinkUs(rule, rule.plugin)}
                       underline="none"
+                      className="brand-blue"
                     >
                       {rule.name}
                     </Link>

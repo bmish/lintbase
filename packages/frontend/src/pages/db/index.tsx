@@ -179,6 +179,7 @@ export default function index({
                           href={`/db/plugins/?keyword=${encodeURIComponent(
                             obj.name
                           )}`}
+                          className="brand-blue"
                         >
                           {obj.name}
                         </Link>
@@ -209,6 +210,7 @@ export default function index({
                               href={`/db/rules/?category=${encodeURIComponent(
                                 obj.category
                               )}`}
+                              className="brand-blue"
                             >
                               {obj.category}
                             </Link>

@@ -26,6 +26,6 @@ body {
     rgb(var(--background-start-rgb));
 }
 
-a, .MuiLink-root, .MuiButton-text {
+.brand-blue {
   color: #2044E0; /* Same color as logo */
 }
