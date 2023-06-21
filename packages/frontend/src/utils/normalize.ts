@@ -1,7 +1,7 @@
 import { EmberTemplateLint } from '@/utils/types';
 import { load } from '@lintbase/downloader';
 import type { TSESLint } from '@typescript-eslint/utils';
-import path, { join } from 'node:path';
+import path from 'node:path';
 import { PackageJson } from 'type-fest';
 import { readFileSync } from 'node:fs';
 import { prisma } from '../server/db';
@@ -13,10 +13,7 @@ import {
 } from './eslint';
 import { Prisma } from '@prisma/client';
 import { asArray, uniqueItems } from './javascript';
-import { createRequire } from 'node:module';
 import pLimit from 'p-limit';
-
-const require = createRequire(import.meta.url);
 
 const IGNORED_KEYWORDS = new Set([
   'configs',
@@ -321,7 +318,13 @@ async function emberTemplateLintPluginToNormalizedPlugin(
   return pluginCreated;
 }
 
-export async function loadPluginsToDb() {
+export async function loadPluginsToDb(
+  eslintRules: Record<
+    string,
+    | TSESLint.RuleCreateFunction
+    | TSESLint.RuleModule<string, unknown[], TSESLint.RuleListener>
+  >
+) {
   const pluginTypes = [
     'eslint', // base package
     'eslint-plugin',
@@ -353,15 +356,10 @@ export async function loadPluginsToDb() {
       }
       case 'eslint': {
         pluginRecord = load<TSESLint.Linter.Plugin>(downloadPath);
-        const pathPackage = path.join(downloadPath, 'node_modules', pluginType);
 
         // Rules/configs are not exported like they are with plugins. Have to manually retrieve them.
 
-        // Convert from LazyLoadingRuleMap to standard object.
-        pluginRecord.eslint.rules = Object.fromEntries(
-          // eslint-disable-next-line import/no-dynamic-require
-          require(join(pathPackage, 'lib', 'rules')).entries()
-        );
+        pluginRecord.eslint.rules = eslintRules;
 
         // ESLint core rules have a `recommended` property that we can build the config from.
         pluginRecord.eslint.configs = {
@@ -373,8 +371,8 @@ export async function loadPluginsToDb() {
                   typeof rule === 'object'
                     ? rule.meta.docs?.recommended
                       ? 'error'
-                      : 'off'
-                    : 'off',
+                      : undefined
+                    : undefined,
                 ]
               )
             ),
