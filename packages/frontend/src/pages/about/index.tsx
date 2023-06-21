@@ -30,9 +30,7 @@ export default function About() {
                 </p>
               </CardContent>
               <CardActions>
-                <Button href="mailto:info@lintbase.com" className="brand-blue">
-                  Email
-                </Button>
+                <Button href="mailto:info@lintbase.com">Email</Button>
               </CardActions>
             </Card>
           </Grid>
@@ -45,10 +43,7 @@ export default function About() {
                 <p>Hear about our latest developments...</p>
               </CardContent>
               <CardActions>
-                <Button
-                  href="https://docs.google.com/forms/d/e/1FAIpQLSfc5yLA4DVIYsNAQVc-I-0By0fizM1gxJ96YjP23oVHg7Ku5A/viewform"
-                  className="brand-blue"
-                >
+                <Button href="https://docs.google.com/forms/d/e/1FAIpQLSfc5yLA4DVIYsNAQVc-I-0By0fizM1gxJ96YjP23oVHg7Ku5A/viewform">
                   Signup
                 </Button>
               </CardActions>

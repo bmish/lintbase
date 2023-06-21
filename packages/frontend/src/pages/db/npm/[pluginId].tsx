@@ -165,11 +165,7 @@ export default function Plugin({
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell scope="row">
-                      <Link
-                        href={ruleToLinkUs(rule, plugin)}
-                        underline="none"
-                        className="brand-blue"
-                      >
+                      <Link href={ruleToLinkUs(rule, plugin)} underline="none">
                         {rule.name}
                       </Link>
                     </TableCell>

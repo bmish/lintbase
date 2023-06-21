@@ -184,11 +184,7 @@ export default function Plugins({
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   <TableCell scope="row">
-                    <Link
-                      href={pluginToLinkUs(plugin)}
-                      underline="none"
-                      className="brand-blue"
-                    >
+                    <Link href={pluginToLinkUs(plugin)} underline="none">
                       {plugin.name}
                     </Link>
                   </TableCell>

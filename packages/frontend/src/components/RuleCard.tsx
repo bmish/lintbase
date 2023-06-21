@@ -38,11 +38,7 @@ export default function RuleCard({
           <Typography variant="h5" component="div">
             {detailed && rule.name}
             {!detailed && (
-              <Link
-                href={ruleToLinkUs(rule, rule.plugin)}
-                underline="none"
-                className="brand-blue"
-              >
+              <Link href={ruleToLinkUs(rule, rule.plugin)} underline="none">
                 {rule.name}
               </Link>
             )}{' '}
@@ -72,16 +68,12 @@ export default function RuleCard({
 
       {detailed && (
         <CardActions>
-          <Button
-            size="small"
-            href={pluginToLinkUs(rule.plugin)}
-            className="brand-blue"
-          >
+          <Button size="small" href={pluginToLinkUs(rule.plugin)}>
             plugin
           </Button>
 
           {rule.linkRuleDoc && (
-            <Button size="small" href={rule.linkRuleDoc} className="brand-blue">
+            <Button size="small" href={rule.linkRuleDoc}>
               Rule Doc
             </Button>
           )}
