@@ -2,6 +2,11 @@ import { loadPluginsToDb } from '@/utils/normalize';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function load(req: NextApiRequest, res: NextApiResponse) {
+  if (process.env.NODE_ENV !== 'development') {
+    res.status(404).end();
+    return;
+  }
+
   const { default: eslintRules } = await import(
     // @ts-expect-error -- ESLint doesn't have types.
     '../../../../downloader/tmp/npm/eslint/node_modules/eslint/lib/rules/index.js'
