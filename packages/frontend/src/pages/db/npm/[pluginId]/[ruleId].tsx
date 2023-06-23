@@ -14,6 +14,9 @@ import {
 } from '@mui/material';
 import { Prisma } from '@prisma/client';
 import Head from 'next/head';
+import { EMOJI_CONFIGS } from '@/utils/eslint';
+import EmojiSeverityWarn from '@/components/EmojiSeverityWarn';
+import EmojiSeverityOff from '@/components/EmojiSeverityOff';
 
 interface IQueryParam {
   ruleId: string;
@@ -23,6 +26,16 @@ const include = {
   plugin: true,
   options: true,
   replacedBy: true,
+  ruleConfigs: {
+    include: {
+      config: true,
+    },
+    orderBy: {
+      config: {
+        name: Prisma.SortOrder.asc,
+      },
+    },
+  },
 };
 
 export async function getServerSideProps({ params }: { params: IQueryParam }) {
@@ -46,6 +59,11 @@ export default function Rule({
 }: {
   data: { rule: Prisma.RuleGetPayload<{ include: typeof include }> };
 }) {
+  const relevantConfigEmojis = Object.entries(EMOJI_CONFIGS).filter(
+    ([config]) =>
+      rule.ruleConfigs.some((ruleConfig) => config === ruleConfig.config.name)
+  );
+
   return (
     <div className="bg-gray-100 h-full">
       <Head>
@@ -61,6 +79,44 @@ export default function Rule({
 
       <main className="flex-grow overflow-y-auto bg-gray-100 pt-8 px-6 mx-auto min-h-screen">
         {rule && <RuleCard rule={rule} detailed={true}></RuleCard>}
+
+        {rule && rule.ruleConfigs.length > 0 && (
+          <TableContainer component={Paper} className="mt-8">
+            <Table sx={{ minWidth: 650 }} aria-label="rule config list">
+              <TableHead>
+                <TableRow>
+                  <TableCell scope="col" colSpan={2}>
+                    Configuration
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rule.ruleConfigs.map((ruleConfig) => (
+                  <TableRow
+                    key={ruleConfig.config.name}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  >
+                    <TableCell scope="row">{ruleConfig.config.name}</TableCell>
+                    <TableCell align="right" title={ruleConfig.config.name}>
+                      {
+                        relevantConfigEmojis.find(
+                          ([commonConfig]) =>
+                            commonConfig === ruleConfig.config.name
+                        )?.[1]
+                      }
+                      {ruleConfig.severity === 'warn' && (
+                        <EmojiSeverityWarn config={ruleConfig.config.name} />
+                      )}
+                      {ruleConfig.severity === 'off' && (
+                        <EmojiSeverityOff config={ruleConfig.config.name} />
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
 
         {rule && rule.options.length > 0 && (
           <TableContainer component={Paper} className="mt-8">

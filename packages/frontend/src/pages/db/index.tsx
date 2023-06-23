@@ -34,14 +34,14 @@ export async function getServerSideProps() {
       include: includePlugins,
       take: 5,
       orderBy: {
-        countWeeklyDownloads: 'desc',
+        countWeeklyDownloads: Prisma.SortOrder.desc,
       },
     }),
     prisma.plugin.findMany({
       include: includePlugins,
       take: 5,
       orderBy: {
-        packageUpdatedAt: 'desc',
+        packageUpdatedAt: Prisma.SortOrder.desc,
       },
     }),
     prisma.pluginKeyword.groupBy({
@@ -57,7 +57,7 @@ export async function getServerSideProps() {
       },
       orderBy: {
         _count: {
-          name: 'desc',
+          name: Prisma.SortOrder.desc,
         },
       },
     }),
@@ -75,7 +75,7 @@ export async function getServerSideProps() {
       },
       orderBy: {
         _count: {
-          category: 'desc',
+          category: Prisma.SortOrder.desc,
         },
       },
     }),

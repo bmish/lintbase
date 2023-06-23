@@ -16,7 +16,7 @@ export async function getServerSideProps() {
   const pluginsPopular = await prisma.plugin.findMany({
     take: 5,
     orderBy: {
-      countWeeklyDownloads: 'desc',
+      countWeeklyDownloads: Prisma.SortOrder.desc,
     },
   });
 

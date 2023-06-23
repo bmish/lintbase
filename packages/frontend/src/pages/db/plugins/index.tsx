@@ -86,7 +86,7 @@ export async function getServerSideProps({
       skip: Number(currentPage) * Number(pageSize),
       where,
       orderBy: {
-        countWeeklyDownloads: 'desc',
+        countWeeklyDownloads: Prisma.SortOrder.desc,
       },
     }),
   ]);
