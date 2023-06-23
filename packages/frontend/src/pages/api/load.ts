@@ -7,10 +7,17 @@ export default async function load(req: NextApiRequest, res: NextApiResponse) {
     return;
   }
 
-  const { default: eslintRules } = await import(
-    // @ts-expect-error -- ESLint doesn't have types.
-    '../../../../downloader/tmp/npm/eslint/node_modules/eslint/lib/rules/index.js'
-  );
+  // TODO: temporary fix to prevent "module not found" error during Vercel deployment due to this import that only works locally.
+  const eslintRules = {
+    entries() {
+      return [];
+    },
+  };
+  // const { default: eslintRules } = await import(
+  //   // @ts-expect-error -- ESLint doesn't have types.
+  //   '../../../../downloader/tmp/npm/eslint/node_modules/eslint/lib/rules/index.js'
+  // );
+
   const pluginsCreated = await loadPluginsToDb(
     Object.fromEntries(eslintRules.entries()) // Convert from LazyLoadingRuleMap to standard object.
   );
