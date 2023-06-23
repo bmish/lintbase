@@ -24,7 +24,11 @@ interface IQueryParam {
 
 const include = {
   plugin: true,
-  options: true,
+  options: {
+    orderBy: {
+      name: Prisma.SortOrder.asc,
+    },
+  },
   replacedBy: true,
   ruleConfigs: {
     include: {

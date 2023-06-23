@@ -36,6 +36,9 @@ interface IQueryParam {
 
 const include = {
   rules: {
+    orderBy: {
+      name: Prisma.SortOrder.asc,
+    },
     include: {
       options: true,
       ruleConfigs: {
@@ -45,7 +48,11 @@ const include = {
       },
     },
   },
-  configs: true,
+  configs: {
+    orderBy: {
+      name: Prisma.SortOrder.asc,
+    },
+  },
   keywords: true,
 };
 
