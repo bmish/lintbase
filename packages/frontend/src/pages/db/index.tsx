@@ -29,6 +29,7 @@ export async function getServerSideProps() {
     pluginsRecentlyUpdated,
     commonPluginKeywords,
     commonRuleCategories,
+    linters,
   ] = await Promise.all([
     prisma.plugin.findMany({
       include: includePlugins,
@@ -79,6 +80,18 @@ export async function getServerSideProps() {
         },
       },
     }),
+    prisma.plugin.groupBy({
+      take: 5,
+      by: ['linter'],
+      _count: {
+        linter: true,
+      },
+      orderBy: {
+        _count: {
+          linter: Prisma.SortOrder.desc,
+        },
+      },
+    }),
   ]);
 
   const pluginsPopularFixed = pluginsPopular.map((plugin) => fixPlugin(plugin));
@@ -94,6 +107,7 @@ export async function getServerSideProps() {
         pluginsRecentlyUpdated: pluginsRecentlyUpdatedFixed,
         commonPluginKeywords,
         commonRuleCategories,
+        linters,
       },
     },
   };
@@ -105,6 +119,7 @@ export default function index({
     pluginsRecentlyUpdated,
     commonPluginKeywords,
     commonRuleCategories,
+    linters,
   },
 }: {
   data: {
@@ -128,6 +143,11 @@ export default function index({
         _count: {
           category: true;
         };
+      }>
+    >;
+    linters: Awaited<
+      Prisma.GetPluginGroupByPayload<{
+        by: ['linter'];
       }>
     >;
   };
@@ -211,6 +231,37 @@ export default function index({
                               )}`}
                             >
                               {obj.category}
+                            </Link>
+                          </TableCell>
+                        </TableRow>
+                      )
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            <Typography
+              variant="h6"
+              className="text-center"
+              marginBottom={2}
+              marginTop={4}
+            >
+              Linters
+            </Typography>
+            <TableContainer component={Paper}>
+              <Table aria-label="linters list">
+                <TableBody>
+                  {linters.map(
+                    (obj) =>
+                      obj.linter && (
+                        <TableRow key={obj.linter}>
+                          <TableCell scope="col">
+                            <Link
+                              href={`/db/plugins/?linter=${encodeURIComponent(
+                                obj.linter
+                              )}`}
+                            >
+                              {obj.linter}
                             </Link>
                           </TableCell>
                         </TableRow>

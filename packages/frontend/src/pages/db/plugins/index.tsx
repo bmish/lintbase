@@ -31,10 +31,10 @@ const include = {
 export async function getServerSideProps({
   query,
 }: {
-  query: { q: string; p: string; c: string; keyword: string };
+  query: { q: string; p: string; c: string; keyword: string; linter: string };
 }) {
   // Access individual query parameters
-  const { q, p, c, keyword } = query;
+  const { q, p, c, keyword, linter } = query;
   const currentPage = p ? Number(p) - 1 : 0;
   const pageSize = c ? Number(c) : 25;
 
@@ -46,6 +46,13 @@ export async function getServerSideProps({
               equals: keyword,
             },
           },
+        },
+      }
+    : {};
+  const linterQuery = linter
+    ? {
+        linter: {
+          equals: linter,
         },
       }
     : {};
@@ -73,8 +80,9 @@ export async function getServerSideProps({
           },
         ],
         ...keywordQuery,
+        ...linterQuery,
       }
-    : { ...keywordQuery };
+    : { ...keywordQuery, ...linterQuery };
 
   const [pluginCount, plugins] = await Promise.all([
     prisma.plugin.count({
