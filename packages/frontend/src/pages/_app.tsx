@@ -1,6 +1,10 @@
 /* eslint filenames/match-exported:"off" */
-// eslint-disable-next-line import/no-unassigned-import
-import '../styles/globals.css';
+import '../styles/globals.css'; // eslint-disable-line import/no-unassigned-import
+
+import '@fontsource/roboto/300.css'; // eslint-disable-line import/no-unassigned-import
+import '@fontsource/roboto/400.css'; // eslint-disable-line import/no-unassigned-import
+import '@fontsource/roboto/500.css'; // eslint-disable-line import/no-unassigned-import
+import '@fontsource/roboto/700.css'; // eslint-disable-line import/no-unassigned-import
 
 import type { AppProps } from 'next/app';
 import { AppType } from 'next/dist/shared/lib/utils';
