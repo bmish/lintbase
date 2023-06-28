@@ -37,7 +37,16 @@ export default function PluginCard({
   detailed = false,
 }: {
   plugin: Prisma.PluginGetPayload<{
-    include: { configs: true; keywords: true; rules: true };
+    include: {
+      configs: true;
+      keywords: true;
+      rules: true;
+      linter: {
+        include: {
+          ecosystem: true;
+        };
+      };
+    };
   }>;
   detailed?: boolean;
 }) {
@@ -47,8 +56,10 @@ export default function PluginCard({
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
         <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          {plugin.ecosystem === 'node' ? 'Node.js' : plugin.ecosystem} •{' '}
-          {plugin.linter === 'eslint' ? 'ESLint' : plugin.linter}
+          {plugin.linter.ecosystem.name === 'node'
+            ? 'Node.js'
+            : plugin.linter.ecosystem.name}{' '}
+          • {plugin.linter.name === 'eslint' ? 'ESLint' : plugin.linter.name}
         </Typography>
         <Typography variant="h5" component="div">
           {detailed && plugin.name}

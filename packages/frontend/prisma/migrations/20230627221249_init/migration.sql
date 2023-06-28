@@ -27,7 +27,6 @@ CREATE TABLE "Rule" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
-    "ecosystem" TEXT NOT NULL,
     "category" TEXT,
     "deprecated" BOOLEAN NOT NULL,
     "description" TEXT,
@@ -94,8 +93,6 @@ CREATE TABLE "Plugin" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
-    "ecosystem" TEXT NOT NULL,
-    "linter" TEXT NOT NULL,
     "description" TEXT,
     "packageCreatedAt" TIMESTAMP(3) NOT NULL,
     "packageUpdatedAt" TIMESTAMP(3) NOT NULL,
@@ -111,8 +108,34 @@ CREATE TABLE "Plugin" (
     "linkHomepage" TEXT,
     "linkBugs" TEXT,
     "emailBugs" TEXT,
+    "linterId" INTEGER NOT NULL,
 
     CONSTRAINT "Plugin_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Linter" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "name" TEXT NOT NULL,
+    "linkRepository" TEXT NOT NULL,
+    "linkHomepage" TEXT NOT NULL,
+    "ecosystemId" INTEGER NOT NULL,
+
+    CONSTRAINT "Linter_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Ecosystem" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "name" TEXT NOT NULL,
+    "linkRepository" TEXT NOT NULL,
+    "linkHomepage" TEXT NOT NULL,
+
+    CONSTRAINT "Ecosystem_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -137,7 +160,13 @@ CREATE UNIQUE INDEX "PluginKeyword_name_pluginId_key" ON "PluginKeyword"("name",
 CREATE UNIQUE INDEX "PluginVersion_version_pluginId_key" ON "PluginVersion"("version", "pluginId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Plugin_name_ecosystem_linter_key" ON "Plugin"("name", "ecosystem", "linter");
+CREATE UNIQUE INDEX "Plugin_name_linterId_key" ON "Plugin"("name", "linterId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Linter_name_ecosystemId_key" ON "Linter"("name", "ecosystemId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Ecosystem_name_key" ON "Ecosystem"("name");
 
 -- AddForeignKey
 ALTER TABLE "RuleOption" ADD CONSTRAINT "RuleOption_ruleId_fkey" FOREIGN KEY ("ruleId") REFERENCES "Rule"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -165,3 +194,9 @@ ALTER TABLE "PluginKeyword" ADD CONSTRAINT "PluginKeyword_pluginId_fkey" FOREIGN
 
 -- AddForeignKey
 ALTER TABLE "PluginVersion" ADD CONSTRAINT "PluginVersion_pluginId_fkey" FOREIGN KEY ("pluginId") REFERENCES "Plugin"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Plugin" ADD CONSTRAINT "Plugin_linterId_fkey" FOREIGN KEY ("linterId") REFERENCES "Linter"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Linter" ADD CONSTRAINT "Linter_ecosystemId_fkey" FOREIGN KEY ("ecosystemId") REFERENCES "Ecosystem"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -23,7 +23,15 @@ interface IQueryParam {
 }
 
 const include = {
-  plugin: true,
+  plugin: {
+    include: {
+      linter: {
+        include: {
+          ecosystem: true,
+        },
+      },
+    },
+  },
   options: {
     orderBy: {
       name: Prisma.SortOrder.asc,

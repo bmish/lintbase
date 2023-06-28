@@ -23,7 +23,11 @@ export default function RuleCard({
   detailed = false,
 }: {
   rule: Prisma.RuleGetPayload<{
-    include: { plugin: true; options: true; replacedBy: true };
+    include: {
+      plugin: { include: { linter: { include: { ecosystem: true } } } };
+      options: true;
+      replacedBy: true;
+    };
   }>;
   detailed?: boolean;
 }) {
@@ -31,8 +35,14 @@ export default function RuleCard({
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
         <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          {rule.ecosystem === 'node' ? 'Node.js' : rule.ecosystem} •{' '}
-          {rule.plugin.name}
+          {rule.plugin.linter.ecosystem.name === 'node'
+            ? 'Node.js'
+            : rule.plugin.linter.ecosystem.name}{' '}
+          •{' '}
+          {rule.plugin.linter.name === 'eslint'
+            ? 'ESLint'
+            : rule.plugin.linter.name}{' '}
+          • {rule.plugin.name}
         </Typography>
         <div className="mb-4">
           <Typography variant="h5" component="div">

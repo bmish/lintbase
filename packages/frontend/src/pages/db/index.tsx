@@ -21,6 +21,11 @@ const includePlugins = {
   rules: true,
   configs: true,
   keywords: true,
+  linter: {
+    include: {
+      ecosystem: true,
+    },
+  },
 };
 
 export async function getServerSideProps() {
@@ -80,15 +85,15 @@ export async function getServerSideProps() {
         },
       },
     }),
-    prisma.plugin.groupBy({
+    prisma.linter.groupBy({
       take: 5,
-      by: ['linter'],
+      by: ['name'],
       _count: {
-        linter: true,
+        name: true,
       },
       orderBy: {
         _count: {
-          linter: Prisma.SortOrder.desc,
+          name: Prisma.SortOrder.desc,
         },
       },
     }),
@@ -146,8 +151,11 @@ export default function index({
       }>
     >;
     linters: Awaited<
-      Prisma.GetPluginGroupByPayload<{
-        by: ['linter'];
+      Prisma.GetLinterGroupByPayload<{
+        by: ['name'];
+        _count: {
+          name: true;
+        };
       }>
     >;
   };
@@ -251,22 +259,19 @@ export default function index({
             <TableContainer component={Paper}>
               <Table aria-label="linters list">
                 <TableBody>
-                  {linters.map(
-                    (obj) =>
-                      obj.linter && (
-                        <TableRow key={obj.linter}>
-                          <TableCell scope="col">
-                            <Link
-                              href={`/db/plugins/?linter=${encodeURIComponent(
-                                obj.linter
-                              )}`}
-                            >
-                              {obj.linter}
-                            </Link>
-                          </TableCell>
-                        </TableRow>
-                      )
-                  )}
+                  {linters.map((obj) => (
+                    <TableRow key={obj.name}>
+                      <TableCell scope="col">
+                        <Link
+                          href={`/db/plugins/?linter=${encodeURIComponent(
+                            obj.name
+                          )}`}
+                        >
+                          {obj.name}
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </TableContainer>

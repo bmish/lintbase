@@ -66,8 +66,7 @@ const pluginInclude = {
 };
 async function baseToNormalizedPlugin(
   pluginName: string,
-  ecosystem: string,
-  linter: string,
+  linterId: number,
   packageJson: PackageJson,
   npmDownloadsInfo: { downloads: number },
   npmRegistryInfo: NpmRegistryInfo,
@@ -86,8 +85,7 @@ async function baseToNormalizedPlugin(
     include: pluginInclude,
     data: {
       name: pluginName,
-      ecosystem,
-      linter,
+      linterId,
       description: packageJson.description || null,
 
       // TODO: get real data from npm/github
@@ -151,7 +149,8 @@ async function eslintPluginToNormalizedPlugin(
   plugin: TSESLint.Linter.Plugin,
   packageJson: PackageJson,
   npmDownloadsInfo: { downloads: number },
-  npmRegistryInfo: NpmRegistryInfo
+  npmRegistryInfo: NpmRegistryInfo,
+  linterId: number
 ): Promise<
   Prisma.PluginGetPayload<{ include: typeof pluginInclude }> | undefined
 > {
@@ -167,7 +166,6 @@ async function eslintPluginToNormalizedPlugin(
         description: rule.meta?.docs?.description || null,
         fixable: normalizeFixable(rule.meta?.fixable),
         hasSuggestions: rule.meta?.hasSuggestions || false,
-        ecosystem: 'node',
         type: rule.meta?.type || null,
         deprecated: rule.meta?.deprecated || false,
         replacedBy: {
@@ -203,8 +201,7 @@ async function eslintPluginToNormalizedPlugin(
 
   const pluginCreated = await baseToNormalizedPlugin(
     pluginName,
-    'node',
-    'eslint',
+    linterId,
     packageJson,
     npmDownloadsInfo,
     npmRegistryInfo,
@@ -270,7 +267,8 @@ async function emberTemplateLintPluginToNormalizedPlugin(
   plugin: EmberTemplateLint,
   packageJson: PackageJson,
   npmDownloadsInfo: { downloads: number },
-  npmRegistryInfo: NpmRegistryInfo
+  npmRegistryInfo: NpmRegistryInfo,
+  linterId: number
 ): Promise<
   Prisma.PluginGetPayload<{ include: typeof pluginInclude }> | undefined
 > {
@@ -280,7 +278,6 @@ async function emberTemplateLintPluginToNormalizedPlugin(
       description: null, // TODO
       fixable: null, // TODO
       hasSuggestions: false, // Not supported.
-      ecosystem: 'node',
       type: null, // Not supported.
       deprecated: false, // Not supported.
       category: null, // Not supported.
@@ -303,8 +300,7 @@ async function emberTemplateLintPluginToNormalizedPlugin(
 
   const pluginCreated = await baseToNormalizedPlugin(
     pluginName,
-    'node',
-    'ember-template-lint',
+    linterId,
     packageJson,
     npmDownloadsInfo,
     npmRegistryInfo,
@@ -330,6 +326,41 @@ export async function loadPluginsToDb(
     'eslint-plugin',
     'ember-template-lint-plugin',
   ];
+
+  const ecosystem = await prisma.ecosystem.upsert({
+    where: { name: 'node' },
+    create: { name: 'node', linkRepository: 'TODO', linkHomepage: 'TODO' },
+    update: {},
+  });
+
+  const linterEslint = await prisma.linter.upsert({
+    where: { name_ecosystemId: { name: 'eslint', ecosystemId: ecosystem.id } },
+    create: {
+      name: 'eslint',
+      ecosystemId: ecosystem.id,
+      linkRepository: 'https://github.com/eslint/eslint',
+      linkHomepage: 'https://eslint.org/',
+    },
+    update: {},
+  });
+
+  const linterEmberTemplateLint = await prisma.linter.upsert({
+    where: {
+      name_ecosystemId: {
+        name: 'ember-template-lint',
+        ecosystemId: ecosystem.id,
+      },
+    },
+    create: {
+      name: 'ember-template-lint',
+      ecosystemId: ecosystem.id,
+      linkRepository:
+        'https://github.com/ember-template-lint/ember-template-lint',
+      linkHomepage:
+        'https://github.com/ember-template-lint/ember-template-lint',
+    },
+    update: {},
+  });
 
   const pluginsCreated = [];
 
@@ -445,14 +476,16 @@ export async function loadPluginsToDb(
                 plugin,
                 packageJson,
                 npmDownloadsInfo,
-                npmRegistryInfo
+                npmRegistryInfo,
+                linterEslint.id
               )
             : await emberTemplateLintPluginToNormalizedPlugin(
                 pluginName,
                 plugin,
                 packageJson,
                 npmDownloadsInfo,
-                npmRegistryInfo
+                npmRegistryInfo,
+                linterEmberTemplateLint.id
               );
 
           if (!pluginNormalized) {

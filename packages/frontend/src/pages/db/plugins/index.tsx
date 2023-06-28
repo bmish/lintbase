@@ -52,7 +52,9 @@ export async function getServerSideProps({
   const linterQuery = linter
     ? {
         linter: {
-          equals: linter,
+          name: {
+            equals: linter,
+          },
         },
       }
     : {};

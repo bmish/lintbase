@@ -54,6 +54,11 @@ const include = {
     },
   },
   keywords: true,
+  linter: {
+    include: {
+      ecosystem: true,
+    },
+  },
 };
 
 export async function getServerSideProps({ params }: { params: IQueryParam }) {

@@ -37,7 +37,6 @@ model Rule {
   createdAt            DateTime         @default(now())
   updatedAt            DateTime         @updatedAt
   name                 String
-  ecosystem            String
   category             String?
   deprecated           Boolean
   description          String?
@@ -110,8 +109,6 @@ model Plugin {
   createdAt            DateTime        @default(now())
   updatedAt            DateTime        @updatedAt
   name                 String
-  ecosystem            String
-  linter               String
   description          String?
   packageCreatedAt     DateTime
   packageUpdatedAt     DateTime
@@ -132,6 +129,32 @@ model Plugin {
   versions             PluginVersion[]
   rules                Rule[]
   ruleConfigs          RuleConfig[]
+  linterId             Int
+  linter               Linter          @relation(fields: [linterId], references: [id])
 
-  @@unique([name, ecosystem, linter])
+  @@unique([name, linterId])
+}
+
+model Linter {
+  id             Int       @id @default(autoincrement())
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  name           String
+  linkRepository String
+  linkHomepage   String
+  ecosystemId    Int
+  ecosystem      Ecosystem @relation(fields: [ecosystemId], references: [id])
+  plugins        Plugin[]
+
+  @@unique([name, ecosystemId])
+}
+
+model Ecosystem {
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  name           String   @unique
+  linkRepository String
+  linkHomepage   String
+  linters        Linter[]
 }
