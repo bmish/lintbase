@@ -17,6 +17,7 @@ import Head from 'next/head';
 import { EMOJI_CONFIGS } from '@/utils/eslint';
 import EmojiSeverityWarn from '@/components/EmojiSeverityWarn';
 import EmojiSeverityOff from '@/components/EmojiSeverityOff';
+import DatabaseNavigation from '@/components/DatabaseNavigation';
 
 interface IQueryParam {
   ruleId: string;
@@ -87,6 +88,8 @@ export default function Rule({
           key="title"
         />
       </Head>
+
+      <DatabaseNavigation />
 
       <main className="flex-grow overflow-y-auto bg-gray-100 pt-8 px-6 mx-auto min-h-screen">
         {rule && <RuleCard rule={rule} detailed={true}></RuleCard>}

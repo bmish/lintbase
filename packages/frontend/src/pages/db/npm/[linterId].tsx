@@ -29,6 +29,7 @@ import EmojiType from '@/components/EmojiType';
 import EmojiSeverityWarn from '@/components/EmojiSeverityWarn';
 import EmojiSeverityOff from '@/components/EmojiSeverityOff';
 import Footer from '@/components/Footer';
+import DatabaseNavigation from '@/components/DatabaseNavigation';
 
 interface IQueryParam {
   linterId: string;
@@ -97,6 +98,9 @@ export default function Linter({
           key="title"
         />
       </Head>
+
+      <DatabaseNavigation />
+
       <main className="flex-grow overflow-y-auto bg-gray-100 pt-8 px-6 mx-auto min-h-screen">
         {linter && <LinterCard linter={linter} detailed={true}></LinterCard>}
 
