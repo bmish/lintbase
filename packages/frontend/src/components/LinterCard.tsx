@@ -1,4 +1,5 @@
 import {
+  ecosystemToDisplayName,
   linterToLinkPackageRegistry,
   packageToLinkUs,
 } from '@/utils/dynamic-fields';
@@ -31,7 +32,6 @@ function getRepositoryLink(linkRepository: string | null): string | undefined {
   return undefined;
 }
 
-// eslint-disable-next-line complexity
 export default function LinterCard({
   linter,
   detailed = false,
@@ -56,10 +56,8 @@ export default function LinterCard({
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
         <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          {linter.package.ecosystem.name === 'node'
-            ? 'Node.js'
-            : linter.package.ecosystem.name}{' '}
-          • {linter.package.name === 'eslint' ? 'ESLint' : linter.package.name}
+          {ecosystemToDisplayName(linter.package.ecosystem)} •{' '}
+          {linter.package.name === 'eslint' ? 'ESLint' : linter.package.name}
         </Typography>
         <Typography variant="h5" component="div">
           {detailed && linter.package.name}

@@ -14,7 +14,10 @@ import { prisma } from '@/server/db';
 import React from 'react';
 import { useRouter } from 'next/router';
 import { fixAnyDatesInObject } from '@/utils/normalize';
-import { lintFrameworkToLinkUs } from '@/utils/dynamic-fields';
+import {
+  ecosystemToDisplayName,
+  lintFrameworkToLinkUs,
+} from '@/utils/dynamic-fields';
 import { Prisma } from '@prisma/client';
 import DatabaseNavigation from '@/components/DatabaseNavigation';
 import Head from 'next/head';
@@ -28,6 +31,7 @@ const include = {
     select: { linters: true },
   },
   linter: { include: { package: true } },
+  ecosystem: true,
 };
 
 export async function getServerSideProps({
@@ -146,6 +150,9 @@ export default function Linters({
                 <TableCell scope="col">Name</TableCell>
                 <TableCell scope="col">Description</TableCell>
                 <TableCell scope="col" align="right">
+                  Ecosystem
+                </TableCell>
+                <TableCell scope="col" align="right">
                   Plugins
                 </TableCell>
                 <TableCell scope="col" align="right">
@@ -171,8 +178,12 @@ export default function Linters({
                       {lintFramework.name}
                     </Link>
                   </TableCell>
+
                   <TableCell scope="row">
                     {lintFramework.linter?.package.description}
+                  </TableCell>
+                  <TableCell scope="row" align="right">
+                    {ecosystemToDisplayName(lintFramework.ecosystem)}
                   </TableCell>
                   <TableCell scope="row" align="right">
                     {lintFramework._count.linters}
