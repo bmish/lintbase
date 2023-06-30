@@ -13,10 +13,12 @@ model RuleOption {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  name      String
-  type      String?
-  ruleId    Int
-  rule      Rule     @relation(fields: [ruleId], references: [id])
+
+  name String
+  type String?
+
+  ruleId Int
+  rule   Rule @relation(fields: [ruleId], references: [id])
 
   @@unique([name, ruleId])
 }
@@ -25,17 +27,20 @@ model RuleReplacedBy {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  name      String
-  ruleId    Int
-  rule      Rule     @relation(fields: [ruleId], references: [id])
+
+  name String
+
+  ruleId Int
+  rule   Rule @relation(fields: [ruleId], references: [id])
 
   @@unique([name, ruleId])
 }
 
 model Rule {
-  id                   Int              @id @default(autoincrement())
-  createdAt            DateTime         @default(now())
-  updatedAt            DateTime         @updatedAt
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   name                 String
   category             String?
   deprecated           Boolean
@@ -45,73 +50,87 @@ model Rule {
   requiresTypeChecking Boolean
   type                 String?
   linkRuleDoc          String?
-  pluginId             Int
-  plugin               Plugin           @relation(fields: [pluginId], references: [id])
-  ruleConfigs          RuleConfig[]
-  options              RuleOption[]
-  replacedBy           RuleReplacedBy[]
 
-  @@unique([name, pluginId])
+  linterId Int
+  linter   Linter @relation(fields: [linterId], references: [id])
+
+  ruleConfigs RuleConfig[]
+  options     RuleOption[]
+  replacedBy  RuleReplacedBy[]
+
+  @@unique([name, linterId])
 }
 
 model Config {
-  id          Int          @id @default(autoincrement())
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  name        String
-  pluginId    Int
-  plugin      Plugin       @relation(fields: [pluginId], references: [id])
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+
+  linterId Int
+  linter   Linter @relation(fields: [linterId], references: [id])
+
   ruleConfigs RuleConfig[]
 
-  @@unique([name, pluginId])
+  @@unique([name, linterId])
 }
 
 model RuleConfig {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  severity  String
-  pluginId  Int
-  configId  Int
-  ruleId    Int
-  plugin    Plugin   @relation(fields: [pluginId], references: [id])
-  config    Config   @relation(fields: [configId], references: [id])
-  rule      Rule     @relation(fields: [ruleId], references: [id])
+
+  severity String
+
+  linterId Int
+  configId Int
+  ruleId   Int
+  linter   Linter @relation(fields: [linterId], references: [id])
+  config   Config @relation(fields: [configId], references: [id])
+  rule     Rule   @relation(fields: [ruleId], references: [id])
 
   @@unique([ruleId, configId])
 }
 
-model PluginKeyword {
+model PackageKeyword {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  name      String
-  pluginId  Int
-  plugin    Plugin   @relation(fields: [pluginId], references: [id])
 
-  @@unique([name, pluginId])
+  name String
+
+  packageId Int
+  package   Package @relation(fields: [packageId], references: [id])
+
+  @@unique([name, packageId])
 }
 
-model PluginVersion {
-  id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model PackageVersion {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   version     String
   publishedAt DateTime
-  pluginId    Int
-  plugin      Plugin   @relation(fields: [pluginId], references: [id])
 
-  @@unique([version, pluginId])
+  packageId Int
+  package   Package @relation(fields: [packageId], references: [id])
+
+  @@unique([version, packageId])
 }
 
-model Plugin {
-  id                   Int             @id @default(autoincrement())
-  createdAt            DateTime        @default(now())
-  updatedAt            DateTime        @updatedAt
-  name                 String
-  description          String?
-  packageCreatedAt     DateTime
-  packageUpdatedAt     DateTime
+// Package. Corresponds to an npm package or package from another ecosystem.
+model Package {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name             String
+  description      String?
+  packageCreatedAt DateTime
+  packageUpdatedAt DateTime
+
   countContributors    Int
   countForks           Int
   countIssues          Int
@@ -119,42 +138,78 @@ model Plugin {
   countStars           Int
   countWatching        Int
   countWeeklyDownloads Int
-  repositoryDirectory  String?
-  linkRepository       String?
-  linkHomepage         String?
-  linkBugs             String?
-  emailBugs            String?
-  configs              Config[]
-  keywords             PluginKeyword[]
-  versions             PluginVersion[]
-  rules                Rule[]
-  ruleConfigs          RuleConfig[]
-  linterId             Int
-  linter               Linter          @relation(fields: [linterId], references: [id])
 
-  @@unique([name, linterId])
+  repositoryDirectory String?
+  linkRepository      String?
+  linkHomepage        String?
+  linkBugs            String?
+  emailBugs           String?
+
+  keywords PackageKeyword[]
+  versions PackageVersion[]
+
+  ecosystemId Int
+  ecosystem   Ecosystem @relation(fields: [ecosystemId], references: [id])
+
+  // A package might be a linter.
+  linter   Linter?
+  linterId Int?    @unique
+
+  @@unique([name, ecosystemId])
 }
 
+// Like core eslint or an eslint plugin.
 model Linter {
-  id             Int       @id @default(autoincrement())
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  name           String
-  linkRepository String
-  linkHomepage   String
-  ecosystemId    Int
-  ecosystem      Ecosystem @relation(fields: [ecosystemId], references: [id])
-  plugins        Plugin[]
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  rules       Rule[]
+  ruleConfigs RuleConfig[]
+  configs     Config[]
+
+  // Linting framework this linter uses.
+  lintFrameworkId Int
+  lintFramework   LintFramework @relation("LintFrameworkLinters", fields: [lintFrameworkId], references: [id])
+
+  // Opposite relation if this is the linter for the framework core.
+  lintFrameworkForCore LintFramework? @relation("LintFrameworkForCore")
+
+  // Package for the linter.
+  packageId Int     @unique
+  package   Package @relation(fields: [packageId], references: [id])
+}
+
+model LintFramework {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+
+  ecosystemId Int
+  ecosystem   Ecosystem @relation(fields: [ecosystemId], references: [id])
+
+  // Linters using this linting framework.
+  linters Linter[] @relation("LintFrameworkLinters")
+
+  // Linter for the framework core.
+  linterId Int?    @unique
+  linter   Linter? @relation("LintFrameworkForCore", fields: [linterId], references: [id])
 
   @@unique([name, ecosystemId])
 }
 
 model Ecosystem {
-  id             Int      @id @default(autoincrement())
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  name           String   @unique
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name           String @unique
+  description    String
   linkRepository String
   linkHomepage   String
-  linters        Linter[]
+
+  packages      Package[]
+  LintFramework LintFramework[]
 }

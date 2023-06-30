@@ -1,4 +1,4 @@
-import { fixPlugin } from '@/utils/normalize';
+import { fixAnyDatesInObject } from '@/utils/normalize';
 import {
   Paper,
   Table,
@@ -13,29 +13,34 @@ import Link from 'next/link';
 import Footer from '@/components/Footer';
 
 export async function getServerSideProps() {
-  const pluginsPopular = await prisma.plugin.findMany({
+  const lintersPopular = await prisma.linter.findMany({
     take: 5,
+    include: { package: true },
     orderBy: {
-      countWeeklyDownloads: Prisma.SortOrder.desc,
+      package: {
+        countWeeklyDownloads: Prisma.SortOrder.desc,
+      },
     },
   });
 
-  const pluginsPopularFixed = pluginsPopular.map((plugin) => fixPlugin(plugin));
+  const lintersPopularFixed = lintersPopular.map((linter) =>
+    fixAnyDatesInObject(linter)
+  );
 
   return {
     props: {
       data: {
-        pluginsPopular: pluginsPopularFixed,
+        lintersPopular: lintersPopularFixed,
       },
     },
   };
 }
 
 export default function index({
-  data: { pluginsPopular },
+  data: { lintersPopular },
 }: {
   data: {
-    pluginsPopular: Prisma.PluginGetPayload<{}>[];
+    lintersPopular: Prisma.LinterGetPayload<{ include: { package: true } }>[];
   };
 }) {
   return (
@@ -73,9 +78,9 @@ export default function index({
             <TableContainer component={Paper} className="max-w-xs mx-auto">
               <Table aria-label="plugin list">
                 <TableBody>
-                  {pluginsPopular.map((p) => (
-                    <TableRow key={p.name}>
-                      <TableCell scope="col">{p.name}</TableCell>
+                  {lintersPopular.map((l) => (
+                    <TableRow key={l.package.name}>
+                      <TableCell scope="col">{l.package.name}</TableCell>
                     </TableRow>
                   ))}
                   <TableRow>

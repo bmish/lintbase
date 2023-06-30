@@ -1,15 +1,23 @@
-import { Plugin as PrismaPlugin, Rule as PrismaRule } from '@prisma/client';
+import {
+  Package as PrismaPackage,
+  Rule as PrismaRule,
+  LintFramework as PrismaLintFramework,
+} from '@prisma/client';
 
-export function ruleToLinkUs(rule: PrismaRule, plugin: PrismaPlugin) {
-  return `/db/npm/${encodeURIComponent(plugin.name)}/${encodeURIComponent(
-    rule.name
-  )}`;
+export function ruleToLinkUs(rule: PrismaRule, package_: PrismaPackage) {
+  return `/db/npm/${encodeURIComponent(
+    package_.name
+  )}/rules/${encodeURIComponent(rule.name)}`;
 }
 
-export function pluginToLinkUs(plugin: PrismaPlugin) {
-  return `/db/npm/${encodeURIComponent(plugin.name)}`;
+export function packageToLinkUs(package_: PrismaPackage) {
+  return `/db/npm/${encodeURIComponent(package_.name)}`;
 }
 
-export function pluginToLinkPackageRegistry(plugin: PrismaPlugin) {
-  return `https://www.npmjs.com/package/${encodeURIComponent(plugin.name)}`;
+export function linterToLinkPackageRegistry(package_: PrismaPackage) {
+  return `https://www.npmjs.com/package/${encodeURIComponent(package_.name)}`;
+}
+
+export function lintFrameworkToLinkUs(linter: PrismaLintFramework) {
+  return `/db/plugins?linter=${encodeURIComponent(linter.name)}`;
 }

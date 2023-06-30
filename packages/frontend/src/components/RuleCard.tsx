@@ -6,7 +6,7 @@ import {
   Link,
   Typography,
 } from '@mui/material';
-import { pluginToLinkUs, ruleToLinkUs } from '@/utils/dynamic-fields';
+import { packageToLinkUs, ruleToLinkUs } from '@/utils/dynamic-fields';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { Prisma } from '@prisma/client';
 import EmojiFixable from './EmojiFixable';
@@ -24,7 +24,12 @@ export default function RuleCard({
 }: {
   rule: Prisma.RuleGetPayload<{
     include: {
-      plugin: { include: { linter: { include: { ecosystem: true } } } };
+      linter: {
+        include: {
+          lintFramework: true;
+          package: { include: { ecosystem: true } };
+        };
+      };
       options: true;
       replacedBy: true;
     };
@@ -35,20 +40,23 @@ export default function RuleCard({
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
         <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          {rule.plugin.linter.ecosystem.name === 'node'
+          {rule.linter.package.ecosystem.name === 'node'
             ? 'Node.js'
-            : rule.plugin.linter.ecosystem.name}{' '}
+            : rule.linter.package.ecosystem.name}{' '}
           •{' '}
-          {rule.plugin.linter.name === 'eslint'
+          {rule.linter.lintFramework.name === 'eslint'
             ? 'ESLint'
-            : rule.plugin.linter.name}{' '}
-          • {rule.plugin.name}
+            : rule.linter.lintFramework.name}{' '}
+          • {rule.linter.lintFramework.name}
         </Typography>
         <div className="mb-4">
           <Typography variant="h5" component="div">
             {detailed && rule.name}
             {!detailed && (
-              <Link href={ruleToLinkUs(rule, rule.plugin)} underline="none">
+              <Link
+                href={ruleToLinkUs(rule, rule.linter.package)}
+                underline="none"
+              >
                 {rule.name}
               </Link>
             )}{' '}
@@ -78,7 +86,7 @@ export default function RuleCard({
 
       {detailed && (
         <CardActions>
-          <Button size="small" href={pluginToLinkUs(rule.plugin)}>
+          <Button size="small" href={packageToLinkUs(rule.linter.package)}>
             plugin
           </Button>
 

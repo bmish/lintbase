@@ -2,7 +2,7 @@
 import Footer from '@/components/Footer';
 import RuleCard from '@/components/RuleCard';
 import { prisma } from '@/server/db';
-import { fixRule } from '@/utils/normalize';
+import { fixAnyDatesInObject } from '@/utils/normalize';
 import {
   Paper,
   Table,
@@ -23,13 +23,12 @@ interface IQueryParam {
 }
 
 const include = {
-  plugin: {
+  linter: {
     include: {
-      linter: {
-        include: {
-          ecosystem: true,
-        },
+      package: {
+        include: { ecosystem: true },
       },
+      lintFramework: true,
     },
   },
   options: {
@@ -59,7 +58,7 @@ export async function getServerSideProps({ params }: { params: IQueryParam }) {
     },
     include,
   });
-  const ruleFixed = fixRule(rule);
+  const ruleFixed = fixAnyDatesInObject(rule);
 
   return {
     props: { data: { rule: ruleFixed } },
@@ -80,11 +79,11 @@ export default function Rule({
     <div className="bg-gray-100 h-full">
       <Head>
         <title>
-          LintBase: {rule.plugin.name}: {rule.name}
+          LintBase: {rule.linter.package.name}: {rule.name}
         </title>
         <meta
           property="og:title"
-          content={`LintBase: ${rule.plugin.name}: ${rule.name}`}
+          content={`LintBase: ${rule.linter.package.name}: ${rule.name}`}
           key="title"
         />
       </Head>

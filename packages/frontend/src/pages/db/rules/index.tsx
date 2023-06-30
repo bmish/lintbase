@@ -11,7 +11,7 @@ import {
   TableRow,
 } from '@mui/material';
 import { prisma } from '@/server/db';
-import { fixRule } from '@/utils/normalize';
+import { fixAnyDatesInObject } from '@/utils/normalize';
 import React from 'react';
 import { useRouter } from 'next/router';
 import { ruleToLinkUs } from '@/utils/dynamic-fields';
@@ -31,7 +31,11 @@ import EmojiType from '@/components/EmojiType';
 import Footer from '@/components/Footer';
 
 const include = {
-  plugin: true,
+  linter: {
+    include: {
+      package: true,
+    },
+  },
   options: true,
 };
 
@@ -79,7 +83,7 @@ export async function getServerSideProps({
     }),
   ]);
 
-  const rulesFixed = await rules.map((rule) => fixRule(rule));
+  const rulesFixed = await rules.map((rule) => fixAnyDatesInObject(rule));
 
   return {
     props: { data: { rules: rulesFixed, ruleCount, currentPage, pageSize } },
@@ -171,12 +175,12 @@ export default function Rules({
             <TableBody>
               {rules.map((rule) => (
                 <TableRow
-                  key={`${rule.plugin.name}/${rule.name}`}
+                  key={`${rule.linter.package.name}/${rule.name}`}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   <TableCell scope="row">
                     <Link
-                      href={ruleToLinkUs(rule, rule.plugin)}
+                      href={ruleToLinkUs(rule, rule.linter.package)}
                       underline="none"
                     >
                       {rule.name}

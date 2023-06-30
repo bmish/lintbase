@@ -1,4 +1,4 @@
-import { loadPluginsToDb } from '@/utils/normalize';
+import { loadLintersToDb } from '@/utils/normalize';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function load(req: NextApiRequest, res: NextApiResponse) {
@@ -18,8 +18,8 @@ export default async function load(req: NextApiRequest, res: NextApiResponse) {
   //   '../../../../downloader/tmp/npm/eslint/node_modules/eslint/lib/rules/index.js'
   // );
 
-  const pluginsCreated = await loadPluginsToDb(
+  const lintersCreated = await loadLintersToDb(
     Object.fromEntries(eslintRules.entries()) // Convert from LazyLoadingRuleMap to standard object.
   );
-  res.status(200).json({ pluginCreatedCount: pluginsCreated.length });
+  res.status(200).json({ linterCreatedCount: lintersCreated.length });
 }

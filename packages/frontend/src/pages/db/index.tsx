@@ -1,7 +1,7 @@
 import DatabaseNavigation from '@/components/DatabaseNavigation';
-import PluginCard from '@/components/PluginCard';
+import LinterCard from '@/components/LinterCard';
 import { prisma } from '@/server/db';
-import { fixPlugin } from '@/utils/normalize';
+import { fixAnyDatesInObject } from '@/utils/normalize';
 import {
   Grid,
   Paper,
@@ -17,40 +17,43 @@ import Link from 'next/link';
 import Head from 'next/head';
 import Footer from '@/components/Footer';
 
-const includePlugins = {
+const includeLinters = {
   rules: true,
   configs: true,
-  keywords: true,
-  linter: {
+  package: {
     include: {
       ecosystem: true,
+      keywords: true,
     },
   },
 };
 
 export async function getServerSideProps() {
   const [
-    pluginsPopular,
-    pluginsRecentlyUpdated,
-    commonPluginKeywords,
+    lintersPopular,
+    lintersRecentlyUpdated,
+    commonLinterKeywords,
     commonRuleCategories,
-    linters,
   ] = await Promise.all([
-    prisma.plugin.findMany({
-      include: includePlugins,
+    prisma.linter.findMany({
+      include: includeLinters,
       take: 5,
       orderBy: {
-        countWeeklyDownloads: Prisma.SortOrder.desc,
+        package: {
+          countWeeklyDownloads: Prisma.SortOrder.desc,
+        },
       },
     }),
-    prisma.plugin.findMany({
-      include: includePlugins,
+    prisma.linter.findMany({
+      include: includeLinters,
       take: 5,
       orderBy: {
-        packageUpdatedAt: Prisma.SortOrder.desc,
+        package: {
+          packageUpdatedAt: Prisma.SortOrder.desc,
+        },
       },
     }),
-    prisma.pluginKeyword.groupBy({
+    prisma.packageKeyword.groupBy({
       where: {
         name: {
           notIn: ['ESLint', 'lint', 'javascript', 'node'],
@@ -85,34 +88,23 @@ export async function getServerSideProps() {
         },
       },
     }),
-    prisma.linter.groupBy({
-      take: 5,
-      by: ['name'],
-      _count: {
-        name: true,
-      },
-      orderBy: {
-        _count: {
-          name: Prisma.SortOrder.desc,
-        },
-      },
-    }),
   ]);
 
-  const pluginsPopularFixed = pluginsPopular.map((plugin) => fixPlugin(plugin));
+  const lintersPopularFixed = lintersPopular.map((linter) =>
+    fixAnyDatesInObject(linter)
+  );
 
-  const pluginsRecentlyUpdatedFixed = pluginsRecentlyUpdated.map((plugin) =>
-    fixPlugin(plugin)
+  const lintersRecentlyUpdatedFixed = lintersRecentlyUpdated.map((linter) =>
+    fixAnyDatesInObject(linter)
   );
 
   return {
     props: {
       data: {
-        pluginsPopular: pluginsPopularFixed,
-        pluginsRecentlyUpdated: pluginsRecentlyUpdatedFixed,
-        commonPluginKeywords,
+        lintersPopular: lintersPopularFixed,
+        lintersRecentlyUpdated: lintersRecentlyUpdatedFixed,
+        commonLinterKeywords,
         commonRuleCategories,
-        linters,
       },
     },
   };
@@ -120,22 +112,21 @@ export async function getServerSideProps() {
 
 export default function index({
   data: {
-    pluginsPopular,
-    pluginsRecentlyUpdated,
-    commonPluginKeywords,
+    lintersPopular,
+    lintersRecentlyUpdated,
+    commonLinterKeywords,
     commonRuleCategories,
-    linters,
   },
 }: {
   data: {
-    pluginsPopular: Prisma.PluginGetPayload<{
-      include: typeof includePlugins;
+    lintersPopular: Prisma.LinterGetPayload<{
+      include: typeof includeLinters;
     }>[];
-    pluginsRecentlyUpdated: Prisma.PluginGetPayload<{
-      include: typeof includePlugins;
+    lintersRecentlyUpdated: Prisma.LinterGetPayload<{
+      include: typeof includeLinters;
     }>[];
-    commonPluginKeywords: Awaited<
-      Prisma.GetPluginGroupByPayload<{
+    commonLinterKeywords: Awaited<
+      Prisma.GetPackageKeywordGroupByPayload<{
         by: ['name'];
         _count: {
           name: true;
@@ -147,14 +138,6 @@ export default function index({
         by: ['category'];
         _count: {
           category: true;
-        };
-      }>
-    >;
-    linters: Awaited<
-      Prisma.GetLinterGroupByPayload<{
-        by: ['name'];
-        _count: {
-          name: true;
         };
       }>
     >;
@@ -171,12 +154,12 @@ export default function index({
         <Grid container spacing={4} columns={{ xs: 2, sm: 4, md: 5 }}>
           <Grid item xs={2}>
             <Typography variant="h6" className="text-center" marginBottom={2}>
-              Popular Plugins
+              Popular Linters
             </Typography>
             <ul className="space-y-8">
-              {pluginsPopular.map((p) => (
-                <li key={p.name}>
-                  <PluginCard plugin={p}></PluginCard>
+              {lintersPopular.map((p) => (
+                <li key={p.package.name}>
+                  <LinterCard linter={p}></LinterCard>
                 </li>
               ))}
             </ul>
@@ -186,25 +169,25 @@ export default function index({
               Recently Updated
             </Typography>
             <ul className="space-y-8">
-              {pluginsRecentlyUpdated.map((p) => (
-                <li key={p.name}>
-                  <PluginCard plugin={p}></PluginCard>
+              {lintersRecentlyUpdated.map((p) => (
+                <li key={p.package.name}>
+                  <LinterCard linter={p}></LinterCard>
                 </li>
               ))}
             </ul>
           </Grid>
           <Grid item xs={2} md={1}>
             <Typography variant="h6" className="text-center" marginBottom={2}>
-              Top Plugin Keywords
+              Top Linter Keywords
             </Typography>
             <TableContainer component={Paper}>
-              <Table aria-label="plugin list">
+              <Table aria-label="linter list">
                 <TableBody>
-                  {commonPluginKeywords.map((obj) => (
+                  {commonLinterKeywords.map((obj) => (
                     <TableRow key={obj.name}>
                       <TableCell scope="col">
                         <Link
-                          href={`/db/plugins/?keyword=${encodeURIComponent(
+                          href={`/db/linters/?keyword=${encodeURIComponent(
                             obj.name
                           )}`}
                         >
@@ -226,7 +209,7 @@ export default function index({
               Top Rule Categories
             </Typography>
             <TableContainer component={Paper}>
-              <Table aria-label="plugin list">
+              <Table aria-label="linter list">
                 <TableBody>
                   {commonRuleCategories.map(
                     (obj) =>
@@ -244,34 +227,6 @@ export default function index({
                         </TableRow>
                       )
                   )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-
-            <Typography
-              variant="h6"
-              className="text-center"
-              marginBottom={2}
-              marginTop={4}
-            >
-              Linters
-            </Typography>
-            <TableContainer component={Paper}>
-              <Table aria-label="linters list">
-                <TableBody>
-                  {linters.map((obj) => (
-                    <TableRow key={obj.name}>
-                      <TableCell scope="col">
-                        <Link
-                          href={`/db/plugins/?linter=${encodeURIComponent(
-                            obj.name
-                          )}`}
-                        >
-                          {obj.name}
-                        </Link>
-                      </TableCell>
-                    </TableRow>
-                  ))}
                 </TableBody>
               </Table>
             </TableContainer>

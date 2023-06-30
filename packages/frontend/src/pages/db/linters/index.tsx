@@ -14,19 +14,20 @@ import { prisma } from '@/server/db';
 import React from 'react';
 import { useRouter } from 'next/router';
 import { fixAnyDatesInObject } from '@/utils/normalize';
-import { packageToLinkUs } from '@/utils/dynamic-fields';
+import { lintFrameworkToLinkUs } from '@/utils/dynamic-fields';
 import { Prisma } from '@prisma/client';
-import { format } from 'timeago.js';
-import GetAppIcon from '@mui/icons-material/GetApp';
-import millify from 'millify';
 import DatabaseNavigation from '@/components/DatabaseNavigation';
 import Head from 'next/head';
 import Footer from '@/components/Footer';
+import GetAppIcon from '@mui/icons-material/GetApp';
+import { format } from 'timeago.js';
+import millify from 'millify';
 
 const include = {
-  rules: true,
-  configs: true,
-  package: true,
+  _count: {
+    select: { linters: true },
+  },
+  linter: { include: { package: true } },
 };
 
 export async function getServerSideProps({
@@ -35,100 +36,61 @@ export async function getServerSideProps({
   query: { q: string; p: string; c: string; keyword: string; linter: string };
 }) {
   // Access individual query parameters
-  const { q, p, c, keyword, linter } = query;
+  const { q, p, c } = query;
   const currentPage = p ? Number(p) - 1 : 0;
   const pageSize = c ? Number(c) : 25;
 
-  const keywordQuery = keyword
-    ? {
-        package: {
-          keywords: {
-            some: {
-              name: {
-                equals: keyword,
-              },
-            },
-          },
-        },
-      }
-    : {};
-  const linterQuery = linter
-    ? {
-        lintFramework: {
-          name: {
-            equals: linter,
-          },
-        },
-      }
-    : {};
   const where = q
     ? {
         OR: [
           {
-            package: {
-              keywords: {
-                some: {
-                  name: {
-                    contains: q,
-                  },
-                },
-              },
-            },
-          },
-          {
-            package: {
-              name: {
-                contains: q,
-              },
-            },
-          },
-          {
-            package: {
-              description: {
-                contains: q,
-              },
+            name: {
+              contains: q,
             },
           },
         ],
-        ...keywordQuery,
-        ...linterQuery,
       }
-    : { ...keywordQuery, ...linterQuery };
+    : {};
 
-  const [linterCount, linters] = await Promise.all([
-    prisma.linter.count({
+  const [lintFrameworkCount, lintFrameworks] = await Promise.all([
+    prisma.lintFramework.count({
       where,
     }),
-    prisma.linter.findMany({
-      include,
+    prisma.lintFramework.findMany({
       take: Number(pageSize),
       skip: Number(currentPage) * Number(pageSize),
       where,
       orderBy: {
-        package: {
-          countWeeklyDownloads: Prisma.SortOrder.desc,
-        },
+        name: Prisma.SortOrder.asc,
       },
+      include,
     }),
   ]);
 
-  const lintersFixed = await linters.map((linter) =>
+  const lintFrameworksFixed = await lintFrameworks.map((linter) =>
     fixAnyDatesInObject(linter)
   );
 
   return {
     props: {
-      data: { linters: lintersFixed, linterCount, currentPage, pageSize },
+      data: {
+        lintFrameworks: lintFrameworksFixed,
+        lintFrameworkCount,
+        currentPage,
+        pageSize,
+      },
     },
   };
 }
 
-export default function Plugins({
-  data: { linters, linterCount, currentPage, pageSize },
+export default function Linters({
+  data: { lintFrameworks, lintFrameworkCount, currentPage, pageSize },
 }: {
   data: {
-    linters: Prisma.LinterGetPayload<{ include: typeof include }>[];
-    linterCount: number;
+    lintFrameworks: Prisma.LintFrameworkGetPayload<{
+      include: typeof include;
+    }>[];
+    lintFrameworkCount: number;
     currentPage: number;
     pageSize: number;
   };
@@ -182,14 +144,9 @@ export default function Plugins({
             <TableHead>
               <TableRow>
                 <TableCell scope="col">Name</TableCell>
-                <TableCell scope="col" align="left">
-                  Description
-                </TableCell>
+                <TableCell scope="col">Description</TableCell>
                 <TableCell scope="col" align="right">
-                  Rules
-                </TableCell>
-                <TableCell scope="col" align="right">
-                  Configs
+                  Plugins
                 </TableCell>
                 <TableCell scope="col" align="right">
                   Wkly
@@ -201,38 +158,48 @@ export default function Plugins({
               </TableRow>
             </TableHead>
             <TableBody>
-              {linters.map((linter) => (
+              {lintFrameworks.map((lintFramework) => (
                 <TableRow
-                  key={linter.package.name}
+                  key={lintFramework.name}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   <TableCell scope="row">
                     <Link
-                      href={packageToLinkUs(linter.package)}
+                      href={lintFrameworkToLinkUs(lintFramework)}
                       underline="none"
                     >
-                      {linter.package.name}
+                      {lintFramework.name}
                     </Link>
                   </TableCell>
-                  <TableCell align="left">
-                    {linter.package.description}
+                  <TableCell scope="row">
+                    {lintFramework.linter?.package.description}
                   </TableCell>
-                  <TableCell align="right">{linter.rules.length}</TableCell>
-                  <TableCell align="right">{linter.configs.length}</TableCell>
-                  <TableCell align="right">
-                    {millify(linter.package.countWeeklyDownloads)}
+                  <TableCell scope="row" align="right">
+                    {lintFramework._count.linters}
+                  </TableCell>
+                  <TableCell scope="row" align="right">
+                    {lintFramework.linter &&
+                      millify(
+                        lintFramework.linter.package.countWeeklyDownloads
+                      )}
                   </TableCell>
                   <TableCell align="right">
-                    <time
-                      dateTime={new Date(
-                        linter.package.packageUpdatedAt
-                      ).toISOString()}
-                      title={new Date(
-                        linter.package.packageUpdatedAt
-                      ).toUTCString()}
-                    >
-                      {format(new Date(linter.package.packageUpdatedAt))}
-                    </time>
+                    {lintFramework.linter && (
+                      <time
+                        dateTime={new Date(
+                          lintFramework.linter.package.packageUpdatedAt
+                        ).toISOString()}
+                        title={new Date(
+                          lintFramework.linter.package.packageUpdatedAt
+                        ).toUTCString()}
+                      >
+                        {format(
+                          new Date(
+                            lintFramework.linter.package.packageUpdatedAt
+                          )
+                        )}
+                      </time>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
@@ -241,7 +208,7 @@ export default function Plugins({
               <TableRow>
                 <TablePagination
                   rowsPerPageOptions={[10, 25, 50]}
-                  count={linterCount}
+                  count={lintFrameworkCount}
                   page={currentPage}
                   rowsPerPage={pageSize}
                   onPageChange={handleChangePage}

@@ -22,7 +22,7 @@ const IGNORED_KEYWORDS = new Set([
   'lint',
   'linter',
   'linting',
-  'plugin',
+  'linter',
   'rule',
   'rules',
 ]);
@@ -53,7 +53,7 @@ type NpmRegistryInfo = {
   time: Record<string | 'created' | 'modified', string>;
 };
 
-const pluginInclude = {
+const linterInclude = {
   rules: {
     include: {
       options: true,
@@ -61,100 +61,129 @@ const pluginInclude = {
     },
   },
   configs: true,
-  keywords: true,
+  package: {
+    include: {
+      keywords: true,
+    },
+  },
   // versions: true,
 };
-async function baseToNormalizedPlugin(
-  pluginName: string,
-  linterId: number,
+async function baseToNormalizedLinter(
+  linterName: string,
+  lintFrameworkId: number,
+  ecosystemId: number,
   packageJson: PackageJson,
   npmDownloadsInfo: { downloads: number },
   npmRegistryInfo: NpmRegistryInfo,
-  rules: Prisma.RuleCreateWithoutPluginInput[],
-  configs: Prisma.ConfigCreateWithoutPluginInput[],
+  rules: Prisma.RuleCreateWithoutLinterInput[],
+  configs: Prisma.ConfigCreateWithoutLinterInput[],
   keywordsToIgnore: Set<string>
 ): Promise<
-  Prisma.PluginGetPayload<{ include: typeof pluginInclude }> | undefined
+  Prisma.LinterGetPayload<{ include: typeof linterInclude }> | undefined
 > {
   if (configs.length === 0 && rules.length === 0) {
-    // Probably not an actual plugin.
+    // Probably not an actual linter.
     return undefined;
   }
 
-  const pluginCreated = await prisma.plugin.create({
-    include: pluginInclude,
+  // Connect the lint framework to its core linter.
+  let lintFrameworkForCore = {};
+  if (['eslint', 'ember-template-lint'].includes(linterName)) {
+    lintFrameworkForCore = {
+      lintFrameworkForCore: {
+        connect: { id: lintFrameworkId },
+      },
+    };
+  }
+
+  const linterCreated = await prisma.linter.create({
+    include: linterInclude,
     data: {
-      name: pluginName,
-      linterId,
-      description: packageJson.description || null,
+      package: {
+        create: {
+          ecosystemId,
 
-      // TODO: get real data from npm/github
-      countPrs: Math.round(Math.random() * 100),
-      countIssues: Math.round(Math.random() * 100),
-      countStars: Math.round(Math.random() * 100),
-      countWatching: Math.round(Math.random() * 100),
-      countForks: Math.round(Math.random() * 100),
-      countContributors: Math.round(Math.random() * 100),
-      countWeeklyDownloads: npmDownloadsInfo.downloads,
+          name: linterName,
+          description: packageJson.description || null,
 
-      packageCreatedAt: new Date(npmRegistryInfo.time.created),
-      packageUpdatedAt: new Date(npmRegistryInfo.time.modified),
+          // TODO: get real data from npm/github
+          countPrs: Math.round(Math.random() * 100),
+          countIssues: Math.round(Math.random() * 100),
+          countStars: Math.round(Math.random() * 100),
+          countWatching: Math.round(Math.random() * 100),
+          countForks: Math.round(Math.random() * 100),
+          countContributors: Math.round(Math.random() * 100),
+          countWeeklyDownloads: npmDownloadsInfo.downloads,
 
-      linkRepository:
-        typeof packageJson.repository === 'object'
-          ? packageJson.repository.url
-          : typeof packageJson.repository === 'string'
-          ? packageJson.repository
-          : null,
-      repositoryDirectory:
-        typeof packageJson.repository === 'object'
-          ? packageJson.repository.directory
-          : null,
+          packageCreatedAt: new Date(npmRegistryInfo.time.created),
+          packageUpdatedAt: new Date(npmRegistryInfo.time.modified),
 
-      linkHomepage: packageJson.homepage?.toString() || null,
-      linkBugs:
-        typeof packageJson.bugs === 'object'
-          ? packageJson.bugs.url
-          : typeof packageJson.bugs === 'string'
-          ? packageJson.bugs
-          : null,
-      emailBugs:
-        typeof packageJson.bugs === 'object' ? packageJson.bugs.email : null,
+          linkRepository:
+            typeof packageJson.repository === 'object'
+              ? packageJson.repository.url
+              : typeof packageJson.repository === 'string'
+              ? packageJson.repository
+              : null,
+          repositoryDirectory:
+            typeof packageJson.repository === 'object'
+              ? packageJson.repository.directory
+              : null,
+
+          linkHomepage: packageJson.homepage?.toString() || null,
+          linkBugs:
+            typeof packageJson.bugs === 'object'
+              ? packageJson.bugs.url
+              : typeof packageJson.bugs === 'string'
+              ? packageJson.bugs
+              : null,
+          emailBugs:
+            typeof packageJson.bugs === 'object'
+              ? packageJson.bugs.email
+              : null,
+
+          keywords: {
+            create: uniqueItems(packageJson.keywords || [])
+              .filter((keyword) => !keywordsToIgnore.has(keyword))
+              .map((keyword) => ({ name: keyword })),
+
+            // TODO: too expensive when some linters have thousands of versions.
+            // versions: {
+            //   create: Object.entries(npmRegistryInfo.time).map(([version, time]) => ({
+            //     version,
+            //     publishedAt: new Date(time),
+            //   })),
+            // },
+          },
+        },
+      },
 
       rules: { create: rules },
 
       configs: { create: configs },
 
-      keywords: {
-        create: uniqueItems(packageJson.keywords || [])
-          .filter((keyword) => !keywordsToIgnore.has(keyword))
-          .map((keyword) => ({ name: keyword })),
+      lintFramework: {
+        connect: { id: lintFrameworkId },
       },
 
-      // TODO: too expensive when some plugins have thousands of versions.
-      // versions: {
-      //   create: Object.entries(npmRegistryInfo.time).map(([version, time]) => ({
-      //     version,
-      //     publishedAt: new Date(time),
-      //   })),
-      // },
+      ...lintFrameworkForCore,
     },
   });
 
-  return pluginCreated;
+  return linterCreated;
 }
 
-async function eslintPluginToNormalizedPlugin(
-  pluginName: string,
-  plugin: TSESLint.Linter.Plugin,
+async function eslintLinterToNormalizedLinter(
+  linterName: string,
+  linter: TSESLint.Linter.Plugin,
   packageJson: PackageJson,
   npmDownloadsInfo: { downloads: number },
   npmRegistryInfo: NpmRegistryInfo,
-  linterId: number
+  lintFrameworkId: number,
+  ecosystemId: number
 ): Promise<
-  Prisma.PluginGetPayload<{ include: typeof pluginInclude }> | undefined
+  Prisma.LinterGetPayload<{ include: typeof linterInclude }> | undefined
 > {
-  const rules = Object.entries(plugin.rules || {}).flatMap(
+  const rules = Object.entries(linter.rules || {}).flatMap(
     ([ruleName, rule]) => {
       if (typeof rule !== 'object') {
         // TODO: handle this case
@@ -191,7 +220,7 @@ async function eslintPluginToNormalizedPlugin(
     }
   );
 
-  const configs = Object.entries(plugin.configs || {}).map(([configName]) => {
+  const configs = Object.entries(linter.configs || {}).map(([configName]) => {
     const config = {
       name: configName,
     };
@@ -199,9 +228,10 @@ async function eslintPluginToNormalizedPlugin(
     return config;
   });
 
-  const pluginCreated = await baseToNormalizedPlugin(
-    pluginName,
-    linterId,
+  const linterCreated = await baseToNormalizedLinter(
+    linterName,
+    lintFrameworkId,
+    ecosystemId,
     packageJson,
     npmDownloadsInfo,
     npmRegistryInfo,
@@ -210,16 +240,16 @@ async function eslintPluginToNormalizedPlugin(
     ESLINT_IGNORED_KEYWORDS
   );
 
-  if (!pluginCreated) {
-    // Probably not an actual plugin.
+  if (!linterCreated) {
+    // Probably not an actual linter.
     return undefined;
   }
 
-  const pluginPrefix = getPluginPrefix(pluginName);
+  const linterPrefix = getPluginPrefix(linterName);
   await prisma.ruleConfig.createMany({
-    data: Object.entries(plugin.configs || {}).flatMap(
+    data: Object.entries(linter.configs || {}).flatMap(
       ([configName, config]) => {
-        const configId = pluginCreated.configs.find(
+        const configId = linterCreated.configs.find(
           (configCreated) => configCreated.name === configName
         )?.id;
         if (configId === undefined) {
@@ -227,10 +257,10 @@ async function eslintPluginToNormalizedPlugin(
         }
         return Object.entries(config.rules || {}).flatMap(
           ([ruleName, ruleEntry]) => {
-            const ruleId = pluginCreated.rules.find(
+            const ruleId = linterCreated.rules.find(
               (ruleCreated) =>
-                (pluginPrefix
-                  ? `${pluginPrefix}/${ruleCreated.name}`
+                (linterPrefix
+                  ? `${linterPrefix}/${ruleCreated.name}`
                   : ruleCreated.name) === ruleName
             )?.id;
             if (ruleId === undefined) {
@@ -248,7 +278,7 @@ async function eslintPluginToNormalizedPlugin(
             return [
               {
                 severity,
-                pluginId: pluginCreated.id,
+                linterId: linterCreated.id,
                 configId,
                 ruleId,
               },
@@ -259,20 +289,21 @@ async function eslintPluginToNormalizedPlugin(
     ),
   });
 
-  return pluginCreated;
+  return linterCreated;
 }
 
-async function emberTemplateLintPluginToNormalizedPlugin(
-  pluginName: string,
-  plugin: EmberTemplateLint,
+async function emberTemplateLintLinterToNormalizedLinter(
+  linterName: string,
+  linter: EmberTemplateLint,
   packageJson: PackageJson,
   npmDownloadsInfo: { downloads: number },
   npmRegistryInfo: NpmRegistryInfo,
-  linterId: number
+  lintFrameworkId: number,
+  ecosystemId: number
 ): Promise<
-  Prisma.PluginGetPayload<{ include: typeof pluginInclude }> | undefined
+  Prisma.LinterGetPayload<{ include: typeof linterInclude }> | undefined
 > {
-  const rules = Object.entries(plugin.rules || {}).map(([ruleName]) => {
+  const rules = Object.entries(linter.rules || {}).map(([ruleName]) => {
     const ruleNormalized = {
       name: ruleName,
       description: null, // TODO
@@ -288,7 +319,7 @@ async function emberTemplateLintPluginToNormalizedPlugin(
     return ruleNormalized;
   });
 
-  const configs = Object.entries(plugin.configurations || {}).map(
+  const configs = Object.entries(linter.configurations || {}).map(
     ([configName]) => {
       const config = {
         name: configName,
@@ -298,9 +329,10 @@ async function emberTemplateLintPluginToNormalizedPlugin(
     }
   );
 
-  const pluginCreated = await baseToNormalizedPlugin(
-    pluginName,
-    linterId,
+  const linterCreated = await baseToNormalizedLinter(
+    linterName,
+    lintFrameworkId,
+    ecosystemId,
     packageJson,
     npmDownloadsInfo,
     npmRegistryInfo,
@@ -311,92 +343,127 @@ async function emberTemplateLintPluginToNormalizedPlugin(
 
   // TODO: create RuleConfigs
 
-  return pluginCreated;
+  return linterCreated;
 }
 
-export async function loadPluginsToDb(
+export async function loadLintersToDb(
   eslintRules: Record<
     string,
     | TSESLint.RuleCreateFunction
     | TSESLint.RuleModule<string, unknown[], TSESLint.RuleListener>
   >
 ) {
-  const pluginTypes = [
+  const linterTypes = [
     'eslint', // base package
     'eslint-plugin',
     'ember-template-lint-plugin',
   ];
 
-  const ecosystem = await prisma.ecosystem.upsert({
+  // Ecosystems.
+  const ecosystemNode = await prisma.ecosystem.upsert({
     where: { name: 'node' },
-    create: { name: 'node', linkRepository: 'TODO', linkHomepage: 'TODO' },
-    update: {},
-  });
-
-  const linterEslint = await prisma.linter.upsert({
-    where: { name_ecosystemId: { name: 'eslint', ecosystemId: ecosystem.id } },
     create: {
-      name: 'eslint',
-      ecosystemId: ecosystem.id,
-      linkRepository: 'https://github.com/eslint/eslint',
-      linkHomepage: 'https://eslint.org/',
+      name: 'node',
+      description: 'TODO',
+      linkRepository: 'TODO',
+      linkHomepage: 'TODO',
     },
     update: {},
   });
 
-  const linterEmberTemplateLint = await prisma.linter.upsert({
+  // Lint frameworks.
+  const lintFrameworkEmberTemplateLint = await prisma.lintFramework.upsert({
     where: {
       name_ecosystemId: {
         name: 'ember-template-lint',
-        ecosystemId: ecosystem.id,
+        ecosystemId: ecosystemNode.id,
       },
     },
     create: {
       name: 'ember-template-lint',
-      ecosystemId: ecosystem.id,
-      linkRepository:
-        'https://github.com/ember-template-lint/ember-template-lint',
-      linkHomepage:
-        'https://github.com/ember-template-lint/ember-template-lint',
+      ecosystemId: ecosystemNode.id,
+    },
+    update: {},
+  });
+  const lintFrameworkEslint = await prisma.lintFramework.upsert({
+    where: {
+      name_ecosystemId: { name: 'eslint', ecosystemId: ecosystemNode.id },
+    },
+    create: {
+      name: 'eslint',
+      ecosystemId: ecosystemNode.id,
+    },
+    update: {},
+  });
+  await prisma.lintFramework.upsert({
+    where: {
+      name_ecosystemId: { name: 'markdownlint', ecosystemId: ecosystemNode.id },
+    },
+    create: {
+      name: 'markdownlint',
+      ecosystemId: ecosystemNode.id,
+    },
+    update: {},
+  });
+  await prisma.lintFramework.upsert({
+    where: {
+      name_ecosystemId: {
+        name: 'npm-package-json-lint',
+        ecosystemId: ecosystemNode.id,
+      },
+    },
+    create: {
+      name: 'npm-package-json-lint',
+      ecosystemId: ecosystemNode.id,
+    },
+    update: {},
+  });
+  await prisma.lintFramework.upsert({
+    where: {
+      name_ecosystemId: { name: 'stylelint', ecosystemId: ecosystemNode.id },
+    },
+    create: {
+      name: 'stylelint',
+      ecosystemId: ecosystemNode.id,
     },
     update: {},
   });
 
-  const pluginsCreated = [];
+  const lintersCreated = [];
 
-  for (const pluginType of pluginTypes) {
+  for (const linterType of linterTypes) {
     const downloadPath = path.join(
       process.cwd(),
       '..',
       'downloader',
       'tmp',
       'npm',
-      pluginType
+      linterType
     );
 
-    let pluginRecord;
+    let linterRecord;
 
-    switch (pluginType) {
+    switch (linterType) {
       case 'eslint-plugin': {
-        pluginRecord = load<TSESLint.Linter.Plugin>(downloadPath);
+        linterRecord = load<TSESLint.Linter.Plugin>(downloadPath);
         break;
       }
       case 'ember-template-lint-plugin': {
-        pluginRecord = load<EmberTemplateLint>(downloadPath);
+        linterRecord = load<EmberTemplateLint>(downloadPath);
         break;
       }
       case 'eslint': {
-        pluginRecord = load<TSESLint.Linter.Plugin>(downloadPath);
+        linterRecord = load<TSESLint.Linter.Plugin>(downloadPath);
 
-        // Rules/configs are not exported like they are with plugins. Have to manually retrieve them.
+        // Rules/configs are not exported like they are with linters. Have to manually retrieve them.
 
-        pluginRecord.eslint.rules = eslintRules;
+        linterRecord.eslint.rules = eslintRules;
 
         // ESLint core rules have a `recommended` property that we can build the config from.
-        pluginRecord.eslint.configs = {
+        linterRecord.eslint.configs = {
           recommended: {
             rules: Object.fromEntries(
-              Object.entries(pluginRecord.eslint.rules).map(
+              Object.entries(linterRecord.eslint.rules).map(
                 ([ruleName, rule]) => [
                   ruleName,
                   typeof rule === 'object'
@@ -413,7 +480,7 @@ export async function loadPluginsToDb(
         break;
       }
       default: {
-        throw new Error(`Unknown plugin type: ${pluginType}`);
+        throw new Error(`Unknown linter type: ${linterType}`);
       }
     }
 
@@ -421,40 +488,43 @@ export async function loadPluginsToDb(
     const limitNpm = pLimit(10);
 
     const npmInfo = await Promise.all(
-      Object.keys(pluginRecord).map((pluginName) =>
-        limitNpm(async () => {
-          let npmDownloadsInfo;
-          let npmRegistryInfo;
-          // eslint-disable-next-line no-console
-          console.log('Fetching npm info for', pluginName);
-          try {
-            // Get info from npm registry.
-            // https://github.com/npm/registry/blob/master/docs/download-counts.md
-            // TODO: consider using bulk queries to reduce number of requests.
-            npmDownloadsInfo = (await fetch(
-              `https://api.npmjs.org/downloads/point/last-week/${pluginName}`
-            ).then((res) => res.json())) as { downloads: number };
-
-            npmRegistryInfo = (await fetch(
-              `https://registry.npmjs.org/${pluginName}`
-            ).then((res) => res.json())) as NpmRegistryInfo;
-          } catch {
+      Object.keys(linterRecord)
+        .slice(0, 10)
+        .map((linterName) =>
+          limitNpm(async () => {
+            let npmDownloadsInfo;
+            let npmRegistryInfo;
             // eslint-disable-next-line no-console
-            console.log(`Fetching npm info failed for ${pluginName}.`);
-            return {};
-          }
-          return { npmDownloadsInfo, npmRegistryInfo };
-        })
-      )
+            console.log('Fetching npm info for', linterName);
+            try {
+              // Get info from npm registry.
+              // https://github.com/npm/registry/blob/master/docs/download-counts.md
+              // TODO: consider using bulk queries to reduce number of requests.
+              npmDownloadsInfo = (await fetch(
+                `https://api.npmjs.org/downloads/point/last-week/${linterName}`
+              ).then((res) => res.json())) as { downloads: number };
+
+              npmRegistryInfo = (await fetch(
+                `https://registry.npmjs.org/${linterName}`
+              ).then((res) => res.json())) as NpmRegistryInfo;
+            } catch {
+              // eslint-disable-next-line no-console
+              console.log(`Fetching npm info failed for ${linterName}.`);
+              return {};
+            }
+            return { npmDownloadsInfo, npmRegistryInfo };
+          })
+        )
     );
 
-    const pluginsCreatedForThisType = await Promise.all(
-      Object.entries(pluginRecord).flatMap(
-        async ([pluginName, plugin], index) => {
+    const lintersCreatedForThisType = await Promise.all(
+      Object.entries(linterRecord)
+        .slice(0, 10)
+        .flatMap(async ([linterName, linter], index) => {
           const pathPackageJson = path.join(
             downloadPath,
             'node_modules',
-            pluginName,
+            linterName,
             'package.json'
           );
           const packageJson = JSON.parse(
@@ -464,55 +534,48 @@ export async function loadPluginsToDb(
           const { npmDownloadsInfo, npmRegistryInfo } = npmInfo[index];
           if (!npmDownloadsInfo || !npmRegistryInfo) {
             // eslint-disable-next-line no-console
-            console.log(`Skipping ${pluginName} due to missing npm info.`);
+            console.log(`Skipping ${linterName} due to missing npm info.`);
             return [];
           }
 
-          const pluginNormalized = ['eslint-plugin', 'eslint'].includes(
-            pluginType
+          const linterNormalized = ['eslint-plugin', 'eslint'].includes(
+            linterType
           )
-            ? await eslintPluginToNormalizedPlugin(
-                pluginName,
-                plugin,
+            ? await eslintLinterToNormalizedLinter(
+                linterName,
+                linter,
                 packageJson,
                 npmDownloadsInfo,
                 npmRegistryInfo,
-                linterEslint.id
+                lintFrameworkEslint.id,
+                ecosystemNode.id
               )
-            : await emberTemplateLintPluginToNormalizedPlugin(
-                pluginName,
-                plugin,
+            : await emberTemplateLintLinterToNormalizedLinter(
+                linterName,
+                linter,
                 packageJson,
                 npmDownloadsInfo,
                 npmRegistryInfo,
-                linterEmberTemplateLint.id
+                lintFrameworkEmberTemplateLint.id,
+                ecosystemNode.id
               );
 
-          if (!pluginNormalized) {
-            // Probably not an actual plugin.
+          if (!linterNormalized) {
+            // Probably not an actual linter.
             return [];
           }
 
-          return [pluginNormalized];
-        }
-      )
+          return [linterNormalized];
+        })
     );
 
-    pluginsCreated.push(...pluginsCreatedForThisType);
+    lintersCreated.push(...lintersCreatedForThisType);
   }
 
-  return pluginsCreated;
+  return lintersCreated;
 }
 
-export function fixRule(rule: Prisma.RuleGetPayload<{}>) {
-  return fixAnyDatesInObject(rule);
-}
-
-export function fixPlugin(plugin: Prisma.PluginGetPayload<{}>) {
-  return fixAnyDatesInObject(plugin);
-}
-
-function fixAnyDatesInObject(object: object): object {
+export function fixAnyDatesInObject(object: object): object {
   return Object.fromEntries(
     Object.entries(object).map(([key, value]) => {
       if (value instanceof Date) {

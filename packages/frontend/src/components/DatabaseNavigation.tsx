@@ -19,6 +19,9 @@ export default function DatabaseNavigation() {
         <ToggleButton value="home" href="/db">
           Summary
         </ToggleButton>
+        <ToggleButton value="linters" href="/db/linters">
+          Linters
+        </ToggleButton>
         <ToggleButton value="plugins" href="/db/plugins">
           Plugins
         </ToggleButton>

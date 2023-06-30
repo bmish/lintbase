@@ -1,5 +1,5 @@
 /* eslint filenames/match-exported:"off",unicorn/filename-case:"off" */
-import PluginCard from '@/components/PluginCard';
+import LinterCard from '@/components/LinterCard';
 import {
   Link,
   Paper,
@@ -11,7 +11,7 @@ import {
   TableRow,
 } from '@mui/material';
 import { prisma } from '@/server/db';
-import { fixPlugin } from '@/utils/normalize';
+import { fixAnyDatesInObject } from '@/utils/normalize';
 import { ruleToLinkUs } from '@/utils/dynamic-fields';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { EMOJI_CONFIGS } from '@/utils/eslint';
@@ -31,7 +31,7 @@ import EmojiSeverityOff from '@/components/EmojiSeverityOff';
 import Footer from '@/components/Footer';
 
 interface IQueryParam {
-  pluginId: string;
+  linterId: string;
 }
 
 const include = {
@@ -53,57 +53,56 @@ const include = {
       name: Prisma.SortOrder.asc,
     },
   },
-  keywords: true,
-  linter: {
-    include: {
-      ecosystem: true,
-    },
+  package: {
+    include: { keywords: true, ecosystem: true },
   },
 };
 
 export async function getServerSideProps({ params }: { params: IQueryParam }) {
-  const { pluginId } = params;
+  const { linterId } = params;
 
-  const plugin = await prisma.plugin.findFirstOrThrow({
+  const linter = await prisma.linter.findFirstOrThrow({
     where: {
-      name: pluginId,
+      package: {
+        name: linterId,
+      },
     },
     include,
   });
-  const pluginFixed = fixPlugin(plugin);
+  const linterFixed = fixAnyDatesInObject(linter);
 
   return {
-    props: { data: { plugin: pluginFixed } },
+    props: { data: { linter: linterFixed } },
   };
 }
-export default function Plugin({
-  data: { plugin },
+export default function Linter({
+  data: { linter },
 }: {
   data: {
-    plugin: Prisma.PluginGetPayload<{ include: typeof include }>;
+    linter: Prisma.LinterGetPayload<{ include: typeof include }>;
   };
 }) {
   const relevantConfigEmojis = Object.entries(EMOJI_CONFIGS).filter(
     ([config]) =>
-      plugin.configs.some((pluginConfig) => config === pluginConfig.name)
+      linter.configs.some((linterConfig) => config === linterConfig.name)
   );
 
   return (
     <div className="bg-gray-100 h-full">
       <Head>
-        <title>LintBase: {plugin.name}</title>
+        <title>LintBase: {linter.package.name}</title>
         <meta
           property="og:title"
-          content={`LintBase: ${plugin.name}`}
+          content={`LintBase: ${linter.package.name}`}
           key="title"
         />
       </Head>
       <main className="flex-grow overflow-y-auto bg-gray-100 pt-8 px-6 mx-auto min-h-screen">
-        {plugin && <PluginCard plugin={plugin} detailed={true}></PluginCard>}
+        {linter && <LinterCard linter={linter} detailed={true}></LinterCard>}
 
-        {plugin && plugin.configs.length > 0 && (
+        {linter && linter.configs.length > 0 && (
           <TableContainer component={Paper} className="mt-8">
-            <Table sx={{ minWidth: 650 }} aria-label="plugin config list">
+            <Table sx={{ minWidth: 650 }} aria-label="linter config list">
               <TableHead>
                 <TableRow>
                   <TableCell scope="col" colSpan={2}>
@@ -112,9 +111,9 @@ export default function Plugin({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {plugin.configs.map((config) => (
+                {linter.configs.map((config) => (
                   <TableRow
-                    key={`${plugin.name}/${config.name}`}
+                    key={`${linter.package.name}/${config.name}`}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell scope="row">{config.name}</TableCell>
@@ -132,9 +131,9 @@ export default function Plugin({
           </TableContainer>
         )}
 
-        {plugin && plugin.rules.length > 0 && (
+        {linter && linter.rules.length > 0 && (
           <TableContainer component={Paper} className="mt-8">
-            <Table sx={{ minWidth: 650 }} aria-label="plugin rule list">
+            <Table sx={{ minWidth: 650 }} aria-label="linter rule list">
               <TableHead>
                 <TableRow>
                   <TableCell scope="col">Rule</TableCell>
@@ -171,13 +170,16 @@ export default function Plugin({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {plugin.rules.map((rule) => (
+                {linter.rules.map((rule) => (
                   <TableRow
-                    key={`${plugin.name}/${rule.name}`}
+                    key={`${linter.package.name}/${rule.name}`}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell scope="row">
-                      <Link href={ruleToLinkUs(rule, plugin)} underline="none">
+                      <Link
+                        href={ruleToLinkUs(rule, linter.package)}
+                        underline="none"
+                      >
                         {rule.name}
                       </Link>
                     </TableCell>
