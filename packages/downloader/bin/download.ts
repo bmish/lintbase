@@ -5,7 +5,15 @@ import path from 'node:path';
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const searches: string[] = ['eslint-plugin', 'ember-template-lint-plugin'];
-const packages = ['eslint'];
+
+// Same as CORE_LINTING_FRAMEWORKS in packages/frontend/src/utils/normalize.ts.
+const packages = [
+  'ember-template-lint',
+  'eslint',
+  'markdownlint',
+  'npm-package-json-lint',
+  'stylelint',
+];
 
 const downloadPath = path.join(__dirname, '..', 'tmp', 'npm');
 

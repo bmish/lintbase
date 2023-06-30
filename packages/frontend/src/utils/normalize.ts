@@ -49,6 +49,15 @@ const EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS = new Set([
   'ember-template-lint-configurations',
 ]);
 
+// Keep in sync with: packages/downloader/bin/download.ts
+const CORE_LINTING_FRAMEWORKS = [
+  'ember-template-lint',
+  'eslint',
+  'markdownlint',
+  'npm-package-json-lint',
+  'stylelint',
+];
+
 type NpmRegistryInfo = {
   time: Record<string | 'created' | 'modified', string>;
 };
@@ -81,14 +90,9 @@ async function baseToNormalizedLinter(
 ): Promise<
   Prisma.LinterGetPayload<{ include: typeof linterInclude }> | undefined
 > {
-  if (configs.length === 0 && rules.length === 0) {
-    // Probably not an actual linter.
-    return undefined;
-  }
-
   // Connect the lint framework to its core linter.
   let lintFrameworkForCore = {};
-  if (['eslint', 'ember-template-lint'].includes(linterName)) {
+  if (CORE_LINTING_FRAMEWORKS.includes(linterName)) {
     lintFrameworkForCore = {
       lintFrameworkForCore: {
         connect: { id: lintFrameworkId },
@@ -183,7 +187,7 @@ async function eslintLinterToNormalizedLinter(
 ): Promise<
   Prisma.LinterGetPayload<{ include: typeof linterInclude }> | undefined
 > {
-  const rules = Object.entries(linter.rules || {}).flatMap(
+  const rules = Object.entries(linter?.rules || {}).flatMap(
     ([ruleName, rule]) => {
       if (typeof rule !== 'object') {
         // TODO: handle this case
@@ -220,7 +224,7 @@ async function eslintLinterToNormalizedLinter(
     }
   );
 
-  const configs = Object.entries(linter.configs || {}).map(([configName]) => {
+  const configs = Object.entries(linter?.configs || {}).map(([configName]) => {
     const config = {
       name: configName,
     };
@@ -241,13 +245,12 @@ async function eslintLinterToNormalizedLinter(
   );
 
   if (!linterCreated) {
-    // Probably not an actual linter.
     return undefined;
   }
 
   const linterPrefix = getPluginPrefix(linterName);
   await prisma.ruleConfig.createMany({
-    data: Object.entries(linter.configs || {}).flatMap(
+    data: Object.entries(linter?.configs || {}).flatMap(
       ([configName, config]) => {
         const configId = linterCreated.configs.find(
           (configCreated) => configCreated.name === configName
@@ -303,7 +306,7 @@ async function emberTemplateLintLinterToNormalizedLinter(
 ): Promise<
   Prisma.LinterGetPayload<{ include: typeof linterInclude }> | undefined
 > {
-  const rules = Object.entries(linter.rules || {}).map(([ruleName]) => {
+  const rules = Object.entries(linter?.rules || {}).map(([ruleName]) => {
     const ruleNormalized = {
       name: ruleName,
       description: null, // TODO
@@ -319,7 +322,7 @@ async function emberTemplateLintLinterToNormalizedLinter(
     return ruleNormalized;
   });
 
-  const configs = Object.entries(linter.configurations || {}).map(
+  const configs = Object.entries(linter?.configurations || {}).map(
     ([configName]) => {
       const config = {
         name: configName,
@@ -346,6 +349,39 @@ async function emberTemplateLintLinterToNormalizedLinter(
   return linterCreated;
 }
 
+async function createObjectAsync<T>(
+  keys: string[],
+  // eslint-disable-next-line no-unused-vars
+  create: (_key: string) => Promise<T>
+): Promise<Record<string, T>> {
+  const results = await Promise.all(keys.map((key) => create(key)));
+  return Object.fromEntries(
+    results.map((result, index) => [keys[index], result])
+  );
+}
+
+function createLintFrameworks(ecosystemId: number) {
+  return createObjectAsync(
+    CORE_LINTING_FRAMEWORKS,
+    async (lintFrameworkName) => {
+      const result = await prisma.lintFramework.upsert({
+        where: {
+          name_ecosystemId: {
+            name: lintFrameworkName,
+            ecosystemId,
+          },
+        },
+        create: {
+          name: lintFrameworkName,
+          ecosystemId,
+        },
+        update: {},
+      });
+      return result;
+    }
+  );
+}
+
 export async function loadLintersToDb(
   eslintRules: Record<
     string,
@@ -354,7 +390,7 @@ export async function loadLintersToDb(
   >
 ) {
   const linterTypes = [
-    'eslint', // base package
+    ...CORE_LINTING_FRAMEWORKS,
     'eslint-plugin',
     'ember-template-lint-plugin',
   ];
@@ -372,63 +408,7 @@ export async function loadLintersToDb(
   });
 
   // Lint frameworks.
-  const lintFrameworkEmberTemplateLint = await prisma.lintFramework.upsert({
-    where: {
-      name_ecosystemId: {
-        name: 'ember-template-lint',
-        ecosystemId: ecosystemNode.id,
-      },
-    },
-    create: {
-      name: 'ember-template-lint',
-      ecosystemId: ecosystemNode.id,
-    },
-    update: {},
-  });
-  const lintFrameworkEslint = await prisma.lintFramework.upsert({
-    where: {
-      name_ecosystemId: { name: 'eslint', ecosystemId: ecosystemNode.id },
-    },
-    create: {
-      name: 'eslint',
-      ecosystemId: ecosystemNode.id,
-    },
-    update: {},
-  });
-  await prisma.lintFramework.upsert({
-    where: {
-      name_ecosystemId: { name: 'markdownlint', ecosystemId: ecosystemNode.id },
-    },
-    create: {
-      name: 'markdownlint',
-      ecosystemId: ecosystemNode.id,
-    },
-    update: {},
-  });
-  await prisma.lintFramework.upsert({
-    where: {
-      name_ecosystemId: {
-        name: 'npm-package-json-lint',
-        ecosystemId: ecosystemNode.id,
-      },
-    },
-    create: {
-      name: 'npm-package-json-lint',
-      ecosystemId: ecosystemNode.id,
-    },
-    update: {},
-  });
-  await prisma.lintFramework.upsert({
-    where: {
-      name_ecosystemId: { name: 'stylelint', ecosystemId: ecosystemNode.id },
-    },
-    create: {
-      name: 'stylelint',
-      ecosystemId: ecosystemNode.id,
-    },
-    update: {},
-  });
-
+  const lintFrameworks = await createLintFrameworks(ecosystemNode.id);
   const lintersCreated = [];
 
   for (const linterType of linterTypes) {
@@ -452,11 +432,18 @@ export async function loadLintersToDb(
         linterRecord = load<EmberTemplateLint>(downloadPath);
         break;
       }
+      case 'ember-template-lint': {
+        linterRecord = load<EmberTemplateLint>(downloadPath);
+        break;
+      }
       case 'eslint': {
         linterRecord = load<TSESLint.Linter.Plugin>(downloadPath);
 
-        // Rules/configs are not exported like they are with linters. Have to manually retrieve them.
+        if (!linterRecord.eslint) {
+          throw new Error('Failed to load eslint.');
+        }
 
+        // Rules/configs are not exported like they are with linters. Have to manually retrieve them.
         linterRecord.eslint.rules = eslintRules;
 
         // ESLint core rules have a `recommended` property that we can build the config from.
@@ -480,7 +467,7 @@ export async function loadLintersToDb(
         break;
       }
       default: {
-        throw new Error(`Unknown linter type: ${linterType}`);
+        linterRecord = load<any>(downloadPath);
       }
     }
 
@@ -538,30 +525,53 @@ export async function loadLintersToDb(
             return [];
           }
 
-          const linterNormalized = ['eslint-plugin', 'eslint'].includes(
-            linterType
-          )
-            ? await eslintLinterToNormalizedLinter(
+          let linterNormalized;
+          switch (linterType) {
+            case 'eslint':
+            case 'eslint-plugin': {
+              linterNormalized = await eslintLinterToNormalizedLinter(
                 linterName,
                 linter,
                 packageJson,
                 npmDownloadsInfo,
                 npmRegistryInfo,
-                lintFrameworkEslint.id,
-                ecosystemNode.id
-              )
-            : await emberTemplateLintLinterToNormalizedLinter(
-                linterName,
-                linter,
-                packageJson,
-                npmDownloadsInfo,
-                npmRegistryInfo,
-                lintFrameworkEmberTemplateLint.id,
+                lintFrameworks.eslint.id,
                 ecosystemNode.id
               );
+              break;
+            }
+
+            case 'ember-template-lint':
+            case 'ember-template-lint-plugin': {
+              linterNormalized =
+                await emberTemplateLintLinterToNormalizedLinter(
+                  linterName,
+                  linter,
+                  packageJson,
+                  npmDownloadsInfo,
+                  npmRegistryInfo,
+                  lintFrameworks['ember-template-lint'].id,
+                  ecosystemNode.id
+                );
+              break;
+            }
+
+            default: {
+              linterNormalized = await baseToNormalizedLinter(
+                linterName,
+                lintFrameworks[linterType].id,
+                ecosystemNode.id,
+                packageJson,
+                npmDownloadsInfo,
+                npmRegistryInfo,
+                [],
+                [],
+                EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS
+              );
+            }
+          }
 
           if (!linterNormalized) {
-            // Probably not an actual linter.
             return [];
           }
 

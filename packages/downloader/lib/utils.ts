@@ -78,7 +78,7 @@ async function installPackages(
 function loadPackages<T>(
   packages: PackageInfo[],
   downloadPath: string
-): Record<string, T> {
+): Record<string, T | undefined> {
   return Object.fromEntries(
     packages.flatMap((pkg) => {
       const packagePath = path.join(downloadPath, 'node_modules', pkg.name);
@@ -88,17 +88,17 @@ function loadPackages<T>(
         return [];
       }
 
+      let loaded;
       try {
         // eslint-disable-next-line import/no-dynamic-require
-        const loaded = require(packagePath) as T;
-        return [[pkg.name, loaded]];
+        loaded = require(packagePath) as T;
       } catch (error) {
         console.log(
           `Failed to require: ${packagePath}. Error = ${String(error)}`
         );
       }
 
-      return [];
+      return [[pkg.name, loaded]];
     })
   );
 }
