@@ -519,39 +519,36 @@ export async function loadLintersToDb(
     const limitNpm = pLimit(10);
 
     const npmInfo = await Promise.all(
-      Object.keys(linterRecord)
-        .slice(0, 10)
-        .map((linterName) =>
-          limitNpm(async () => {
-            let npmDownloadsInfo;
-            let npmRegistryInfo;
-            // eslint-disable-next-line no-console
-            console.log('Fetching npm info for', linterName);
-            try {
-              // Get info from npm registry.
-              // https://github.com/npm/registry/blob/master/docs/download-counts.md
-              // TODO: consider using bulk queries to reduce number of requests.
-              npmDownloadsInfo = (await fetch(
-                `https://api.npmjs.org/downloads/point/last-week/${linterName}`
-              ).then((res) => res.json())) as { downloads: number };
+      Object.keys(linterRecord).map((linterName) =>
+        limitNpm(async () => {
+          let npmDownloadsInfo;
+          let npmRegistryInfo;
+          // eslint-disable-next-line no-console
+          console.log('Fetching npm info for', linterName);
+          try {
+            // Get info from npm registry.
+            // https://github.com/npm/registry/blob/master/docs/download-counts.md
+            // TODO: consider using bulk queries to reduce number of requests.
+            npmDownloadsInfo = (await fetch(
+              `https://api.npmjs.org/downloads/point/last-week/${linterName}`
+            ).then((res) => res.json())) as { downloads: number };
 
-              npmRegistryInfo = (await fetch(
-                `https://registry.npmjs.org/${linterName}`
-              ).then((res) => res.json())) as NpmRegistryInfo;
-            } catch {
-              // eslint-disable-next-line no-console
-              console.log(`Fetching npm info failed for ${linterName}.`);
-              return {};
-            }
-            return { npmDownloadsInfo, npmRegistryInfo };
-          })
-        )
+            npmRegistryInfo = (await fetch(
+              `https://registry.npmjs.org/${linterName}`
+            ).then((res) => res.json())) as NpmRegistryInfo;
+          } catch {
+            // eslint-disable-next-line no-console
+            console.log(`Fetching npm info failed for ${linterName}.`);
+            return {};
+          }
+          return { npmDownloadsInfo, npmRegistryInfo };
+        })
+      )
     );
 
     const lintersCreatedForThisType = await Promise.all(
-      Object.entries(linterRecord)
-        .slice(0, 10)
-        .flatMap(async ([linterName, linter], index) => {
+      Object.entries(linterRecord).flatMap(
+        async ([linterName, linter], index) => {
           const pathPackageJson = path.join(
             downloadPath,
             'node_modules',
@@ -633,7 +630,8 @@ export async function loadLintersToDb(
           }
 
           return [linterNormalized];
-        })
+        }
+      )
     );
 
     lintersCreated.push(...lintersCreatedForThisType);
