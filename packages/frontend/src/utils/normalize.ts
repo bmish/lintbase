@@ -1,4 +1,4 @@
-import { EmberTemplateLint } from '@/utils/types';
+import { EmberTemplateLint, Stylelint } from '@/utils/types';
 import { load } from '@lintbase/downloader';
 import type { TSESLint } from '@typescript-eslint/utils';
 import path from 'node:path';
@@ -349,6 +349,50 @@ async function emberTemplateLintLinterToNormalizedLinter(
   return linterCreated;
 }
 
+async function stylelintToNormalizedLinter(
+  linterName: string,
+  linter: Stylelint,
+  packageJson: PackageJson,
+  npmDownloadsInfo: { downloads: number },
+  npmRegistryInfo: NpmRegistryInfo,
+  lintFrameworkId: number,
+  ecosystemId: number
+): Promise<
+  Prisma.LinterGetPayload<{ include: typeof linterInclude }> | undefined
+> {
+  const rules = Object.entries(linter?.rules || {}).map(([ruleName, rule]) => {
+    const ruleNormalized = {
+      name: ruleName,
+      description: null, // TODO
+      fixable: rule.meta?.fixable ? 'code' : null, // TODO: schema should support booleans
+      hasSuggestions: false, // Not supported.
+      type: null, // Not supported.
+      deprecated: rule.meta?.deprecated || false,
+      category: null, // Not supported.
+      requiresTypeChecking: false, // Not supported.
+      linkRuleDoc: rule.meta?.url || null,
+    };
+
+    return ruleNormalized;
+  });
+
+  const linterCreated = await baseToNormalizedLinter(
+    linterName,
+    lintFrameworkId,
+    ecosystemId,
+    packageJson,
+    npmDownloadsInfo,
+    npmRegistryInfo,
+    rules,
+    [],
+    IGNORED_KEYWORDS
+  );
+
+  // TODO: create RuleConfigs
+
+  return linterCreated;
+}
+
 async function createObjectAsync<T>(
   keys: string[],
   // eslint-disable-next-line no-unused-vars
@@ -553,6 +597,19 @@ export async function loadLintersToDb(
                   lintFrameworks['ember-template-lint'].id,
                   ecosystemNode.id
                 );
+              break;
+            }
+
+            case 'stylelint': {
+              linterNormalized = await stylelintToNormalizedLinter(
+                linterName,
+                linter,
+                packageJson,
+                npmDownloadsInfo,
+                npmRegistryInfo,
+                lintFrameworks.stylelint.id,
+                ecosystemNode.id
+              );
               break;
             }
 
