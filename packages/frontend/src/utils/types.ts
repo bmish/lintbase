@@ -15,3 +15,14 @@ export type Stylelint = {
     }
   >;
 };
+
+export type StylelintPlugin = {
+  ruleName: string;
+  rule: {
+    meta?: {
+      deprecated?: boolean;
+      fixable?: boolean;
+      url?: string;
+    };
+  };
+}[];

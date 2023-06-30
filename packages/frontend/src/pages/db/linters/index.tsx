@@ -186,7 +186,7 @@ export default function Linters({
                     {ecosystemToDisplayName(lintFramework.ecosystem)}
                   </TableCell>
                   <TableCell scope="row" align="right">
-                    {lintFramework._count.linters}
+                    {millify(lintFramework._count.linters)}
                   </TableCell>
                   <TableCell scope="row" align="right">
                     {lintFramework.linter &&
