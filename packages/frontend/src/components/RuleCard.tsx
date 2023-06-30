@@ -47,7 +47,7 @@ export default function RuleCard({
           {rule.linter.lintFramework.name === 'eslint'
             ? 'ESLint'
             : rule.linter.lintFramework.name}{' '}
-          • {rule.linter.lintFramework.name}
+          • {rule.linter.package.name}
         </Typography>
         <div className="mb-4">
           <Typography variant="h5" component="div">
