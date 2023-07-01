@@ -17,6 +17,9 @@ import Head from 'next/head';
 import Footer from '@/components/Footer';
 import DatabaseNavigation from '@/components/DatabaseNavigation';
 import RuleTable from '@/components/RuleTable';
+import { Configuration, OpenAIApi } from 'openai';
+import { useRouter } from 'next/router';
+import { kmeans } from 'ml-kmeans';
 
 interface IQueryParam {
   linterId: string;
@@ -46,7 +49,15 @@ const include = {
   },
 };
 
-export async function getServerSideProps({ params }: { params: IQueryParam }) {
+export async function getServerSideProps({
+  params,
+  query,
+}: {
+  params: IQueryParam;
+  query: {
+    count?: string;
+  };
+}) {
   const { linterId } = params;
 
   const linter = await prisma.linter.findFirstOrThrow({
@@ -59,18 +70,69 @@ export async function getServerSideProps({ params }: { params: IQueryParam }) {
   });
   const linterFixed = fixAnyDatesInObject(linter);
 
+  if (!query.count || query.count === '1') {
+    return {
+      props: { data: { linter: linterFixed } },
+    };
+  }
+
+  const configuration = new Configuration({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+  const openai = new OpenAIApi(configuration);
+
+  const embeddings: number[][] = [];
+  const rules = linter.rules;
+  for (const rule of rules) {
+    const response = await openai.createEmbedding({
+      input: `${rule.name}: ${rule.description || ''}`,
+      model: 'text-embedding-ada-002',
+    });
+    embeddings.push(response.data.data[0].embedding);
+  }
+
   return {
-    props: { data: { linter: linterFixed } },
+    props: { data: { linter: linterFixed, embeddings } },
   };
 }
 
+function embeddingsToLists(
+  countClusters: number,
+  embeddings: number[][],
+  linter: Prisma.LinterGetPayload<{ include: typeof include }>
+) {
+  const ruleIndexToCluster = kmeans(
+    embeddings,
+    Number(countClusters),
+    {}
+  ).clusters;
+
+  const listsOfRules = Array.from({ length: Number(countClusters) })
+    .fill('')
+    .map((x, clusterIndex) =>
+      linter.rules.filter(
+        (_, ruleIndex) => ruleIndexToCluster[ruleIndex] === clusterIndex
+      )
+    );
+
+  return listsOfRules;
+}
+
 export default function Linter({
-  data: { linter },
+  data: { linter, embeddings },
 }: {
   data: {
     linter: Prisma.LinterGetPayload<{ include: typeof include }>;
+    embeddings?: number[][];
   };
 }) {
+  const router = useRouter();
+  const countClusters = router.query.count;
+
+  const listsOfRules = embeddings
+    ? embeddingsToLists(Number(countClusters), embeddings, linter)
+    : [linter.rules];
+
   const relevantConfigEmojis = Object.entries(EMOJI_CONFIGS).filter(
     ([config]) =>
       linter.configs.some((linterConfig) => config === linterConfig.name)
@@ -123,14 +185,14 @@ export default function Linter({
           </TableContainer>
         )}
 
-        {linter && linter.rules.length > 0 && (
+        {listsOfRules.map((rules, i) => (
           <RuleTable
-            rules={linter.rules}
+            key={i}
+            rules={rules}
             pkg={linter.package}
             relevantConfigEmojis={relevantConfigEmojis}
           />
-        )}
-
+        ))}
         <Footer />
       </main>
     </div>
