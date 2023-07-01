@@ -46,6 +46,7 @@ export default function LinterCard({
       };
       configs: true;
       rules: true;
+      lintFramework: true;
     };
   }>;
   detailed?: boolean;
@@ -57,7 +58,9 @@ export default function LinterCard({
       <CardContent>
         <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
           {ecosystemToDisplayName(linter.package.ecosystem)} •{' '}
-          {linter.package.name === 'eslint' ? 'ESLint' : linter.package.name}
+          {linter.lintFramework.name === 'eslint'
+            ? 'ESLint'
+            : linter.lintFramework.name}
         </Typography>
         <Typography variant="h5" component="div">
           {detailed && linter.package.name}

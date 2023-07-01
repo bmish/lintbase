@@ -49,6 +49,7 @@ const include = {
   package: {
     include: { keywords: true, ecosystem: true },
   },
+  lintFramework: true,
 };
 
 export async function getServerSideProps({

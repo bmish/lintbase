@@ -26,6 +26,7 @@ const includeLinters = {
       keywords: true,
     },
   },
+  lintFramework: true,
 };
 
 export async function getServerSideProps() {
