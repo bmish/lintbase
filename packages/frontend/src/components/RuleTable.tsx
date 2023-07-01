@@ -27,7 +27,7 @@ export default function RuleTable({
   pkg,
   relevantConfigEmojis,
 }: {
-  rules: Prisma.RuleGetPayload<{
+  rules: readonly Prisma.RuleGetPayload<{
     include: { options: true; ruleConfigs: { include: { config: true } } };
   }>[];
   pkg: Prisma.PackageGetPayload<{}>;

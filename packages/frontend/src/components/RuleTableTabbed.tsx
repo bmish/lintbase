@@ -32,8 +32,8 @@ export default function RuleTableTabbed({
   pkg,
 }: {
   listsOfRules: {
-    title: string;
-    rules: Prisma.RuleGetPayload<{
+    title?: string;
+    rules: readonly Prisma.RuleGetPayload<{
       include: { options: true; ruleConfigs: { include: { config: true } } };
     }>[];
   }[];
@@ -56,6 +56,8 @@ export default function RuleTableTabbed({
             value={currentRuleListIndex}
             onChange={handleChangeCurrentRuleListIndex}
             aria-label="rule list tabs"
+            variant="scrollable"
+            scrollButtons="auto"
           >
             {listsOfRules.map((obj, i) => (
               <Tab key={i} label={obj.title} id={`rule-list-tab-${i}`} />

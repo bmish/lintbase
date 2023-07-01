@@ -21,6 +21,7 @@ import { useRouter } from 'next/router';
 import { kmeans } from 'ml-kmeans';
 import React from 'react';
 import RuleTableTabbed from '@/components/RuleTableTabbed';
+import { splitList } from '@/utils/split-list';
 
 interface IQueryParam {
   linterId: string;
@@ -134,7 +135,10 @@ export default function Linter({
   const listsOfRules = embeddings
     ? embeddingsToLists(Number(countClusters), embeddings, linter)
     : linter.rules.some((rule) => rule.category)
-    ? [] // TODO: add category lists
+    ? splitList(linter.rules, ['category']).map((obj) => ({
+        title: obj.title,
+        rules: obj.items,
+      }))
     : [];
   listsOfRules.unshift({ rules: linter.rules, title: 'Alphabetical' });
 
