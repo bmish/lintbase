@@ -1,6 +1,6 @@
 export type EmberTemplateLint = {
-  configurations?: Record<string, { rules: {} }>;
-  rules?: Record<string, {}>;
+  configurations?: Record<string, { rules: object }>;
+  rules?: Record<string, object>;
 };
 
 export type Stylelint = {

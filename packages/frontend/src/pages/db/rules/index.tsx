@@ -83,7 +83,7 @@ export async function getServerSideProps({
     }),
   ]);
 
-  const rulesFixed = await rules.map((rule) => fixAnyDatesInObject(rule));
+  const rulesFixed = rules.map((rule) => fixAnyDatesInObject(rule));
 
   return {
     props: { data: { rules: rulesFixed, ruleCount, currentPage, pageSize } },
@@ -102,7 +102,7 @@ export default function Rules({
 }) {
   const router = useRouter();
 
-  const handleChangePage = (
+  const handleChangePage = async (
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number
   ) => {
@@ -116,14 +116,14 @@ export default function Rules({
     if (newPage > 0) {
       newQueryParams.append('p', String(newPage + 1));
     }
-    router.push(
+    await router.push(
       `${router.pathname}${
         newQueryParams.size > 0 ? '?' : ''
       }${newQueryParams.toString()}`
     );
   };
 
-  const handleChangeRowsPerPage = (
+  const handleChangeRowsPerPage = async (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const pageSize = Number.parseInt(event.target.value, 10);
@@ -133,7 +133,7 @@ export default function Rules({
     }
     newQueryParams.append('c', String(pageSize));
 
-    router.push(`${router.pathname}?${newQueryParams.toString()}`);
+    await router.push(`${router.pathname}?${newQueryParams.toString()}`);
   };
 
   return (
@@ -227,7 +227,9 @@ export default function Rules({
                   count={ruleCount}
                   page={currentPage}
                   rowsPerPage={pageSize}
+                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   onPageChange={handleChangePage}
+                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   onRowsPerPageChange={handleChangeRowsPerPage}
                 />
               </TableRow>

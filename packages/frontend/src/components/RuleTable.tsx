@@ -30,8 +30,8 @@ export default function RuleTable({
   rules: readonly Prisma.RuleGetPayload<{
     include: { options: true; ruleConfigs: { include: { config: true } } };
   }>[];
-  pkg: Prisma.PackageGetPayload<{}>;
-  relevantConfigEmojis: [string, string][];
+  pkg: Prisma.PackageGetPayload<object>;
+  relevantConfigEmojis: readonly [string, string][];
 }) {
   return (
     <TableContainer>

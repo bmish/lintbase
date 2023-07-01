@@ -208,6 +208,7 @@ async function eslintLinterToNormalizedLinter(
           })),
         },
         // @ts-expect-error -- category not an official property
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         category: rule.meta?.docs?.category || null,
         options: {
           create: uniqueItems(
@@ -216,6 +217,7 @@ async function eslintLinterToNormalizedLinter(
           ).map((obj) => ({ name: obj.name, type: obj.type })),
         },
         // @ts-expect-error -- requiresTypeChecking not an official property
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         requiresTypeChecking: rule.meta?.requiresTypeChecking || false,
         linkRuleDoc: rule.meta?.docs?.url || null,
       };
@@ -439,7 +441,7 @@ async function stylelintPluginToNormalizedLinter(
 
 async function createObjectAsync<T>(
   keys: string[],
-  // eslint-disable-next-line no-unused-vars
+
   create: (_key: string) => Promise<T>
 ): Promise<Record<string, T>> {
   const results = await Promise.all(keys.map((key) => create(key)));
@@ -557,6 +559,7 @@ export async function loadLintersToDb(
         break;
       }
       default: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         linterRecord = load<any>(downloadPath);
       }
     }
@@ -618,6 +621,7 @@ export async function loadLintersToDb(
             case 'eslint-plugin': {
               linterNormalized = await eslintLinterToNormalizedLinter(
                 linterName,
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 linter,
                 packageJson,
                 npmDownloadsInfo,
@@ -633,6 +637,7 @@ export async function loadLintersToDb(
               linterNormalized =
                 await emberTemplateLintLinterToNormalizedLinter(
                   linterName,
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                   linter,
                   packageJson,
                   npmDownloadsInfo,
@@ -646,6 +651,7 @@ export async function loadLintersToDb(
             case 'stylelint': {
               linterNormalized = await stylelintToNormalizedLinter(
                 linterName,
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 linter,
                 packageJson,
                 npmDownloadsInfo,
@@ -658,6 +664,7 @@ export async function loadLintersToDb(
             case 'stylelint-plugin': {
               linterNormalized = await stylelintPluginToNormalizedLinter(
                 linterName,
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 linter,
                 packageJson,
                 npmDownloadsInfo,
@@ -706,10 +713,12 @@ export function fixAnyDatesInObject(object: object): object {
       }
 
       if (Array.isArray(value)) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         return [key, value.map((item) => fixAnyDatesInObject(item))];
       }
 
       if (typeof value === 'object' && value !== null) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         return [key, fixAnyDatesInObject(value)];
       }
 

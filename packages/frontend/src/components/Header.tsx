@@ -9,7 +9,7 @@ export default function Header() {
 
   const [searchValue, setSearchValue] = useState(router.query.q || '');
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value);
 
     const SEARCHABLE_PATHS = ['/db/plugins', '/db/rules'];
@@ -18,11 +18,9 @@ export default function Header() {
       ? router.pathname
       : '/db/plugins';
 
-    if (event.target.value) {
-      router.push(`${newUrl}?q=${event.target.value}`);
-    } else {
-      router.push(newUrl);
-    }
+    await (event.target.value
+      ? router.push(`${newUrl}?q=${event.target.value}`)
+      : router.push(newUrl));
   };
 
   useEffect(() => {
@@ -53,6 +51,7 @@ export default function Header() {
               placeholder="Search"
               variant="standard"
               value={searchValue}
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises
               onChange={handleChange} // TODO: add debouncing
             ></TextField>
           </li>

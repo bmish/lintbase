@@ -20,7 +20,10 @@ function getRepositoryLink(linkRepository: string | null): string | undefined {
   if (!linkRepository) {
     return undefined;
   }
-  if (linkRepository.includes('github:') || /^\w+\/\w+$/.test(linkRepository)) {
+  if (
+    linkRepository.includes('github:') ||
+    /^\w+\/\w+$/u.test(linkRepository)
+  ) {
     return `https://github.com/${linkRepository.replace('github:', '')}`;
   }
   if (

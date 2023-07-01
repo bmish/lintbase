@@ -37,7 +37,7 @@ export default function RuleTableTabbed({
       include: { options: true; ruleConfigs: { include: { config: true } } };
     }>[];
   }[];
-  pkg: Prisma.PackageGetPayload<{}>;
+  pkg: Prisma.PackageGetPayload<object>;
   relevantConfigEmojis: [string, string][];
 }) {
   const [currentRuleListIndex, setCurrentRuleListIndex] = React.useState(0);

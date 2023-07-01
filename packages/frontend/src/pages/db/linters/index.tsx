@@ -71,7 +71,7 @@ export async function getServerSideProps({
     }),
   ]);
 
-  const lintFrameworksFixed = await lintFrameworks.map((linter) =>
+  const lintFrameworksFixed = lintFrameworks.map((linter) =>
     fixAnyDatesInObject(linter)
   );
 
@@ -101,7 +101,7 @@ export default function Linters({
 }) {
   const router = useRouter();
 
-  const handleChangePage = (
+  const handleChangePage = async (
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number
   ) => {
@@ -115,14 +115,14 @@ export default function Linters({
     if (newPage > 0) {
       newQueryParams.append('p', String(newPage + 1));
     }
-    router.push(
+    await router.push(
       `${router.pathname}${
         newQueryParams.size > 0 ? '?' : ''
       }${newQueryParams.toString()}`
     );
   };
 
-  const handleChangeRowsPerPage = (
+  const handleChangeRowsPerPage = async (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const pageSize = Number.parseInt(event.target.value, 10);
@@ -132,7 +132,7 @@ export default function Linters({
     }
     newQueryParams.append('c', String(pageSize));
 
-    router.push(`${router.pathname}?${newQueryParams.toString()}`);
+    await router.push(`${router.pathname}?${newQueryParams.toString()}`);
   };
 
   return (
@@ -222,7 +222,9 @@ export default function Linters({
                   count={lintFrameworkCount}
                   page={currentPage}
                   rowsPerPage={pageSize}
+                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   onPageChange={handleChangePage}
+                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
                   onRowsPerPageChange={handleChangeRowsPerPage}
                 />
               </TableRow>

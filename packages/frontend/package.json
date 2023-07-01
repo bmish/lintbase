@@ -31,7 +31,6 @@
     "boolean": "^3.2.0",
     "dot-prop": "^8.0.1",
     "eslint": "^8",
-    "eslint-config-next": "^13.4.4",
     "json-schema-traverse": "^1.0.0",
     "millify": "^6.1.0",
     "ml-kmeans": "^6.0.0",
@@ -52,6 +51,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "eslint-config-next": "^13.4.4",
     "eslint-plugin-square": "^25.0.0"
   },
   "engines": {
