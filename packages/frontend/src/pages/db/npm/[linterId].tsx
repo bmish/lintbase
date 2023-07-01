@@ -1,13 +1,16 @@
 /* eslint filenames/match-exported:"off",unicorn/filename-case:"off" */
 import LinterCard from '@/components/LinterCard';
 import {
+  Box,
   Paper,
+  Tab,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  Tabs,
 } from '@mui/material';
 import { prisma } from '@/server/db';
 import { fixAnyDatesInObject } from '@/utils/normalize';
@@ -20,6 +23,7 @@ import RuleTable from '@/components/RuleTable';
 import { Configuration, OpenAIApi } from 'openai';
 import { useRouter } from 'next/router';
 import { kmeans } from 'ml-kmeans';
+import React from 'react';
 
 interface IQueryParam {
   linterId: string;
@@ -118,6 +122,35 @@ function embeddingsToLists(
   return listsOfRules;
 }
 
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`rule-list-tab-panel-${index}`}
+      aria-labelledby={`rule-list-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box>{children}</Box>}
+    </div>
+  );
+}
+
+function a11yPropsRuleListTab(index: number) {
+  return {
+    id: `rule-list-tab-${index}`,
+    'aria-controls': `rule-list-tab-${index}`,
+  };
+}
+
 export default function Linter({
   data: { linter, embeddings },
 }: {
@@ -137,6 +170,14 @@ export default function Linter({
     ([config]) =>
       linter.configs.some((linterConfig) => config === linterConfig.name)
   );
+
+  const [currentRuleListIndex, setCurrentRuleListIndex] = React.useState(0);
+  const handleChangeCurrentRuleListIndex = (
+    event: React.SyntheticEvent,
+    newValue: number
+  ) => {
+    setCurrentRuleListIndex(newValue);
+  };
 
   return (
     <div className="bg-gray-100 h-full">
@@ -185,14 +226,34 @@ export default function Linter({
           </TableContainer>
         )}
 
-        {listsOfRules.map((rules, i) => (
-          <RuleTable
-            key={i}
-            rules={rules}
-            pkg={linter.package}
-            relevantConfigEmojis={relevantConfigEmojis}
-          />
-        ))}
+        <Paper className="mt-8">
+          {listsOfRules.length > 1 && (
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <Tabs
+                value={currentRuleListIndex}
+                onChange={handleChangeCurrentRuleListIndex}
+                aria-label="rule list tabs"
+              >
+                {listsOfRules.map((rules, i) => (
+                  <Tab
+                    key={i}
+                    label={`Cluster ${i + 1}`}
+                    {...a11yPropsRuleListTab(i)}
+                  />
+                ))}
+              </Tabs>
+            </Box>
+          )}
+          {listsOfRules.map((rules, i) => (
+            <TabPanel value={i} index={0} key={i}>
+              <RuleTable
+                rules={rules}
+                pkg={linter.package}
+                relevantConfigEmojis={relevantConfigEmojis}
+              />
+            </TabPanel>
+          ))}
+        </Paper>
         <Footer />
       </main>
     </div>

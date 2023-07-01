@@ -1,6 +1,5 @@
 import {
   Link,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -35,7 +34,7 @@ export default function RuleTable({
   relevantConfigEmojis: [string, string][];
 }) {
   return (
-    <TableContainer component={Paper} className="mt-8">
+    <TableContainer>
       <Table sx={{ minWidth: 650 }} aria-label="linter rule list">
         <TableHead>
           <TableRow>
