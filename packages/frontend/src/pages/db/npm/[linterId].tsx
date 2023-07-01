@@ -141,7 +141,9 @@ export default function Linter({
         rules: obj.items,
       }))
     : [];
-  listsOfRules.unshift({ rules: linter.rules, title: 'Alphabetical' });
+  if (linter.rules.length > 0) {
+    listsOfRules.unshift({ rules: linter.rules, title: 'Alphabetical' });
+  }
 
   const relevantConfigEmojis = Object.entries(EMOJI_CONFIGS).filter(
     ([config]) =>
@@ -195,13 +197,16 @@ export default function Linter({
           </TableContainer>
         )}
 
-        <Paper className="mt-8">
-          <RuleTableTabbed
-            listsOfRules={listsOfRules}
-            relevantConfigEmojis={relevantConfigEmojis}
-            pkg={linter.package}
-          />
-        </Paper>
+        {listsOfRules.length > 0 && (
+          <Paper className="mt-8">
+            <RuleTableTabbed
+              listsOfRules={listsOfRules}
+              relevantConfigEmojis={relevantConfigEmojis}
+              pkg={linter.package}
+            />
+          </Paper>
+        )}
+
         <Footer />
       </main>
     </div>
