@@ -188,7 +188,7 @@ export default function index({
                     <TableRow key={obj.name}>
                       <TableCell scope="col">
                         <Link
-                          href={`/db/linters/?keyword=${encodeURIComponent(
+                          href={`/db/plugins/?keyword=${encodeURIComponent(
                             obj.name
                           )}`}
                         >
