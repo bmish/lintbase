@@ -1,6 +1,6 @@
 import RuleTable from '@/components/RuleTable';
 import { Box, Tab, Tabs } from '@mui/material';
-import { Prisma } from '@prisma/client';
+import { Prisma, Package as PrismaPackage } from '@prisma/client';
 import React from 'react';
 
 interface TabPanelProps {
@@ -37,7 +37,7 @@ export default function RuleTableTabbed({
       include: { options: true; ruleConfigs: { include: { config: true } } };
     }>[];
   }[];
-  pkg: Prisma.PackageGetPayload<object>;
+  pkg: PrismaPackage;
   relevantConfigEmojis: [string, string][];
 }) {
   const [currentRuleListIndex, setCurrentRuleListIndex] = React.useState(0);

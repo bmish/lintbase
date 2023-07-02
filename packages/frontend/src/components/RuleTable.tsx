@@ -20,7 +20,7 @@ import EmojiSeverityWarn from '@/components/EmojiSeverityWarn';
 import EmojiSeverityOff from '@/components/EmojiSeverityOff';
 import { ruleToLinkUs } from '@/utils/dynamic-fields';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
-import { Prisma } from '@prisma/client';
+import { Prisma, Package as PrismaPackage } from '@prisma/client';
 
 export default function RuleTable({
   rules,
@@ -30,7 +30,7 @@ export default function RuleTable({
   rules: readonly Prisma.RuleGetPayload<{
     include: { options: true; ruleConfigs: { include: { config: true } } };
   }>[];
-  pkg: Prisma.PackageGetPayload<object>;
+  pkg: PrismaPackage;
   relevantConfigEmojis: readonly [string, string][];
 }) {
   return (
