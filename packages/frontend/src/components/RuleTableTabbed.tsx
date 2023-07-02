@@ -60,7 +60,13 @@ export default function RuleTableTabbed({
             scrollButtons="auto"
           >
             {listsOfRules.map((obj, i) => (
-              <Tab key={i} label={obj.title} id={`rule-list-tab-${i}`} />
+              <Tab
+                key={i}
+                label={obj.title}
+                id={`rule-list-tab-${i}`}
+                // Separate groups of tabs.
+                sx={{ 'margin-right': obj.title === 'Alphabetical' ? 24 : 0 }}
+              />
             ))}
           </Tabs>
         </Box>
