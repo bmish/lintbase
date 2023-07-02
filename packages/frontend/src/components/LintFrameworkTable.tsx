@@ -18,6 +18,7 @@ import { Prisma } from '@prisma/client';
 
 export default function LintFrameworkTable({
   lintFrameworks,
+  ruleCounts,
   isPreview,
 }: {
   lintFrameworks: Prisma.LintFrameworkGetPayload<{
@@ -29,6 +30,7 @@ export default function LintFrameworkTable({
       ecosystem: true;
     };
   }>[];
+  ruleCounts: number[];
   isPreview?: boolean;
 }) {
   return (
@@ -46,6 +48,11 @@ export default function LintFrameworkTable({
                 Plugins
               </TableCell>
             )}
+            {!isPreview && (
+              <TableCell scope="col" align="right">
+                Rules
+              </TableCell>
+            )}
             <TableCell scope="col" align="right">
               Wkly
               <GetAppIcon fontSize="inherit" titleAccess="Downloads" />
@@ -56,7 +63,7 @@ export default function LintFrameworkTable({
           </TableRow>
         </TableHead>
         <TableBody>
-          {lintFrameworks.map((lintFramework) => (
+          {lintFrameworks.map((lintFramework, index) => (
             <TableRow
               key={lintFramework.name}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -83,6 +90,11 @@ export default function LintFrameworkTable({
               {!isPreview && (
                 <TableCell scope="row" align="right">
                   {millify(lintFramework._count.linters)}
+                </TableCell>
+              )}
+              {!isPreview && (
+                <TableCell scope="row" align="right">
+                  {millify(ruleCounts[index])}
                 </TableCell>
               )}
               <TableCell scope="row" align="right">

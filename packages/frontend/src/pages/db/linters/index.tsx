@@ -51,6 +51,19 @@ export async function getServerSideProps({ query }: { query: { q: string } }) {
     }),
   ]);
 
+  // TODO: skip preview-only frameworks for performance.
+  const ruleCountPerLintFramework = await Promise.all(
+    lintFrameworks.map((lintFramework) =>
+      prisma.rule.count({
+        where: {
+          linter: {
+            lintFrameworkId: lintFramework.id,
+          },
+        },
+      })
+    )
+  );
+
   const lintFrameworksFixed = lintFrameworks.map((linter) =>
     fixAnyDatesInObject(linter)
   );
@@ -58,27 +71,37 @@ export async function getServerSideProps({ query }: { query: { q: string } }) {
   return {
     props: {
       data: {
-        lintFrameworks: lintFrameworksFixed,
+        lintFrameworksAndRuleCounts: lintFrameworksFixed.map(
+          (lintFramework, index) => ({
+            lintFramework,
+            countRules: ruleCountPerLintFramework[index],
+          })
+        ),
       },
     },
   };
 }
 
 export default function Linters({
-  data: { lintFrameworks },
+  data: { lintFrameworksAndRuleCounts },
 }: {
   data: {
-    lintFrameworks: Prisma.LintFrameworkGetPayload<{
-      include: typeof include;
-    }>[];
+    lintFrameworksAndRuleCounts: {
+      lintFramework: Prisma.LintFrameworkGetPayload<{
+        include: typeof include;
+      }>;
+      countRules: number;
+    }[];
   };
 }) {
-  const lintFrameworksPopulated = lintFrameworks.filter(
-    (lintFramework) => lintFramework._count.linters > 1
+  const lintFrameworksPopulated = lintFrameworksAndRuleCounts.filter(
+    (lintFrameworkAndRuleCount) =>
+      lintFrameworkAndRuleCount.lintFramework._count.linters > 1
   );
 
-  const lintFrameworksPreview = lintFrameworks.filter(
-    (lintFramework) => lintFramework._count.linters <= 1
+  const lintFrameworksPreview = lintFrameworksAndRuleCounts.filter(
+    (lintFrameworkAndRuleCount) =>
+      lintFrameworkAndRuleCount.lintFramework._count.linters <= 1
   );
 
   return (
@@ -91,7 +114,12 @@ export default function Linters({
       <main className="flex-grow overflow-y-auto bg-gray-100 pt-8 px-6 mx-auto min-h-screen">
         {lintFrameworksPopulated.length > 0 && (
           <Paper>
-            <LintFrameworkTable lintFrameworks={lintFrameworksPopulated} />
+            <LintFrameworkTable
+              lintFrameworks={lintFrameworksPopulated.map(
+                (obj) => obj.lintFramework
+              )}
+              ruleCounts={lintFrameworksPopulated.map((obj) => obj.countRules)}
+            />
           </Paper>
         )}
 
@@ -100,7 +128,12 @@ export default function Linters({
             <h2 className="text-lg mt-8 text-center">Coming Soon</h2>
             <Paper className="mt-8">
               <LintFrameworkTable
-                lintFrameworks={lintFrameworksPreview}
+                lintFrameworks={lintFrameworksPreview.map(
+                  (obj) => obj.lintFramework
+                )}
+                ruleCounts={lintFrameworksPopulated.map(
+                  (obj) => obj.countRules
+                )}
                 isPreview={true}
               />
             </Paper>
