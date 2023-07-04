@@ -21,8 +21,11 @@ const IGNORED_KEYWORDS = new Set([
   'configurations',
   'lint',
   'linter',
-  'linting',
   'linter',
+  'linting',
+  'package',
+  'plugin',
+  'plugins',
   'rule',
   'rules',
 ]);
