@@ -11,6 +11,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
 } from '@mui/material';
 import { Prisma } from '@prisma/client';
 import Head from 'next/head';
@@ -18,6 +19,7 @@ import { EMOJI_CONFIGS } from '@/utils/eslint';
 import EmojiSeverityWarn from '@/components/EmojiSeverityWarn';
 import EmojiSeverityOff from '@/components/EmojiSeverityOff';
 import DatabaseNavigation from '@/components/DatabaseNavigation';
+import { related } from '@/utils/related';
 
 interface IQueryParam {
   ruleId: string;
@@ -50,7 +52,15 @@ const include = {
   },
 };
 
-export async function getServerSideProps({ params }: { params: IQueryParam }) {
+export async function getServerSideProps({
+  params,
+  query,
+}: {
+  params: IQueryParam;
+  query: {
+    showRelated?: string; // Hide by default until we cached the results.
+  };
+}) {
   const { ruleId } = params;
 
   const rule = await prisma.rule.findFirstOrThrow({
@@ -61,15 +71,62 @@ export async function getServerSideProps({ params }: { params: IQueryParam }) {
   });
   const ruleFixed = fixAnyDatesInObject(rule);
 
+  // Similar rules:
+  let rulesRelated = null,
+    rulesRelatedResults = null;
+  if (query.showRelated) {
+    try {
+      rulesRelatedResults = await related({
+        type: 'rule',
+        ecosystemName: rule.linter.package.ecosystem.name,
+        linterName: rule.linter.package.name,
+        ruleName: ruleId,
+        count: 3,
+      });
+
+      rulesRelated = await Promise.all(
+        rulesRelatedResults?.map(async (result) => {
+          const rule = await prisma.rule.findFirstOrThrow({
+            where: {
+              name: result.id.split('#')[2],
+              linter: {
+                package: {
+                  ecosystem: {
+                    name: result.id.split('#')[0],
+                  },
+                  name: result.id.split('#')[1],
+                },
+              },
+            },
+            include,
+          });
+          return {
+            rule: fixAnyDatesInObject(rule),
+            score: result.score,
+          };
+        }) || []
+      );
+    } catch {
+      // eslint-disable-next-line no-console
+      console.log('Could not fetch similar rules');
+    }
+  }
+
   return {
-    props: { data: { rule: ruleFixed } },
+    props: { data: { rule: ruleFixed, rulesRelated } },
   };
 }
 
 export default function Rule({
-  data: { rule },
+  data: { rule, rulesRelated },
 }: {
-  data: { rule: Prisma.RuleGetPayload<{ include: typeof include }> };
+  data: {
+    rule: Prisma.RuleGetPayload<{ include: typeof include }>;
+    rulesRelated?: {
+      rule: Prisma.RuleGetPayload<{ include: typeof include }>;
+      score: number;
+    }[];
+  };
 }) {
   const relevantConfigEmojis = Object.entries(EMOJI_CONFIGS).filter(
     ([config]) =>
@@ -93,6 +150,22 @@ export default function Rule({
 
       <main className="flex-grow overflow-y-auto bg-gray-100 pt-8 px-6 mx-auto min-h-screen">
         {rule && <RuleCard rule={rule} detailed={true}></RuleCard>}
+
+        {rulesRelated && rulesRelated.length > 0 && (
+          <div className="mt-8">
+            <Typography className="mb-2">Related Rules</Typography>
+            <div className="flex md:flex-row flex-col justify-between">
+              {rulesRelated.map((obj) => (
+                <div
+                  className="flex-grow md:mr-8 last:md:mr-0 md:mb-0 mb-8 last:mb-0"
+                  key={obj.rule.id}
+                >
+                  <RuleCard rule={obj.rule} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {rule && rule.ruleConfigs.length > 0 && (
           <TableContainer component={Paper} className="mt-8">
