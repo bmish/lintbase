@@ -17,13 +17,13 @@ import { Prisma } from '@prisma/client';
 import Head from 'next/head';
 import Footer from '@/components/Footer';
 import DatabaseNavigation from '@/components/DatabaseNavigation';
-import { Configuration, OpenAIApi } from 'openai';
 import { useRouter } from 'next/router';
 import { kmeans } from 'ml-kmeans';
 import React from 'react';
 import RuleTableTabbed from '@/components/RuleTableTabbed';
 import { splitList } from '@/utils/split-list';
 import { related } from '@/utils/related';
+import { PineconeClient } from '@pinecone-database/pinecone';
 
 interface IQueryParam {
   linterId: string;
@@ -122,35 +122,55 @@ export async function getServerSideProps({
 
   // Experimental clustering feature:
 
-  const configuration = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
-  const openai = new OpenAIApi(configuration);
+  const environment = process.env.PINECONE_ENVIRONMENT;
+  const apiKey = process.env.PINECONE_API_KEY;
 
-  const embeddings: number[][] = [];
-  const rules = linter.rules;
-  for (const rule of rules) {
-    const response = await openai.createEmbedding({
-      input: `${rule.name}: ${rule.description || ''}`,
-      model: 'text-embedding-ada-002',
-    });
-    embeddings.push(response.data.data[0].embedding);
+  if (!environment || !apiKey) {
+    return {
+      props: { data: { linter: linterFixed, lintersSimilar } },
+    };
   }
+
+  const pinecone = new PineconeClient();
+  await pinecone.init({
+    environment,
+    apiKey,
+  });
+
+  const rulesIndex = pinecone.Index('lintbase');
+
+  const vectorIds = linter.rules.map(
+    (rule) =>
+      `${linter.package.ecosystem.name}#${linter.package.name}#${rule.name}`
+  );
+  const vectorResponse = await rulesIndex.fetch({
+    ids: vectorIds,
+    namespace: 'rule',
+  });
 
   return {
     props: {
-      data: { linter: linterFixed, lintersSimilar, embeddings },
+      data: {
+        linter: linterFixed,
+        lintersSimilar,
+        embeddings: Object.entries(vectorResponse.vectors || {})
+          .map(([ruleName, vector]) => ({
+            ruleName: ruleName.split('#')[2],
+            values: vector.values,
+          }))
+          .sort((a, b) => a.ruleName.localeCompare(b.ruleName)), // Ensure the ordering of vectors matches the ordering of rules to that they correspond.
+      },
     },
   };
 }
 
 function embeddingsToLists(
   countClusters: number,
-  embeddings: number[][],
+  embeddings: { ruleName: string; values: number[] }[],
   linter: Prisma.LinterGetPayload<{ include: typeof include }>
 ) {
   const ruleIndexToCluster = kmeans(
-    embeddings,
+    embeddings.map((obj) => obj.values),
     Number(countClusters),
     {}
   ).clusters;
@@ -176,7 +196,7 @@ export default function Linter({
       linter: Prisma.LinterGetPayload<{ include: typeof include }>;
       score: number;
     }[];
-    embeddings?: number[][];
+    embeddings: { ruleName: string; values: number[] }[];
   };
 }) {
   const router = useRouter();
