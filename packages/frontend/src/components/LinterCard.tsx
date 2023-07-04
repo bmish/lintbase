@@ -57,7 +57,7 @@ export default function LinterCard({
   const repositoryLink = getRepositoryLink(linter.package.linkRepository);
 
   return (
-    <Card sx={{ minWidth: 275 }}>
+    <Card>
       <CardContent>
         <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
           {ecosystemToDisplayName(linter.package.ecosystem)} •{' '}

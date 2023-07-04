@@ -8,6 +8,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
 } from '@mui/material';
 import { prisma } from '@/server/db';
 import { fixAnyDatesInObject } from '@/utils/normalize';
@@ -22,6 +23,7 @@ import { kmeans } from 'ml-kmeans';
 import React from 'react';
 import RuleTableTabbed from '@/components/RuleTableTabbed';
 import { splitList } from '@/utils/split-list';
+import { related } from '@/utils/related';
 
 interface IQueryParam {
   linterId: string;
@@ -59,6 +61,7 @@ export async function getServerSideProps({
   params: IQueryParam;
   query: {
     count?: string;
+    showRelated?: string; // Hide by default until we cached the results.
   };
 }) {
   const { linterId } = params;
@@ -73,11 +76,51 @@ export async function getServerSideProps({
   });
   const linterFixed = fixAnyDatesInObject(linter);
 
+  // Similar linters:
+
+  let lintersSimilar = null,
+    lintersSimilarResponse = null;
+  if (query.showRelated) {
+    try {
+      lintersSimilarResponse = await related({
+        type: 'linter',
+        ecosystemName: linter.package.ecosystem.name,
+        linterName: linter.package.name,
+        count: 3,
+      });
+
+      lintersSimilar = await Promise.all(
+        lintersSimilarResponse?.map(async (result) => {
+          const linter = await prisma.linter.findFirstOrThrow({
+            where: {
+              package: {
+                ecosystem: {
+                  name: result.id.split('#')[0],
+                },
+                name: result.id.split('#')[1],
+              },
+            },
+            include,
+          });
+          return {
+            linter: fixAnyDatesInObject(linter),
+            score: result.score,
+          };
+        }) || []
+      );
+    } catch {
+      // eslint-disable-next-line no-console
+      console.log('Could not fetch similar linters');
+    }
+  }
+
   if (!query.count || query.count === '1') {
     return {
-      props: { data: { linter: linterFixed } },
+      props: { data: { linter: linterFixed, lintersSimilar } },
     };
   }
+
+  // Experimental clustering feature:
 
   const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
@@ -95,7 +138,9 @@ export async function getServerSideProps({
   }
 
   return {
-    props: { data: { linter: linterFixed, embeddings } },
+    props: {
+      data: { linter: linterFixed, lintersSimilar, embeddings },
+    },
   };
 }
 
@@ -123,10 +168,14 @@ function embeddingsToLists(
 }
 
 export default function Linter({
-  data: { linter, embeddings },
+  data: { linter, lintersSimilar, embeddings },
 }: {
   data: {
     linter: Prisma.LinterGetPayload<{ include: typeof include }>;
+    lintersSimilar?: {
+      linter: Prisma.LinterGetPayload<{ include: typeof include }>;
+      score: number;
+    }[];
     embeddings?: number[][];
   };
 }) {
@@ -165,6 +214,22 @@ export default function Linter({
 
       <main className="flex-grow overflow-y-auto bg-gray-100 pt-8 px-6 mx-auto min-h-screen">
         {linter && <LinterCard linter={linter} detailed={true}></LinterCard>}
+
+        {lintersSimilar && lintersSimilar.length > 0 && (
+          <div className="mt-8">
+            <Typography className="mb-2">Related Plugins</Typography>
+            <div className="flex md:flex-row flex-col justify-between">
+              {lintersSimilar.map((obj) => (
+                <div
+                  className="flex-grow md:mr-8 last:md:mr-0 md:mb-0 mb-8 last:mb-0"
+                  key={obj.linter.id}
+                >
+                  <LinterCard linter={obj.linter} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {linter && linter.configs.length > 0 && (
           <TableContainer component={Paper} className="mt-8">
