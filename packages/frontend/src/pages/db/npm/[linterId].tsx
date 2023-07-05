@@ -17,13 +17,13 @@ import { Prisma } from '@prisma/client';
 import Head from 'next/head';
 import Footer from '@/components/Footer';
 import DatabaseNavigation from '@/components/DatabaseNavigation';
-import { useRouter } from 'next/router';
 import { kmeans } from 'ml-kmeans';
 import React from 'react';
 import RuleTableTabbed from '@/components/RuleTableTabbed';
 import { splitList } from '@/utils/split-list';
 import { related } from '@/utils/related';
-import { PineconeClient } from '@pinecone-database/pinecone';
+import { clusterNamesForRules } from '@/utils/summarize';
+import { getVectors } from '@/utils/pinecone';
 
 interface IQueryParam {
   linterId: string;
@@ -60,7 +60,7 @@ export async function getServerSideProps({
 }: {
   params: IQueryParam;
   query: {
-    count?: string;
+    clusters?: string;
     showRelated?: string; // Hide by default until we cached the results.
   };
 }) {
@@ -114,51 +114,85 @@ export async function getServerSideProps({
     }
   }
 
-  if (!query.count || query.count === '1') {
-    return {
-      props: { data: { linter: linterFixed, lintersSimilar } },
-    };
-  }
+  const listsOfRules =
+    linter.rules.length > 0
+      ? [
+          { rules: linter.rules, title: 'Alphabetical' },
+          ...(linter.rules.some((rule) => rule.category)
+            ? splitList(linter.rules, ['category']).map((obj) => ({
+                title: obj.title,
+                rules: obj.items,
+              }))
+            : []),
+        ]
+      : [];
 
   // Experimental clustering feature:
 
-  const environment = process.env.PINECONE_ENVIRONMENT;
-  const apiKey = process.env.PINECONE_API_KEY;
+  if (query.clusters && Number(query.clusters) > 0) {
+    const vectorIds = linter.rules.map(
+      (rule) =>
+        `${linter.package.ecosystem.name}#${linter.package.name}#${rule.name}`
+    );
+    try {
+      const vectors = await getVectors(vectorIds, 'rule');
 
-  if (!environment || !apiKey) {
-    return {
-      props: { data: { linter: linterFixed, lintersSimilar } },
-    };
+      const embeddings = Object.entries(vectors || {})
+        .map(([ruleName, vector]) => ({
+          ruleName: ruleName.split('#')[2],
+          values: vector.values,
+        }))
+        .sort((a, b) => a.ruleName.localeCompare(b.ruleName)); // Ensure the ordering of vectors matches the ordering of rules to that they correspond.
+
+      const clusters = [];
+      if (embeddings && embeddings.length > 0) {
+        clusters.push(
+          ...embeddingsToLists(Number(query.clusters), embeddings, linter)
+        );
+      }
+
+      const stringOfRuleClusters = listsOfRules
+        .map((obj, i) => {
+          const rulesList = obj.rules
+            .map(
+              (rule) =>
+                `\t${[rule.name, rule.description].filter(Boolean).join(' - ')}`
+            )
+            .join('\n');
+          return `Cluster ${i + 1}\n${rulesList}`;
+        })
+        .join('\n\n');
+      const clusterNamesGenerated = await clusterNamesForRules(
+        stringOfRuleClusters
+      );
+
+      if (clusterNamesGenerated.length === Number(query.clusters)) {
+        for (const [i, clusterName] of clusterNamesGenerated.entries()) {
+          clusters[i].title = clusterName;
+        }
+      } else {
+        // eslint-disable-next-line no-console
+        console.log(
+          `Generated ${clusterNamesGenerated.length} cluster names, but ${query.clusters} were requested.`
+        );
+      }
+
+      listsOfRules.push(...clusters);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log(`Failed to perform clustering of rules: ${String(error)}`);
+    }
   }
-
-  const pinecone = new PineconeClient();
-  await pinecone.init({
-    environment,
-    apiKey,
-  });
-
-  const rulesIndex = pinecone.Index('lintbase');
-
-  const vectorIds = linter.rules.map(
-    (rule) =>
-      `${linter.package.ecosystem.name}#${linter.package.name}#${rule.name}`
-  );
-  const vectorResponse = await rulesIndex.fetch({
-    ids: vectorIds,
-    namespace: 'rule',
-  });
 
   return {
     props: {
       data: {
         linter: linterFixed,
         lintersSimilar,
-        embeddings: Object.entries(vectorResponse.vectors || {})
-          .map(([ruleName, vector]) => ({
-            ruleName: ruleName.split('#')[2],
-            values: vector.values,
-          }))
-          .sort((a, b) => a.ruleName.localeCompare(b.ruleName)), // Ensure the ordering of vectors matches the ordering of rules to that they correspond.
+        listsOfRules: listsOfRules.map((obj) => ({
+          ...obj,
+          rules: obj.rules.map((rule) => fixAnyDatesInObject(rule)),
+        })),
       },
     },
   };
@@ -188,7 +222,7 @@ function embeddingsToLists(
 }
 
 export default function Linter({
-  data: { linter, lintersSimilar, embeddings },
+  data: { linter, lintersSimilar, listsOfRules },
 }: {
   data: {
     linter: Prisma.LinterGetPayload<{ include: typeof include }>;
@@ -196,24 +230,12 @@ export default function Linter({
       linter: Prisma.LinterGetPayload<{ include: typeof include }>;
       score: number;
     }[];
-    embeddings: { ruleName: string; values: number[] }[];
+    listsOfRules: {
+      title: string;
+      rules: Prisma.RuleGetPayload<{ include: typeof include.rules.include }>[];
+    }[];
   };
 }) {
-  const router = useRouter();
-  const countClusters = router.query.count;
-
-  const listsOfRules = embeddings
-    ? embeddingsToLists(Number(countClusters), embeddings, linter)
-    : linter.rules.some((rule) => rule.category)
-    ? splitList(linter.rules, ['category']).map((obj) => ({
-        title: obj.title,
-        rules: obj.items,
-      }))
-    : [];
-  if (linter.rules.length > 0) {
-    listsOfRules.unshift({ rules: linter.rules, title: 'Alphabetical' });
-  }
-
   const relevantConfigEmojis = Object.entries(EMOJI_CONFIGS).filter(
     ([config]) =>
       linter.configs.some((linterConfig) => config === linterConfig.name)
