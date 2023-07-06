@@ -20,10 +20,8 @@ import EmojiSeverityWarn from '@/components/EmojiSeverityWarn';
 import EmojiSeverityOff from '@/components/EmojiSeverityOff';
 import DatabaseNavigation from '@/components/DatabaseNavigation';
 import { related } from '@/utils/related';
-
-interface IQueryParam {
-  ruleId: string;
-}
+import { getServerAuthSession } from '@/server/auth';
+import { type GetServerSideProps } from 'next';
 
 const include = {
   linter: {
@@ -52,16 +50,16 @@ const include = {
   },
 };
 
-export async function getServerSideProps({
-  params,
-  query,
-}: {
-  params: IQueryParam;
-  query: {
-    showRelated?: string; // Hide by default until we cached the results.
-  };
-}) {
-  const { ruleId } = params;
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { params, query } = context;
+  const {
+    showRelated,
+  }: {
+    showRelated?: string;
+  } = query;
+  const ruleId = params?.ruleId as string;
+
+  const session = await getServerAuthSession(context);
 
   const rule = await prisma.rule.findFirstOrThrow({
     where: {
@@ -74,7 +72,7 @@ export async function getServerSideProps({
   // Similar rules:
   let rulesRelated = null,
     rulesRelatedResults = null;
-  if (query.showRelated) {
+  if (showRelated || session) {
     try {
       rulesRelatedResults = await related({
         type: 'rule',
@@ -115,7 +113,7 @@ export async function getServerSideProps({
   return {
     props: { data: { rule: ruleFixed, rulesRelated } },
   };
-}
+};
 
 export default function Rule({
   data: { rule, rulesRelated },
