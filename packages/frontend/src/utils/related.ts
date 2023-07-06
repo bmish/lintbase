@@ -1,4 +1,5 @@
 import { PineconeClient } from '@pinecone-database/pinecone';
+import { env } from '@/env.mjs';
 
 export async function related(
   params:
@@ -16,8 +17,8 @@ export async function related(
         count?: number | undefined;
       }
 ) {
-  const environment = process.env.PINECONE_ENVIRONMENT;
-  const apiKey = process.env.PINECONE_API_KEY;
+  const environment = env.PINECONE_ENVIRONMENT;
+  const apiKey = env.PINECONE_API_KEY;
 
   if (!environment || !apiKey) {
     return null;

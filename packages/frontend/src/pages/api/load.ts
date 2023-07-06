@@ -1,8 +1,9 @@
 import { loadLintersToDb } from '@/utils/normalize';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { env } from '@/env.mjs';
 
 export default async function load(req: NextApiRequest, res: NextApiResponse) {
-  if (process.env.NODE_ENV !== 'development') {
+  if (env.NODE_ENV !== 'development') {
     res.status(404).end();
     return;
   }

@@ -29,6 +29,15 @@ export const env = createEnv({
     // Add `.min(1) on ID and SECRET if you want to make sure they're not empty
     DISCORD_CLIENT_ID: z.string(),
     DISCORD_CLIENT_SECRET: z.string(),
+
+    OPENAI_API_KEY: z.string(),
+
+    PINECONE_API_KEY: z.string(),
+    PINECONE_ENVIRONMENT: z.string(),
+
+    PORT: z.string().optional(),
+
+    VERCEL_URL: z.string().optional(),
   },
 
   /**
@@ -53,6 +62,15 @@ export const env = createEnv({
 
     DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
+
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+
+    PINECONE_API_KEY: process.env.PINECONE_API_KEY,
+    PINECONE_ENVIRONMENT: process.env.PINECONE_ENVIRONMENT,
+
+    PORT: process.env.PORT,
+
+    VERCEL_URL: process.env.VERCEL_URL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
