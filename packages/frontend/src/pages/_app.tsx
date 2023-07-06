@@ -6,16 +6,22 @@ import '@fontsource/roboto/400.css'; // eslint-disable-line import/no-unassigned
 import '@fontsource/roboto/500.css'; // eslint-disable-line import/no-unassigned-import
 import '@fontsource/roboto/700.css'; // eslint-disable-line import/no-unassigned-import
 
-import type { AppProps } from 'next/app';
-import { AppType } from 'next/dist/shared/lib/utils';
+import type { AppType } from 'next/app';
 import { api } from '@/utils/api';
 import Layout from '../components/layout';
+import { SessionProvider } from 'next-auth/react';
+import { type Session } from 'next-auth';
 
-const App: AppType = ({ Component, pageProps }: AppProps) => {
+const App: AppType<{ session: Session | null }> = ({
+  Component,
+  pageProps: { session, ...pageProps },
+}) => {
   return (
-    <Layout>
-      <Component {...pageProps} />
-    </Layout>
+    <SessionProvider session={session}>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+    </SessionProvider>
   );
 };
 

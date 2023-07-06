@@ -3,8 +3,11 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
 
 export default function Header() {
+  const { data: session } = useSession();
+
   const router = useRouter();
 
   const [searchValue, setSearchValue] = useState(router.query.q || '');
@@ -77,6 +80,36 @@ export default function Header() {
               About
             </Link>
           </li>
+          {session && router.pathname !== '/dashboard' && (
+            <li>
+              <Link
+                href="/dashboard"
+                className="px-2 sm:px-4 py-2 font-semibold text-gray-600 rounded"
+              >
+                Dashboard
+              </Link>
+            </li>
+          )}
+          {session && router.pathname === '/dashboard' && (
+            <li>
+              <Link
+                href="/api/auth/signout"
+                className="px-2 sm:px-4 py-2 font-semibold text-gray-600 rounded"
+              >
+                Logout
+              </Link>
+            </li>
+          )}
+          {!session && (
+            <li>
+              <Link
+                href="/api/auth/signin"
+                className="px-2 sm:px-4 py-2 font-semibold text-gray-600 rounded"
+              >
+                Login
+              </Link>
+            </li>
+          )}
         </ul>
       </div>
     </header>
