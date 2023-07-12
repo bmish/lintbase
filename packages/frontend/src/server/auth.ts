@@ -6,6 +6,7 @@ import {
 } from 'next-auth';
 import DiscordProvider from 'next-auth/providers/discord';
 import { env } from '@/env.mjs';
+import { prisma } from '@/server/db';
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -42,6 +43,34 @@ export const authOptions: NextAuthOptions = {
         id: token.sub,
       },
     }),
+
+    async signIn({ user, account, profile }) {
+      await prisma.user.upsert({
+        where: { id: user.id },
+        update: {
+          email: user.email,
+          name: user.name,
+          image: user.image,
+          visitedAt: new Date(),
+          // @ts-expect-error -- locale is provided by Discord at least
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- locale is provided by Discord at least
+          locale: profile?.locale,
+          accountProvider: account?.provider,
+        },
+        create: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+          visitedAt: new Date(),
+          // @ts-expect-error -- locale is provided by Discord at least
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- locale is provided by Discord at least
+          locale: profile?.locale,
+          accountProvider: account?.provider,
+        },
+      });
+      return true;
+    },
   },
   providers: [
     DiscordProvider({

@@ -9,6 +9,21 @@ datasource db {
   shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
+model User {
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  visitedAt DateTime
+
+  email String? @unique
+  image String?
+  name  String?
+
+  locale String?
+
+  accountProvider String?
+}
+
 model RuleOption {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
