@@ -119,10 +119,17 @@ export async function getServerSideProps({
       ? [
           { rules: linter.rules, title: 'Alphabetical' },
           ...(linter.rules.some((rule) => rule.category)
-            ? splitList(linter.rules, ['category']).map((obj) => ({
-                title: obj.title,
-                rules: obj.items,
-              }))
+            ? splitList(linter.rules, ['category']).flatMap(
+                (obj) =>
+                  obj.title
+                    ? [
+                        {
+                          title: obj.title,
+                          rules: obj.items,
+                        },
+                      ]
+                    : [] // Skip rules without categories.
+              )
             : []),
         ]
       : [];
