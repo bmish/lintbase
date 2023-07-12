@@ -4,6 +4,7 @@ import path from 'node:path';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
+// Same as PLUGINS_SUPPORTED in packages/frontend/src/utils/normalize.ts.
 const searches: string[] = [
   'eslint-plugin',
   'ember-template-lint-plugin',

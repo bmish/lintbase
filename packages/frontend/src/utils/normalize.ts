@@ -61,6 +61,13 @@ const CORE_LINTING_FRAMEWORKS = [
   'stylelint',
 ];
 
+// Keep in sync with: packages/downloader/bin/download.ts
+const PLUGINS_SUPPORTED = [
+  'eslint-plugin',
+  'ember-template-lint-plugin',
+  'stylelint-plugin',
+];
+
 type NpmRegistryInfo = {
   time: Record<string | 'created' | 'modified', string>;
 };
@@ -509,12 +516,7 @@ export async function loadLintersToDb(
     | TSESLint.RuleModule<string, unknown[], TSESLint.RuleListener>
   >
 ) {
-  const linterTypes = [
-    ...CORE_LINTING_FRAMEWORKS,
-    'eslint-plugin',
-    'ember-template-lint-plugin',
-    'stylelint-plugin',
-  ];
+  const linterTypes = [...CORE_LINTING_FRAMEWORKS, ...PLUGINS_SUPPORTED];
 
   // Ecosystems.
   const ecosystemNode = await prisma.ecosystem.upsert({
