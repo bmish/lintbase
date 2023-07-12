@@ -48,12 +48,13 @@ export default function Header() {
         </Link>
 
         <ul className="space-x-0 sm:space-x-2 inline-flex">
-          <li>
+          <li className="pr-4 w-32">
             <TextField
               type="search"
               placeholder="Search"
               variant="standard"
               value={searchValue}
+              fullWidth={true}
               // eslint-disable-next-line @typescript-eslint/no-misused-promises
               onChange={handleChange} // TODO: add debouncing
             ></TextField>
