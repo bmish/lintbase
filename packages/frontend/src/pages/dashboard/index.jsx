@@ -21,6 +21,8 @@ export default function Dashboard() {
       </Head>
       <main className="py-8 px-6 max-w-4xl mx-auto min-h-screen">
         <Paper className="p-8">
+          <p>Welcome, {session.user.name}.</p>
+          <br></br>
           <p>Coming soon.</p>
           <br></br>
           <p>
