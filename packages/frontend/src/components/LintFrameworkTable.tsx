@@ -19,18 +19,17 @@ import { Prisma } from '@prisma/client';
 export default function LintFrameworkTable({
   lintFrameworks,
   ruleCounts,
+  linterCounts,
   isPreview,
 }: {
   lintFrameworks: Prisma.LintFrameworkGetPayload<{
     include: {
-      _count: {
-        select: { linters: true };
-      };
       linter: { include: { package: true } };
       ecosystem: true;
     };
   }>[];
   ruleCounts: number[];
+  linterCounts: number[];
   isPreview?: boolean;
 }) {
   return (
@@ -89,7 +88,7 @@ export default function LintFrameworkTable({
               </TableCell>
               {!isPreview && (
                 <TableCell scope="row" align="right">
-                  {millify(lintFramework._count.linters)}
+                  {millify(linterCounts[index])}
                 </TableCell>
               )}
               {!isPreview && (

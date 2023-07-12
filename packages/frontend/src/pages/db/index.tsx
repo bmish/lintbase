@@ -29,6 +29,10 @@ const includeLinters = {
   lintFramework: true,
 };
 
+const actualLinter = {
+  OR: [{ rules: { some: {} } }, { configs: { some: {} } }], // Actual linter with rules or configs.
+};
+
 export async function getServerSideProps() {
   const [
     lintersPopular,
@@ -44,6 +48,7 @@ export async function getServerSideProps() {
           countWeeklyDownloads: Prisma.SortOrder.desc,
         },
       },
+      where: actualLinter,
     }),
     prisma.linter.findMany({
       include: includeLinters,
@@ -53,6 +58,7 @@ export async function getServerSideProps() {
           packageUpdatedAt: Prisma.SortOrder.desc,
         },
       },
+      where: actualLinter,
     }),
     prisma.packageKeyword.groupBy({
       where: {

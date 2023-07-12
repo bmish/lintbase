@@ -39,6 +39,9 @@ export async function getServerSideProps({
   const currentPage = p ? Number(p) - 1 : 0;
   const pageSize = c ? Number(c) : 25;
 
+  const actualLinter = {
+    OR: [{ rules: { some: {} } }, { configs: { some: {} } }],
+  };
   const keywordQuery = keyword
     ? {
         package: {
@@ -61,7 +64,7 @@ export async function getServerSideProps({
         },
       }
     : {};
-  const where = q
+  const qQuery = q
     ? {
         OR: [
           {
@@ -90,10 +93,13 @@ export async function getServerSideProps({
             },
           },
         ],
-        ...keywordQuery,
-        ...linterQuery,
       }
-    : { ...keywordQuery, ...linterQuery };
+    : {};
+  const where = {
+    AND: [qQuery, actualLinter],
+    ...keywordQuery,
+    ...linterQuery,
+  };
 
   const [linterCount, linters] = await Promise.all([
     prisma.linter.count({

@@ -21,6 +21,9 @@ export async function getServerSideProps() {
         countWeeklyDownloads: Prisma.SortOrder.desc,
       },
     },
+    where: {
+      OR: [{ rules: { some: {} } }, { configs: { some: {} } }], // Actual linter with rules or configs.
+    },
   });
 
   const lintersPopularFixed = lintersPopular.map((linter) =>

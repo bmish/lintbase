@@ -9,9 +9,6 @@ import LintFrameworkTable from '@/components/LintFrameworkTable';
 import { Paper } from '@mui/material';
 
 const include = {
-  _count: {
-    select: { linters: true },
-  },
   linter: { include: { package: true } },
   ecosystem: true,
 };
@@ -64,6 +61,17 @@ export async function getServerSideProps({ query }: { query: { q: string } }) {
     )
   );
 
+  const linterCountPerLintFramework = await Promise.all(
+    lintFrameworks.map((lintFramework) =>
+      prisma.linter.count({
+        where: {
+          lintFrameworkId: lintFramework.id,
+          OR: [{ rules: { some: {} } }, { configs: { some: {} } }], // Actual linter with rules or configs.
+        },
+      })
+    )
+  );
+
   const lintFrameworksFixed = lintFrameworks.map((linter) =>
     fixAnyDatesInObject(linter)
   );
@@ -75,6 +83,7 @@ export async function getServerSideProps({ query }: { query: { q: string } }) {
           (lintFramework, index) => ({
             lintFramework,
             countRules: ruleCountPerLintFramework[index],
+            countLinters: linterCountPerLintFramework[index],
           })
         ),
       },
@@ -91,17 +100,16 @@ export default function Linters({
         include: typeof include;
       }>;
       countRules: number;
+      countLinters: number;
     }[];
   };
 }) {
   const lintFrameworksPopulated = lintFrameworksAndRuleCounts.filter(
-    (lintFrameworkAndRuleCount) =>
-      lintFrameworkAndRuleCount.lintFramework._count.linters > 1
+    (lintFrameworkAndRuleCount) => lintFrameworkAndRuleCount.countLinters > 1
   );
 
   const lintFrameworksPreview = lintFrameworksAndRuleCounts.filter(
-    (lintFrameworkAndRuleCount) =>
-      lintFrameworkAndRuleCount.lintFramework._count.linters <= 1
+    (lintFrameworkAndRuleCount) => lintFrameworkAndRuleCount.countLinters <= 1
   );
 
   return (
@@ -119,6 +127,9 @@ export default function Linters({
                 (obj) => obj.lintFramework
               )}
               ruleCounts={lintFrameworksPopulated.map((obj) => obj.countRules)}
+              linterCounts={lintFrameworksPopulated.map(
+                (obj) => obj.countLinters
+              )}
             />
           </Paper>
         )}
@@ -133,6 +144,9 @@ export default function Linters({
                 )}
                 ruleCounts={lintFrameworksPopulated.map(
                   (obj) => obj.countRules
+                )}
+                linterCounts={lintFrameworksPopulated.map(
+                  (obj) => obj.countLinters
                 )}
                 isPreview={true}
               />
