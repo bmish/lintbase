@@ -25,13 +25,13 @@ import { Prisma, Package as PrismaPackage } from '@prisma/client';
 export default function RuleTable({
   rules,
   pkg,
-  relevantConfigEmojis,
+  configToEmoji,
 }: {
   rules: readonly Prisma.RuleGetPayload<{
     include: { options: true; ruleConfigs: { include: { config: true } } };
   }>[];
   pkg: PrismaPackage;
-  relevantConfigEmojis: readonly [string, string][];
+  configToEmoji: Record<string, string | undefined>;
 }) {
   return (
     <TableContainer>
@@ -60,7 +60,7 @@ export default function RuleTable({
             <TableCell scope="col" align="right">
               <EmojiDeprecated />
             </TableCell>
-            {relevantConfigEmojis.map(([config, emoji]) => (
+            {Object.entries(configToEmoji).map(([config, emoji]) => (
               <TableCell key={config} align="right" title={`Config: ${config}`}>
                 {emoji}
               </TableCell>
@@ -104,7 +104,7 @@ export default function RuleTable({
               <TableCell align="right">
                 {rule.deprecated ? <EmojiDeprecated /> : ''}
               </TableCell>
-              {relevantConfigEmojis.map(([config, emoji]) => (
+              {Object.entries(configToEmoji).map(([config, emoji]) => (
                 <TableCell key={config} align="right">
                   {rule.ruleConfigs.some(
                     (ruleConfig) =>

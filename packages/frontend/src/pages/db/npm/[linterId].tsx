@@ -228,6 +228,37 @@ function embeddingsToLists(
   return listsOfRules;
 }
 
+function* generateEmoji() {
+  const emojis = [
+    // circles
+    '🔴',
+    '🟠',
+    '🟡',
+    '🟢',
+    '🔵',
+    '🟣',
+    '🟤',
+    '⚫',
+    '⚪',
+    // squares
+    '🟥',
+    '🟧',
+    '🟨',
+    '🟩',
+    '🟦',
+    '🟪',
+    '🟫',
+    '⬛',
+    '⬜',
+  ];
+  let i = 0;
+
+  while (true) {
+    yield emojis[i];
+    i++;
+  }
+}
+
 export default function Linter({
   data: { linter, lintersSimilar, listsOfRules },
 }: {
@@ -243,9 +274,14 @@ export default function Linter({
     }[];
   };
 }) {
-  const relevantConfigEmojis = Object.entries(EMOJI_CONFIGS).filter(
-    ([config]) =>
-      linter.configs.some((linterConfig) => config === linterConfig.name)
+  const genEmoji = generateEmoji();
+  const configToEmoji = Object.fromEntries(
+    linter.configs.map((config) => [
+      config.name,
+      (EMOJI_CONFIGS as Record<string, string | undefined>)[config.name] ||
+        genEmoji.next().value ||
+        undefined,
+    ])
   );
 
   return (
@@ -298,11 +334,7 @@ export default function Linter({
                   >
                     <TableCell scope="row">{config.name}</TableCell>
                     <TableCell align="right" title={config.name}>
-                      {
-                        relevantConfigEmojis.find(
-                          ([commonConfig]) => commonConfig === config.name
-                        )?.[1]
-                      }
+                      {configToEmoji[config.name]}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -315,7 +347,7 @@ export default function Linter({
           <Paper className="mt-8">
             <RuleTableTabbed
               listsOfRules={listsOfRules}
-              relevantConfigEmojis={relevantConfigEmojis}
+              configToEmoji={configToEmoji}
               pkg={linter.package}
             />
           </Paper>

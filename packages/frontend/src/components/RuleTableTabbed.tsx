@@ -28,7 +28,7 @@ function TabPanel(props: TabPanelProps) {
 
 export default function RuleTableTabbed({
   listsOfRules,
-  relevantConfigEmojis,
+  configToEmoji,
   pkg,
 }: {
   listsOfRules: {
@@ -38,7 +38,7 @@ export default function RuleTableTabbed({
     }>[];
   }[];
   pkg: PrismaPackage;
-  relevantConfigEmojis: [string, string][];
+  configToEmoji: Record<string, string | undefined>;
 }) {
   const [currentRuleListIndex, setCurrentRuleListIndex] = React.useState(0);
   const handleChangeCurrentRuleListIndex = (
@@ -76,7 +76,7 @@ export default function RuleTableTabbed({
           <RuleTable
             rules={obj.rules}
             pkg={pkg}
-            relevantConfigEmojis={relevantConfigEmojis}
+            configToEmoji={configToEmoji}
           />
         </TabPanel>
       ))}
