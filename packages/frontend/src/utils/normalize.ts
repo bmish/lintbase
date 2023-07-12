@@ -103,6 +103,21 @@ async function baseToNormalizedLinter(
     };
   }
 
+  const packageFound = await prisma.linter.findFirst({
+    include: linterInclude,
+    where: {
+      package: {
+        name: linterName,
+        ecosystemId,
+      },
+    },
+  });
+
+  if (packageFound) {
+    // Already exists.
+    return packageFound;
+  }
+
   const linterCreated = await prisma.linter.create({
     include: linterInclude,
     data: {
@@ -254,6 +269,18 @@ async function eslintLinterToNormalizedLinter(
   }
 
   const linterPrefix = getPluginPrefix(linterName);
+
+  const existingRuleConfig = await prisma.ruleConfig.findFirst({
+    where: {
+      linterId: linterCreated.id,
+    },
+  });
+
+  if (existingRuleConfig) {
+    // Likely already created this plugin previously.
+    return linterCreated;
+  }
+
   await prisma.ruleConfig.createMany({
     data: Object.entries(linter?.configs || {}).flatMap(
       ([configName, config]) => {
