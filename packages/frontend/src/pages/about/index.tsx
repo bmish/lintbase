@@ -38,13 +38,13 @@ export default function About() {
             <Card>
               <CardContent>
                 <Typography variant="h6" marginBottom={2}>
-                  Signup for announcements
+                  Sign up for announcements
                 </Typography>
                 <p>Hear about our latest developments...</p>
               </CardContent>
               <CardActions>
                 <Button href="https://docs.google.com/forms/d/e/1FAIpQLSfc5yLA4DVIYsNAQVc-I-0By0fizM1gxJ96YjP23oVHg7Ku5A/viewform">
-                  Signup
+                  Sign up
                 </Button>
               </CardActions>
             </Card>
