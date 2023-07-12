@@ -4,6 +4,7 @@ import Head from 'next/head';
 import { Paper } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import AccessDenied from '@/components/AccessDenied';
+import Link from 'next/link';
 
 export default function Dashboard() {
   const { data: session } = useSession();
@@ -21,6 +22,13 @@ export default function Dashboard() {
       <main className="py-8 px-6 max-w-4xl mx-auto min-h-screen">
         <Paper className="p-8">
           <p>Coming soon.</p>
+          <br></br>
+          <p>
+            <Link href="https://docs.google.com/forms/d/e/1FAIpQLSfc5yLA4DVIYsNAQVc-I-0By0fizM1gxJ96YjP23oVHg7Ku5A/viewform">
+              Signup
+            </Link>{' '}
+            for announcements.
+          </p>
         </Paper>
         <Footer />
       </main>
