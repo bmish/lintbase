@@ -24,10 +24,8 @@ import { splitList } from '@/utils/split-list';
 import { related } from '@/utils/related';
 import { clusterNamesForRules } from '@/utils/summarize';
 import { getVectors } from '@/utils/pinecone';
-
-interface IQueryParam {
-  linterId: string;
-}
+import { getServerAuthSession } from '@/server/auth';
+import { type GetServerSideProps } from 'next';
 
 const include = {
   rules: {
@@ -54,17 +52,19 @@ const include = {
   lintFramework: true,
 };
 
-export async function getServerSideProps({
-  params,
-  query,
-}: {
-  params: IQueryParam;
-  query: {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { params, query } = context;
+
+  const linterId = params?.linterId as string;
+  const {
+    clusters,
+    showRelated,
+  }: {
     clusters?: string;
-    showRelated?: string; // Hide by default until we cached the results.
-  };
-}) {
-  const { linterId } = params;
+    showRelated?: string;
+  } = query;
+
+  const session = await getServerAuthSession(context);
 
   const linter = await prisma.linter.findFirstOrThrow({
     where: {
@@ -80,7 +80,7 @@ export async function getServerSideProps({
 
   let lintersSimilar = null,
     lintersSimilarResponse = null;
-  if (query.showRelated) {
+  if (showRelated || session) {
     try {
       lintersSimilarResponse = await related({
         type: 'linter',
@@ -136,7 +136,7 @@ export async function getServerSideProps({
 
   // Experimental clustering feature:
 
-  if (query.clusters && Number(query.clusters) > 0) {
+  if (clusters && Number(clusters) > 0) {
     const vectorIds = linter.rules.map(
       (rule) =>
         `${linter.package.ecosystem.name}#${linter.package.name}#${rule.name}`
@@ -151,10 +151,10 @@ export async function getServerSideProps({
         }))
         .sort((a, b) => a.ruleName.localeCompare(b.ruleName)); // Ensure the ordering of vectors matches the ordering of rules to that they correspond.
 
-      const clusters = [];
+      const clustersList = [];
       if (embeddings && embeddings.length > 0) {
-        clusters.push(
-          ...embeddingsToLists(Number(query.clusters), embeddings, linter)
+        clustersList.push(
+          ...embeddingsToLists(Number(clusters), embeddings, linter)
         );
       }
 
@@ -173,18 +173,18 @@ export async function getServerSideProps({
         stringOfRuleClusters
       );
 
-      if (clusterNamesGenerated.length === Number(query.clusters)) {
+      if (clusterNamesGenerated.length === Number(clusters)) {
         for (const [i, clusterName] of clusterNamesGenerated.entries()) {
-          clusters[i].title = clusterName;
+          clustersList[i].title = clusterName;
         }
       } else {
         // eslint-disable-next-line no-console
         console.log(
-          `Generated ${clusterNamesGenerated.length} cluster names, but ${query.clusters} were requested.`
+          `Generated ${clusterNamesGenerated.length} cluster names, but ${clusters} were requested.`
         );
       }
 
-      listsOfRules.push(...clusters);
+      listsOfRules.push(...clustersList);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.log(`Failed to perform clustering of rules: ${String(error)}`);
@@ -203,7 +203,7 @@ export async function getServerSideProps({
       },
     },
   };
-}
+};
 
 function embeddingsToLists(
   countClusters: number,

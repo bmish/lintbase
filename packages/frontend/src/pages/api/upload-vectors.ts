@@ -5,13 +5,14 @@ import { prisma } from '@/server/db';
 import { Configuration, OpenAIApi } from 'openai';
 import chunk from 'lodash.chunk';
 import pLimit from 'p-limit';
+import { env } from '@/env.mjs';
 
 export default async function uploadVectors(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const environment = process.env.PINECONE_ENVIRONMENT;
-  const apiKey = process.env.PINECONE_API_KEY;
+  const environment = env.PINECONE_ENVIRONMENT;
+  const apiKey = env.PINECONE_API_KEY;
 
   if (!environment || !apiKey) {
     res.status(400).end();
@@ -39,7 +40,7 @@ export default async function uploadVectors(
   ]);
 
   const configuration = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: env.OPENAI_API_KEY,
   });
   const openai = new OpenAIApi(configuration);
 

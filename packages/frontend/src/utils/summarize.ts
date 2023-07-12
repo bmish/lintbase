@@ -1,10 +1,11 @@
 import { Configuration, OpenAIApi } from 'openai';
+import { env } from '@/env.mjs';
 
 async function createChatCompletion(
   messages: { role: 'user' | 'system' | 'assistant'; content: string }[]
 ) {
   const configuration = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: env.OPENAI_API_KEY,
   });
   const openai = new OpenAIApi(configuration);
 
