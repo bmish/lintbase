@@ -13,6 +13,7 @@ import millify from 'millify';
 import {
   ecosystemToDisplayName,
   lintFrameworkToLinkUs,
+  packageToLinkUs,
 } from '@/utils/dynamic-fields';
 import { Prisma } from '@prisma/client';
 
@@ -20,7 +21,6 @@ export default function LintFrameworkTable({
   lintFrameworks,
   ruleCounts,
   linterCounts,
-  isPreview,
 }: {
   lintFrameworks: Prisma.LintFrameworkGetPayload<{
     include: {
@@ -30,7 +30,6 @@ export default function LintFrameworkTable({
   }>[];
   ruleCounts: number[];
   linterCounts: number[];
-  isPreview?: boolean;
 }) {
   return (
     <TableContainer>
@@ -42,16 +41,12 @@ export default function LintFrameworkTable({
             <TableCell scope="col" align="right">
               Ecosystem
             </TableCell>
-            {!isPreview && (
-              <TableCell scope="col" align="right">
-                Plugins
-              </TableCell>
-            )}
-            {!isPreview && (
-              <TableCell scope="col" align="right">
-                Rules
-              </TableCell>
-            )}
+            <TableCell scope="col" align="right">
+              Plugins
+            </TableCell>
+            <TableCell scope="col" align="right">
+              Rules
+            </TableCell>
             <TableCell scope="col" align="right">
               Wkly
               <GetAppIcon fontSize="inherit" titleAccess="Downloads" />
@@ -68,9 +63,17 @@ export default function LintFrameworkTable({
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
               <TableCell scope="row">
-                {isPreview ? (
-                  <span>{lintFramework.name}</span>
-                ) : (
+                {ruleCounts[index] === 0 &&
+                  linterCounts[index] === 0 &&
+                  lintFramework.linter?.package && (
+                    <Link
+                      href={packageToLinkUs(lintFramework.linter?.package)}
+                      underline="none"
+                    >
+                      {lintFramework.name}
+                    </Link>
+                  )}
+                {(ruleCounts[index] > 0 || linterCounts[index] > 0) && (
                   <Link
                     href={lintFrameworkToLinkUs(lintFramework)}
                     underline="none"
@@ -86,12 +89,17 @@ export default function LintFrameworkTable({
               <TableCell scope="row" align="right">
                 {ecosystemToDisplayName(lintFramework.ecosystem)}
               </TableCell>
-              {!isPreview && (
+              {ruleCounts[index] === 0 && linterCounts[index] === 0 && (
+                <TableCell scope="row" align="right" colSpan={2}>
+                  Coming Soon
+                </TableCell>
+              )}
+              {(ruleCounts[index] > 0 || linterCounts[index] > 0) && (
                 <TableCell scope="row" align="right">
                   {millify(linterCounts[index])}
                 </TableCell>
               )}
-              {!isPreview && (
+              {(ruleCounts[index] > 0 || linterCounts[index] > 0) && (
                 <TableCell scope="row" align="right">
                   {millify(ruleCounts[index])}
                 </TableCell>

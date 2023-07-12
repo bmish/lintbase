@@ -104,14 +104,6 @@ export default function Linters({
     }[];
   };
 }) {
-  const lintFrameworksPopulated = lintFrameworksAndRuleCounts.filter(
-    (lintFrameworkAndRuleCount) => lintFrameworkAndRuleCount.countLinters > 1
-  );
-
-  const lintFrameworksPreview = lintFrameworksAndRuleCounts.filter(
-    (lintFrameworkAndRuleCount) => lintFrameworkAndRuleCount.countLinters <= 1
-  );
-
   return (
     <div className="bg-gray-100 h-full">
       <Head>
@@ -120,40 +112,21 @@ export default function Linters({
       </Head>
       <DatabaseNavigation />
       <main className="flex-grow overflow-y-auto bg-gray-100 pt-8 px-6 mx-auto min-h-screen">
-        {lintFrameworksPopulated.length > 0 && (
+        {lintFrameworksAndRuleCounts.length > 0 && (
           <Paper>
             <LintFrameworkTable
-              lintFrameworks={lintFrameworksPopulated.map(
+              lintFrameworks={lintFrameworksAndRuleCounts.map(
                 (obj) => obj.lintFramework
               )}
-              ruleCounts={lintFrameworksPopulated.map((obj) => obj.countRules)}
-              linterCounts={lintFrameworksPopulated.map(
+              ruleCounts={lintFrameworksAndRuleCounts.map(
+                (obj) => obj.countRules
+              )}
+              linterCounts={lintFrameworksAndRuleCounts.map(
                 (obj) => obj.countLinters
               )}
             />
           </Paper>
         )}
-
-        {lintFrameworksPreview.length > 0 && (
-          <div>
-            <h2 className="text-lg mt-8 text-center">Coming Soon</h2>
-            <Paper className="mt-8">
-              <LintFrameworkTable
-                lintFrameworks={lintFrameworksPreview.map(
-                  (obj) => obj.lintFramework
-                )}
-                ruleCounts={lintFrameworksPopulated.map(
-                  (obj) => obj.countRules
-                )}
-                linterCounts={lintFrameworksPopulated.map(
-                  (obj) => obj.countLinters
-                )}
-                isPreview={true}
-              />
-            </Paper>
-          </div>
-        )}
-
         <Footer />
       </main>
     </div>
