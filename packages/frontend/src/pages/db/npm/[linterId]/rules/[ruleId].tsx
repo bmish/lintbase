@@ -60,12 +60,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     showRelated?: string;
   } = query;
   const ruleId = params?.ruleId as string;
+  const linterId = params?.linterId as string;
 
   const session = await getServerAuthSession(context);
 
   const rule = await prisma.rule.findFirstOrThrow({
     where: {
       name: ruleId,
+      linter: {
+        package: {
+          name: linterId,
+        },
+      },
     },
     include,
   });
