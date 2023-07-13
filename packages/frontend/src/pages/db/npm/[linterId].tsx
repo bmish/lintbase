@@ -52,6 +52,8 @@ const include = {
   lintFramework: true,
 };
 
+const COUNT_RELATED_LINTERS = 3;
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { params, query } = context;
 
@@ -76,41 +78,40 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   });
   const linterFixed = fixAnyDatesInObject(linter);
 
-  // Similar linters:
+  // Related linters:
 
-  let lintersSimilar = null,
-    lintersSimilarResponse = null;
+  let lintersRelated = null;
   if (showRelated || session) {
     try {
-      lintersSimilarResponse = await related({
+      const lintersRelatedResponse = await related({
         type: 'linter',
         ecosystemName: linter.package.ecosystem.name,
         linterName: linter.package.name,
-        count: 3,
+        count: COUNT_RELATED_LINTERS * 3, // Request more than we need so we can pick out the higher quality ones (by downloads). Note that requesting too many could result in less-related choices.
       });
-
-      lintersSimilar = await Promise.all(
-        lintersSimilarResponse?.map(async (result) => {
-          const linter = await prisma.linter.findFirstOrThrow({
-            where: {
+      lintersRelated = await prisma.linter.findMany({
+        include,
+        where: {
+          OR:
+            lintersRelatedResponse?.map((linterRelated) => ({
               package: {
                 ecosystem: {
-                  name: result.id.split('#')[0],
+                  name: linterRelated.id.split('#')[0],
                 },
-                name: result.id.split('#')[1],
+                name: linterRelated.id.split('#')[1],
               },
-            },
-            include,
-          });
-          return {
-            linter: fixAnyDatesInObject(linter),
-            score: result.score,
-          };
-        }) || []
-      );
+            })) || [],
+        },
+        orderBy: {
+          package: {
+            countWeeklyDownloads: Prisma.SortOrder.desc,
+          },
+        },
+        take: COUNT_RELATED_LINTERS,
+      });
     } catch {
       // eslint-disable-next-line no-console
-      console.log('Could not fetch similar linters');
+      console.log('Could not fetch related linters');
     }
   }
 
@@ -195,7 +196,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       data: {
         linter: linterFixed,
-        lintersSimilar,
+        lintersRelated:
+          lintersRelated?.map((obj) => fixAnyDatesInObject(obj)) || [],
         listsOfRules: listsOfRules.map((obj) => ({
           ...obj,
           rules: obj.rules.map((rule) => fixAnyDatesInObject(rule)),
@@ -260,14 +262,11 @@ function* generateEmoji() {
 }
 
 export default function Linter({
-  data: { linter, lintersSimilar, listsOfRules },
+  data: { linter, lintersRelated, listsOfRules },
 }: {
   data: {
     linter: Prisma.LinterGetPayload<{ include: typeof include }>;
-    lintersSimilar?: {
-      linter: Prisma.LinterGetPayload<{ include: typeof include }>;
-      score: number;
-    }[];
+    lintersRelated?: Prisma.LinterGetPayload<{ include: typeof include }>[];
     listsOfRules: {
       title: string;
       rules: Prisma.RuleGetPayload<{ include: typeof include.rules.include }>[];
@@ -300,16 +299,16 @@ export default function Linter({
       <main className="flex-grow overflow-y-auto bg-gray-100 pt-8 px-6 mx-auto min-h-screen">
         {linter && <LinterCard linter={linter} detailed={true}></LinterCard>}
 
-        {lintersSimilar && lintersSimilar.length > 0 && (
+        {lintersRelated && lintersRelated.length > 0 && (
           <div className="mt-8">
             <Typography className="mb-2">Related Plugins</Typography>
             <div className="flex md:flex-row flex-col justify-between">
-              {lintersSimilar.map((obj) => (
+              {lintersRelated.map((linterRelated) => (
                 <div
                   className="flex-grow md:mr-8 last:md:mr-0 md:mb-0 mb-8 last:mb-0"
-                  key={obj.linter.id}
+                  key={linterRelated.id}
                 >
-                  <LinterCard linter={obj.linter} />
+                  <LinterCard linter={linterRelated} />
                 </div>
               ))}
             </div>

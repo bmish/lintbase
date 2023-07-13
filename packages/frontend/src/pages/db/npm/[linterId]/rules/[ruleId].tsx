@@ -50,6 +50,8 @@ const include = {
   },
 };
 
+const COUNT_RELATED_RULES = 3;
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { params, query } = context;
   const {
@@ -69,49 +71,49 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   });
   const ruleFixed = fixAnyDatesInObject(rule);
 
-  // Similar rules:
-  let rulesRelated = null,
-    rulesRelatedResults = null;
+  // Related rules:
+  let rulesRelated = null;
   if (showRelated || session) {
     try {
-      rulesRelatedResults = await related({
+      const rulesRelatedResponse = await related({
         type: 'rule',
         ecosystemName: rule.linter.package.ecosystem.name,
         linterName: rule.linter.package.name,
         ruleName: ruleId,
-        count: 3,
+        count: COUNT_RELATED_RULES,
       });
-
-      rulesRelated = await Promise.all(
-        rulesRelatedResults?.map(async (result) => {
-          const rule = await prisma.rule.findFirstOrThrow({
-            where: {
-              name: result.id.split('#')[2],
+      rulesRelated = await prisma.rule.findMany({
+        include,
+        where: {
+          OR:
+            rulesRelatedResponse?.map((ruleRelated) => ({
+              name: ruleRelated.id.split('#')[2],
               linter: {
                 package: {
                   ecosystem: {
-                    name: result.id.split('#')[0],
+                    name: ruleRelated.id.split('#')[0],
                   },
-                  name: result.id.split('#')[1],
+                  name: ruleRelated.id.split('#')[1],
                 },
               },
-            },
-            include,
-          });
-          return {
-            rule: fixAnyDatesInObject(rule),
-            score: result.score,
-          };
-        }) || []
-      );
+            })) || [],
+        },
+        take: COUNT_RELATED_RULES,
+      });
     } catch {
       // eslint-disable-next-line no-console
-      console.log('Could not fetch similar rules');
+      console.log('Could not fetch related rules');
     }
   }
 
   return {
-    props: { data: { rule: ruleFixed, rulesRelated } },
+    props: {
+      data: {
+        rule: ruleFixed,
+        rulesRelated:
+          rulesRelated?.map((obj) => fixAnyDatesInObject(obj)) || [],
+      },
+    },
   };
 };
 
@@ -120,10 +122,7 @@ export default function Rule({
 }: {
   data: {
     rule: Prisma.RuleGetPayload<{ include: typeof include }>;
-    rulesRelated?: {
-      rule: Prisma.RuleGetPayload<{ include: typeof include }>;
-      score: number;
-    }[];
+    rulesRelated?: Prisma.RuleGetPayload<{ include: typeof include }>[];
   };
 }) {
   const relevantConfigEmojis = Object.entries(EMOJI_CONFIGS).filter(
@@ -153,12 +152,12 @@ export default function Rule({
           <div className="mt-8">
             <Typography className="mb-2">Related Rules</Typography>
             <div className="flex md:flex-row flex-col justify-between">
-              {rulesRelated.map((obj) => (
+              {rulesRelated.map((ruleRelated) => (
                 <div
                   className="flex-grow md:mr-8 last:md:mr-0 md:mb-0 mb-8 last:mb-0"
-                  key={obj.rule.id}
+                  key={ruleRelated.id}
                 >
-                  <RuleCard rule={obj.rule} />
+                  <RuleCard rule={ruleRelated} />
                 </div>
               ))}
             </div>
