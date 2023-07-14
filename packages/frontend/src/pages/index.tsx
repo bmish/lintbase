@@ -136,8 +136,8 @@ export default function index({
               Boost developer productivity
             </h2>
             <p className="mt-4 ">
-              Supercharge your development workflow with instant feedback and
-              shorter feedback loops.
+              Supercharge your workflow with instant feedback and
+              shorter development cycles.
             </p>
           </div>
 
