@@ -5,6 +5,7 @@ import {
   type DefaultSession,
 } from 'next-auth';
 import DiscordProvider from 'next-auth/providers/discord';
+import GitHubProvider from 'next-auth/providers/github';
 import { env } from '@/env.mjs';
 import { prisma } from '@/server/db';
 
@@ -44,7 +45,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
 
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account, profile, email, credentials }) {
       await prisma.user.upsert({
         where: { id: user.id },
         update: {
@@ -73,6 +74,10 @@ export const authOptions: NextAuthOptions = {
     },
   },
   providers: [
+    GitHubProvider({
+      clientId: env.GITHUB_ID,
+      clientSecret: env.GITHUB_SECRET
+    }),
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
