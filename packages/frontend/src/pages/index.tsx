@@ -109,7 +109,7 @@ export default function index({
           </p>
           <button
             disabled={true}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+            className="bg-blue-300 text-white font-bold py-2 px-4 rounded"
           >
             Coming Soon
           </button>
@@ -127,7 +127,7 @@ export default function index({
           </p>
           <button
             disabled={true}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+            className="bg-blue-300 text-white font-bold py-2 px-4 rounded"
           >
             Coming Soon
           </button>
@@ -144,7 +144,7 @@ export default function index({
           </p>
           <button
             disabled={true}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+            className="bg-blue-300 text-white font-bold py-2 px-4 rounded"
           >
             Coming Soon
           </button>
@@ -162,7 +162,7 @@ export default function index({
           </p>
           <button
             disabled={true}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+            className="bg-blue-300 text-white font-bold py-2 px-4 rounded"
           >
             Coming Soon
           </button>
