@@ -51,10 +51,10 @@ export default function index({
       <section className="bg-gray-800 text-white">
         <div className="container mx-auto py-20 px-8 md:px-0 max-w-3xl">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6 text-left">
-            Take your adoption of linting to the next level
+            Real-time coding feedback and fixes powered by AI
           </h1>
           <p className="text-xl sm:text-2xl mb-8">
-            Make developer tools like linting your superpower.
+            Take your adoption of linting to the next level.
           </p>
         </div>
       </section>
@@ -101,25 +101,71 @@ export default function index({
       <section className="bg-gray-800 text-white ">
         <div className="container mx-auto py-20 px-8 md:px-0  max-w-3xl ">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
-            AI-powered lint builder
+            Lint coverage scanner
           </h1>
           <p className="text-xl sm:text-2xl mb-8">
-            Design and build linting targeted at your developers or consumers of
-            your libraries, SDKs, APIs, etc with the help of AI-powered
-            suggestions (coming soon).
+            Identify codebases missing lint coverage and gain unique quality
+            insights.
           </p>
+          <button
+            disabled={true}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+          >
+            Coming Soon
+          </button>
         </div>
       </section>
 
       <section className=" bg-gray-100 text-black ">
         <div className="container mx-auto py-20 px-8 md:px-0  max-w-3xl ">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
-            Unique quality insights
+            Concept recommendations
           </h1>
           <p className="text-xl sm:text-2xl mb-8 text-gray-700">
-            Identify gaps in lint coverage. Better gauge the health of your
-            codebases and lint tooling (coming soon).
+            Automated suggestions of ideas for new lint rules tailored to your
+            team&apos;s codebases or consumers of your libraries.
           </p>
+          <button
+            disabled={true}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+          >
+            Coming Soon
+          </button>
+        </div>
+      </section>
+
+      <section className="bg-gray-800 text-white ">
+        <div className="container mx-auto py-20 px-8 md:px-0  max-w-3xl ">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
+            Low-code lint builder
+          </h1>
+          <p className="text-xl sm:text-2xl mb-8">
+            Design and build linting in a no-code or low-code fashion.
+          </p>
+          <button
+            disabled={true}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+          >
+            Coming Soon
+          </button>
+        </div>
+      </section>
+
+      <section className=" bg-gray-100 text-black ">
+        <div className="container mx-auto py-20 px-8 md:px-0  max-w-3xl ">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
+            Automated pull requests
+          </h1>
+          <p className="text-xl sm:text-2xl mb-8 text-gray-700">
+            We&apos;ll open PRs to enable and fix relevant lint coverage gaps
+            for you.
+          </p>
+          <button
+            disabled={true}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+          >
+            Coming Soon
+          </button>
         </div>
       </section>
 
@@ -136,8 +182,8 @@ export default function index({
               Boost developer productivity
             </h2>
             <p className="mt-4 ">
-              Supercharge your workflow with instant feedback and
-              shorter development cycles.
+              Supercharge your workflow with instant feedback and shorter
+              development cycles.
             </p>
           </div>
 
