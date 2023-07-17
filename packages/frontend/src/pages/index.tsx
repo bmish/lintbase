@@ -170,31 +170,38 @@ export default function index({
       </section>
 
       <section className="bg-gray-800 text-white ">
-        <div className="container mx-auto py-20 px-8 md:px-0 max-w-3xl flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8">
-          <div className="md:w-1/3">
-            <h2 className="text-2xl font-semibold">Improve app quality</h2>
-            <p className="mt-4 ">
-              Automatically enforce best practices and detect common mistakes.
-            </p>
-          </div>
-          <div className="md:w-1/3">
-            <h2 className="text-2xl font-semibold ">
-              Boost developer productivity
-            </h2>
-            <p className="mt-4 ">
-              Supercharge your workflow with instant feedback and shorter
-              development cycles.
-            </p>
-          </div>
+        <div className="container mx-auto pt-20  max-w-3xl">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight px-8 md:px-0">
+            Why use linting?
+          </h1>
+          <div className="pt-6 pb-20  px-8 md:px-0  flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8">
+            <div className="md:w-1/3">
+              <h2 className="text-2xl font-semibold">Improve app quality</h2>
+              <p className="mt-4 ">
+                Automatically enforce best practices and detect common mistakes,
+                reducing bugs and improving product reliability.
+              </p>
+            </div>
+            <div className="md:w-1/3">
+              <h2 className="text-2xl font-semibold ">
+                Boost developer productivity
+              </h2>
+              <p className="mt-4 ">
+                Supercharge your workflow with instant feedback and shorter
+                development cycles.
+              </p>
+            </div>
 
-          <div className="md:w-1/3 ">
-            <h2 className="text-2xl font-semibold ">
-              Keep your app modern and up-to-date
-            </h2>
-            <p className="mt-4">
-              Detect and automatically fix usage of deprecated syntax to
-              facilitate dependency, framework, and language upgrades.
-            </p>
+            <div className="md:w-1/3 ">
+              <h2 className="text-2xl font-semibold ">
+                Keep your app modern and up-to-date
+              </h2>
+              <p className="mt-4">
+                Detect and automatically fix usage of deprecated syntax to
+                facilitate dependency, framework, and language upgrades and
+                security patches.
+              </p>
+            </div>
           </div>
         </div>
       </section>
