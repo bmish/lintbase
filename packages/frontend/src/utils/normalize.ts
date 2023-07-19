@@ -234,11 +234,12 @@ async function eslintLinterToNormalizedLinter(
               name,
             })),
         },
-        // @ts-expect-error -- category not an official property
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         category:
+          // @ts-expect-error -- category not an official property
           typeof rule.meta?.docs?.category === 'string'
-            ? rule.meta.docs.category
+            ? // @ts-expect-error -- category not an official property
+              rule.meta.docs.category
             : null, // Only accept strings. In rare case, a plugin provided this as an array.
         options: {
           create: uniqueItems(
@@ -609,8 +610,8 @@ export async function loadLintersToDb(
         limitNpm(async () => {
           let npmDownloadsInfo;
           let npmRegistryInfo;
-          // eslint-disable-next-line no-console
-          console.log('Fetching npm info for', linterName);
+
+          console.log('Fetching npm info for', linterName); // eslint-disable-line no-console
           try {
             // Get info from npm registry.
             // https://github.com/npm/registry/blob/master/docs/download-counts.md
@@ -623,8 +624,7 @@ export async function loadLintersToDb(
               `https://registry.npmjs.org/${linterName}`
             ).then((res) => res.json())) as NpmRegistryInfo;
           } catch {
-            // eslint-disable-next-line no-console
-            console.log(`Fetching npm info failed for ${linterName}.`);
+            console.log(`Fetching npm info failed for ${linterName}.`); // eslint-disable-line no-console
             return {};
           }
           return { npmDownloadsInfo, npmRegistryInfo };
@@ -647,8 +647,7 @@ export async function loadLintersToDb(
 
           const { npmDownloadsInfo, npmRegistryInfo } = npmInfo[index];
           if (!npmDownloadsInfo || !npmRegistryInfo) {
-            // eslint-disable-next-line no-console
-            console.log(`Skipping ${linterName} due to missing npm info.`);
+            console.log(`Skipping ${linterName} due to missing npm info.`); // eslint-disable-line no-console
             return [];
           }
 
@@ -781,7 +780,6 @@ export async function deleteAllData() {
   try {
     await prisma.$executeRawUnsafe(`TRUNCATE TABLE ${tables} CASCADE;`);
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.log({ error });
+    console.log({ error }); // eslint-disable-line no-console
   }
 }

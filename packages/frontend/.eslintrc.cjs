@@ -5,7 +5,7 @@ module.exports = {
     sourceType: 'module',
   },
   extends: [
-    'plugin:square/react',
+    'plugin:square/typescript',
     'plugin:node/recommended',
     'plugin:unicorn/recommended', // Turn eslint-plugin-unicorn recommended rules on again because many were turned off by eslint-plugin-square.
     'next/core-web-vitals',
@@ -28,12 +28,15 @@ module.exports = {
     'import/no-named-as-default-member': 'off',
 
     'node/no-missing-import': 'off', // Disabled due to a bug: https://github.com/mysticatea/eslint-plugin-node/issues/342
-    'require-unicode-regexp': 'error',
+
     'unicorn/no-array-reduce': 'off',
     'unicorn/no-nested-ternary': 'off',
     'unicorn/no-null': 'off',
     'unicorn/prevent-abbreviations': 'off',
 
+    'func-style': ['error', 'declaration', { allowArrowFunctions: true }],
+    'no-console': 'error',
+    'require-unicode-regexp': 'error',
     'sort-keys': 'off',
   },
   overrides: [
@@ -56,6 +59,22 @@ module.exports = {
 
         '@typescript-eslint/prefer-readonly': 'error',
         '@typescript-eslint/require-array-sort-compare': 'error',
+      },
+    },
+
+    {
+      // From eslint-plugin-square React config.
+      files: ['src/components/**/*'],
+      rules: {
+        'filenames/match-exported': ['error', 'pascal'],
+        'unicorn/filename-case': ['error', { case: 'pascalCase' }],
+      },
+    },
+    {
+      // From eslint-plugin-square React config.
+      files: ['src/setupTests.*'],
+      rules: {
+        'unicorn/filename-case': 'off',
       },
     },
   ],
