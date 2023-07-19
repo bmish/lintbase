@@ -104,12 +104,22 @@ export default function Header() {
           {!session && (
             <li>
               <Link
+                href="/waitlist"
+                className="px-2 sm:px-4 py-2 font-semibold text-gray-600 rounded"
+              >
+                Waitlist
+              </Link>
+            </li>
+            /*
+            <li>
+              <Link
                 href="/api/auth/signin"
                 className="px-2 sm:px-4 py-2 font-semibold text-gray-600 rounded"
               >
                 Login
               </Link>
             </li>
+            */
           )}
         </ul>
       </div>

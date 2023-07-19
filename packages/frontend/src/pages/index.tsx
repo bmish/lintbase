@@ -107,12 +107,12 @@ export default function index({
             Identify codebases missing lint coverage and gain unique quality
             insights.
           </p>
-          <button
-            disabled={true}
-            className="bg-blue-300 text-white font-bold py-2 px-4 rounded"
+          <Link
+            href="/waitlist"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
           >
-            Coming Soon
-          </button>
+            Waitlist
+          </Link>
         </div>
       </section>
 
@@ -125,12 +125,12 @@ export default function index({
             Automated suggestions of ideas for new lint rules tailored to your
             team&apos;s codebases or consumers of your libraries.
           </p>
-          <button
-            disabled={true}
-            className="bg-blue-300 text-white font-bold py-2 px-4 rounded"
+          <Link
+            href="/waitlist"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
           >
-            Coming Soon
-          </button>
+            Waitlist
+          </Link>
         </div>
       </section>
 
@@ -142,12 +142,12 @@ export default function index({
           <p className="text-xl sm:text-2xl mb-8">
             Design and build linting in a no-code or low-code fashion.
           </p>
-          <button
-            disabled={true}
-            className="bg-blue-300 text-white font-bold py-2 px-4 rounded"
+          <Link
+            href="/waitlist"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
           >
-            Coming Soon
-          </button>
+            Waitlist
+          </Link>
         </div>
       </section>
 
@@ -160,12 +160,12 @@ export default function index({
             We&apos;ll open PRs to enable and fix relevant lint coverage gaps
             for you.
           </p>
-          <button
-            disabled={true}
-            className="bg-blue-300 text-white font-bold py-2 px-4 rounded"
+          <Link
+            href="/waitlist"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
           >
-            Coming Soon
-          </button>
+            Waitlist
+          </Link>
         </div>
       </section>
 

@@ -14,6 +14,16 @@ CREATE TABLE "User" (
 );
 
 -- CreateTable
+CREATE TABLE "UserWaitlist" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "email" TEXT NOT NULL,
+
+    CONSTRAINT "UserWaitlist_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "RuleOption" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -167,6 +177,9 @@ CREATE TABLE "Ecosystem" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserWaitlist_email_key" ON "UserWaitlist"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "RuleOption_name_ruleId_key" ON "RuleOption"("name", "ruleId");
