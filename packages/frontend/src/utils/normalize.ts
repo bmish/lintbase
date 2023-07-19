@@ -234,7 +234,7 @@ async function eslintLinterToNormalizedLinter(
         },
         // @ts-expect-error -- category not an official property
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        category: rule.meta?.docs?.category || null,
+        category: typeof rule.meta?.docs?.category === 'string' ? rule.meta.docs.category : null, // Only accept strings. In rare case, a plugin provided this as an array.
         options: {
           create: uniqueItems(
             getAllNamedOptions(rule.meta?.schema),
