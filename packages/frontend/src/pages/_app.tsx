@@ -11,6 +11,7 @@ import { api } from '@/utils/api';
 import Layout from '../components/layout';
 import { SessionProvider } from 'next-auth/react';
 import { type Session } from 'next-auth';
+import { Analytics } from '@vercel/analytics/react';
 
 const App: AppType<{ session: Session | null }> = ({
   Component,
@@ -20,6 +21,7 @@ const App: AppType<{ session: Session | null }> = ({
     <SessionProvider session={session}>
       <Layout>
         <Component {...pageProps} />
+        <Analytics />
       </Layout>
     </SessionProvider>
   );
