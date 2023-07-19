@@ -228,13 +228,18 @@ async function eslintLinterToNormalizedLinter(
         deprecated: rule.meta?.deprecated || false,
         replacedBy: {
           // asArray in case user has mistakenly added a string instead of an array.
-          create: uniqueItems(asArray(rule.meta?.replacedBy)).map((name) => ({
-            name,
-          })),
+          create: uniqueItems(asArray(rule.meta?.replacedBy))
+            .filter((name) => typeof name === 'string')
+            .map((name) => ({
+              name,
+            })),
         },
         // @ts-expect-error -- category not an official property
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        category: typeof rule.meta?.docs?.category === 'string' ? rule.meta.docs.category : null, // Only accept strings. In rare case, a plugin provided this as an array.
+        category:
+          typeof rule.meta?.docs?.category === 'string'
+            ? rule.meta.docs.category
+            : null, // Only accept strings. In rare case, a plugin provided this as an array.
         options: {
           create: uniqueItems(
             getAllNamedOptions(rule.meta?.schema),
