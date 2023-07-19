@@ -12,10 +12,11 @@ export default async function waitlist(
     return;
   }
 
-  const result = await prisma.userWaitlist.create({
-    data: {
-      email,
-    },
+  // Use upsert so it doesn't fail if email already exists.
+  const result = await prisma.userWaitlist.upsert({
+    where: { email },
+    update: {},
+    create: { email },
   });
 
   res.status(200).json({ result });
