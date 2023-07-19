@@ -172,7 +172,7 @@ export default function index({
       <section className="bg-gray-800 text-white ">
         <div className="container mx-auto pt-20  max-w-3xl">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight px-8 md:px-0">
-            Why use linting?
+            Strengthen your linting game
           </h1>
           <div className="pt-6 pb-20  px-8 md:px-0  flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8">
             <div className="md:w-1/3">
