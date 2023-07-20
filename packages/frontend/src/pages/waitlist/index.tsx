@@ -9,25 +9,20 @@ import {
 } from '@mui/material';
 import Head from 'next/head';
 import { useState } from 'react';
+import { api } from '@/utils/api';
 
 export default function Waitlist() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const waitlistJoinMutation = api.userWaitlist.join.useMutation();
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const result = await fetch('/api/waitlist', {
-      method: 'POST',
-      body: JSON.stringify({ email }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    waitlistJoinMutation.mutate({ email });
 
-    if (result.status === 200) {
-      setSubmitted(true);
-    }
+    setSubmitted(true);
   };
 
   return (
@@ -37,7 +32,6 @@ export default function Waitlist() {
         <meta property="og:title" content="LintBase Waitlist" key="title" />
       </Head>
       <main className="py-8 px-6 max-w-4xl mx-auto min-h-screen">
-        {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
         <form onSubmit={handleSubmit}>
           <Card>
             <CardContent>
