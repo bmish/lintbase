@@ -79,7 +79,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   // Related rules:
   let rulesRelated = null;
-  if (showRelated || session) {
+  // eslint-disable-next-line no-constant-condition
+  if (showRelated || session || true) {
     try {
       const rulesRelatedResponse = await related({
         type: 'rule',
