@@ -81,8 +81,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   // Related linters:
 
   let lintersRelated = null;
-  // eslint-disable-next-line no-constant-condition
-  if (showRelated || session || true) {
+  if (showRelated || session) {
     try {
       const lintersRelatedResponse = await related({
         type: 'linter',
