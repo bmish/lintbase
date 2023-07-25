@@ -1,4 +1,5 @@
 import {
+  Breadcrumbs,
   Button,
   Card,
   CardActions,
@@ -6,7 +7,12 @@ import {
   Link,
   Typography,
 } from '@mui/material';
-import { packageToLinkUs, ruleToLinkUs } from '@/utils/dynamic-fields';
+import {
+  ecosystemToDisplayName,
+  lintFrameworkToLinkUs,
+  packageToLinkUs,
+  ruleToLinkUs,
+} from '@/utils/dynamic-fields';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { Prisma } from '@prisma/client';
 import EmojiFixable from './EmojiFixable';
@@ -39,16 +45,30 @@ export default function RuleCard({
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
-        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          {rule.linter.package.ecosystem.name === 'node'
-            ? 'Node.js'
-            : rule.linter.package.ecosystem.name}{' '}
-          •{' '}
-          {rule.linter.lintFramework.name === 'eslint'
-            ? 'ESLint'
-            : rule.linter.lintFramework.name}{' '}
-          • {rule.linter.package.name}
-        </Typography>
+        <Breadcrumbs aria-label="breadcrumb" className="mb-1">
+          <Typography sx={{ fontSize: 14 }} color="text.secondary">
+            {ecosystemToDisplayName(rule.linter.package.ecosystem)}
+          </Typography>
+          <Link
+            underline="hover"
+            sx={{ fontSize: 14 }}
+            color="text.secondary"
+            href={lintFrameworkToLinkUs(rule.linter.lintFramework)}
+          >
+            {rule.linter.lintFramework.name === 'eslint'
+              ? 'ESLint'
+              : rule.linter.lintFramework.name}
+          </Link>
+          <Link
+            underline="hover"
+            sx={{ fontSize: 14 }}
+            color="text.secondary"
+            href={packageToLinkUs(rule.linter.package)}
+          >
+            {rule.linter.package.name}
+          </Link>
+        </Breadcrumbs>
+
         <div className="mb-4">
           <Typography variant="h5" component="div">
             {detailed && rule.name}
@@ -84,12 +104,8 @@ export default function RuleCard({
         )}
       </CardContent>
 
-      {detailed && (
+      {detailed && rule.linkRuleDoc && (
         <CardActions>
-          <Button size="small" href={packageToLinkUs(rule.linter.package)}>
-            plugin
-          </Button>
-
           {rule.linkRuleDoc && (
             <Button size="small" href={rule.linkRuleDoc}>
               Rule Doc

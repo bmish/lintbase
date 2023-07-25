@@ -4,7 +4,6 @@ import Head from 'next/head';
 import { Button, Paper } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import AccessDenied from '@/components/AccessDenied';
-import Link from 'next/link';
 import DatabaseNavigation from '@/components/DashboardNavigation';
 
 export default function Repos() {

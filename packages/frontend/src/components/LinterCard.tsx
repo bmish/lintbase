@@ -1,9 +1,11 @@
 import {
   ecosystemToDisplayName,
+  lintFrameworkToLinkUs,
   linterToLinkPackageRegistry,
   packageToLinkUs,
 } from '@/utils/dynamic-fields';
 import {
+  Breadcrumbs,
   Button,
   Card,
   CardActions,
@@ -59,12 +61,22 @@ export default function LinterCard({
   return (
     <Card>
       <CardContent>
-        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          {ecosystemToDisplayName(linter.package.ecosystem)} •{' '}
-          {linter.lintFramework.name === 'eslint'
-            ? 'ESLint'
-            : linter.lintFramework.name}
-        </Typography>
+        <Breadcrumbs aria-label="breadcrumb" className="mb-1">
+          <Typography sx={{ fontSize: 14 }} color="text.secondary">
+            {ecosystemToDisplayName(linter.package.ecosystem)}
+          </Typography>
+          <Link
+            underline="hover"
+            sx={{ fontSize: 14 }}
+            color="text.secondary"
+            href={lintFrameworkToLinkUs(linter.lintFramework)}
+          >
+            {linter.lintFramework.name === 'eslint'
+              ? 'ESLint'
+              : linter.lintFramework.name}
+          </Link>
+        </Breadcrumbs>
+
         <Typography variant="h5" component="div">
           {detailed && linter.package.name}
           {!detailed && (
@@ -73,6 +85,7 @@ export default function LinterCard({
             </Link>
           )}
         </Typography>
+
         <div className="mb-4">
           <Typography sx={{ fontSize: 14 }} color="text.secondary">
             {linter.configs.length > 0 &&
