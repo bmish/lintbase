@@ -1,10 +1,20 @@
 /* eslint node/no-unsupported-features/es-syntax:"off" */
 import Footer from '@/components/Footer';
 import Head from 'next/head';
-import { Button, Paper } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import AccessDenied from '@/components/AccessDenied';
 import DatabaseNavigation from '@/components/DashboardNavigation';
+import {
+  Button,
+  Paper,
+  Table,
+  TableHead,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+} from '@mui/material';
+import Link from 'next/link';
 
 export default function Repos() {
   const { data: session } = useSession();
@@ -12,6 +22,12 @@ export default function Repos() {
   if (!session) {
     return <AccessDenied />;
   }
+
+  const repos = [
+    { name: 'dashboard' },
+    { name: 'invoices' },
+    { name: 'appointments' },
+  ];
 
   return (
     <div className="bg-gray-100 h-full">
@@ -36,10 +52,31 @@ export default function Repos() {
         </Button>
       </div>
       <main className="py-8 px-6 mx-auto min-h-screen">
-        <Paper className="p-8">
-          <p>Coming soon.</p>
-          <br></br>
-        </Paper>
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} aria-label="linter config list">
+            <TableHead>
+              <TableRow>
+                <TableCell scope="col" colSpan={2}>
+                  Repository
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {repos.map((repo) => (
+                <TableRow
+                  key={repo.name}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+                  <TableCell scope="row">
+                    <Link href={`/dashboard/repos/${repo.name}`}>
+                      {repo.name}
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
         <Footer />
       </main>
     </div>
