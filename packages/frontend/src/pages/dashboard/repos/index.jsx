@@ -1,13 +1,13 @@
 /* eslint node/no-unsupported-features/es-syntax:"off" */
 import Footer from '@/components/Footer';
 import Head from 'next/head';
-import { Paper } from '@mui/material';
+import { Button, Paper } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import AccessDenied from '@/components/AccessDenied';
 import Link from 'next/link';
 import DatabaseNavigation from '@/components/DashboardNavigation';
 
-export default function Dashboard() {
+export default function Repos() {
   const { data: session } = useSession();
 
   if (!session) {
@@ -17,22 +17,29 @@ export default function Dashboard() {
   return (
     <div className="bg-gray-100 h-full">
       <Head>
-        <title>LintBase Dashboard</title>
-        <meta property="og:title" content="LintBase Dashboard" key="title" />
+        <title>LintBase Dashboard Repositories</title>
+        <meta
+          property="og:title"
+          content="LintBase Dashboard Repositories"
+          key="title"
+        />
       </Head>
       <DatabaseNavigation />
+      <div className=" px-6 pt-8 w-full flex flex-row  justify-end">
+        <Button
+          variant="contained"
+          style={{
+            'background-color':
+              '#1976d2' /* Color is to avoid this issue https://stackoverflow.com/questions/75202373/button-in-material-ui-is-transparent-when-loading */,
+          }}
+        >
+          Import Repository
+        </Button>
+      </div>
       <main className="py-8 px-6 mx-auto min-h-screen">
         <Paper className="p-8">
-          <p>Welcome, {session.user.name}.</p>
-          <br></br>
           <p>Coming soon.</p>
           <br></br>
-          <p>
-            <Link href="https://docs.google.com/forms/d/e/1FAIpQLSfc5yLA4DVIYsNAQVc-I-0By0fizM1gxJ96YjP23oVHg7Ku5A/viewform">
-              Sign up
-            </Link>{' '}
-            for announcements.
-          </p>
         </Paper>
         <Footer />
       </main>
