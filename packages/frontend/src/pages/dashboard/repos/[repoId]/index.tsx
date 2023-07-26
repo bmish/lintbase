@@ -154,7 +154,7 @@ export default function Repo({ data: { repo } }: { data: { repo: Repo } }) {
         <title>LintBase Dashboard Repository - {repo.name}</title>
         <meta
           property="og:title"
-          content="LintBase Dashboard Repository - {repo.name}"
+          content={`LintBase Dashboard Repository - ${repo.name}`}
           key="title"
         />
       </Head>
@@ -162,8 +162,19 @@ export default function Repo({ data: { repo } }: { data: { repo: Repo } }) {
 
       <main className="py-8 px-6 mx-auto min-h-screen">
         <Paper className="p-8">
-          <p>Repository page for: {repo.name}</p>
-          <br></br>
+          <Typography variant="h5">{repo.name}</Typography>
+          <br />
+          <p>Some description about the repository.</p>
+          <br />
+          <p>
+            App detected at <code>/package.json</code>. ESLint detected at{' '}
+            <code>/.eslintrc.js</code>.
+          </p>
+          <br />
+          <p>
+            Imported 3 days ago. Suggestions generated yesterday (updated daily
+            when repo has activity).
+          </p>
         </Paper>
 
         <Paper className="mt-8">
