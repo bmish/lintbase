@@ -3,6 +3,9 @@
 import Footer from '@/components/Footer';
 import Head from 'next/head';
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Button,
   Paper,
@@ -11,8 +14,10 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TableHead,
   TableRow,
   Tabs,
+  Typography,
 } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import AccessDenied from '@/components/AccessDenied';
@@ -20,6 +25,7 @@ import DatabaseNavigation from '@/components/DashboardNavigation';
 import { type GetServerSideProps } from 'next';
 import React from 'react';
 import Link from 'next/link';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -111,6 +117,37 @@ export default function Repo({ data: { repo } }: { data: { repo: Repo } }) {
   ];
   const rulesSuggested = [{ name: 'yoda' }, { name: 'ember/no-get' }];
 
+  const configsInLinter = [
+    { name: 'recommended', enabled: true },
+    {
+      name: 'stylistic',
+      enabled: false,
+      violations: 67,
+      violationsFixable: 82,
+    },
+  ];
+  const rulesInLinter = [
+    { name: 'no-get', enabled: true },
+    {
+      name: 'no-get-with-properties',
+      enabled: false,
+      violations: 15,
+      violationsFixable: 75,
+    },
+    {
+      name: 'order-in-components',
+      enabled: false,
+      violations: 7,
+      violationsFixable: 100,
+    },
+    {
+      name: 'order-in-routes',
+      enabled: false,
+      violations: 23,
+      violationsFixable: 100,
+    },
+  ];
+
   return (
     <div className="bg-gray-100 h-full">
       <Head>
@@ -152,29 +189,89 @@ export default function Repo({ data: { repo } }: { data: { repo: Repo } }) {
             key={1}
             prefix="linters-tab-"
           >
-            <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 650 }} aria-label="repo linters suggested">
-                <TableBody>
-                  {lintersSuggested.map((repo) => (
-                    <TableRow
-                      key={repo.name}
-                      sx={{
-                        '&:last-child td, &:last-child th': { border: 0 },
-                      }}
-                    >
-                      <TableCell scope="row">
-                        <Link href={`/dashboard/repos/${repo.name}`}>
-                          {repo.name}
-                        </Link>
-                      </TableCell>
-                      <TableCell scope="row" align="right">
-                        <Button variant="outlined">See Recommendations</Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+            {lintersSuggested.map((repo) => (
+              <Accordion key={repo.name}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                >
+                  <Typography>{repo.name}</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <TableContainer>
+                    <Table sx={{ minWidth: 650 }} aria-label="repo rules novel">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Config</TableCell>
+                          <TableCell>Violations</TableCell>
+                          <TableCell>Autofixable</TableCell>
+                          <TableCell></TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {configsInLinter.map((repo) => (
+                          <TableRow
+                            key="recommended"
+                            sx={{
+                              '&:last-child td, &:last-child th': { border: 0 },
+                            }}
+                          >
+                            <TableCell scope="row">{repo.name}</TableCell>
+                            <TableCell scope="row">{repo.violations}</TableCell>
+                            <TableCell scope="row">
+                              {repo.violationsFixable &&
+                                `${repo.violationsFixable}%`}
+                            </TableCell>
+                            <TableCell scope="row" align="right">
+                              {repo.enabled && (
+                                <Button variant="outlined">Disable</Button>
+                              )}
+                              {!repo.enabled && (
+                                <Button variant="outlined">Enable</Button>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Rule</TableCell>
+                          <TableCell></TableCell>
+                          <TableCell></TableCell>
+                          <TableCell></TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {rulesInLinter.map((repo) => (
+                          <TableRow
+                            key={repo.name}
+                            sx={{
+                              '&:last-child td, &:last-child th': { border: 0 },
+                            }}
+                          >
+                            <TableCell scope="row">{repo.name}</TableCell>
+                            <TableCell scope="row">{repo.violations}</TableCell>
+                            <TableCell scope="row">
+                              {repo.violationsFixable &&
+                                `${repo.violationsFixable}%`}
+                            </TableCell>
+                            <TableCell scope="row" align="right">
+                              {repo.enabled && (
+                                <Button variant="outlined">Disable</Button>
+                              )}
+                              {!repo.enabled && (
+                                <Button variant="outlined">Enable</Button>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </AccordionDetails>
+              </Accordion>
+            ))}
           </TabPanel>
           <TabPanel
             value={currentLintersTabIndex}
@@ -184,7 +281,7 @@ export default function Repo({ data: { repo } }: { data: { repo: Repo } }) {
           >
             <Table sx={{ minWidth: 650 }} aria-label="repo linters current">
               <TableBody>
-                {lintersCurrent.map((repo, i) => (
+                {lintersCurrent.map((repo) => (
                   <TableRow
                     key={repo.name}
                     sx={{
@@ -229,7 +326,7 @@ export default function Repo({ data: { repo } }: { data: { repo: Repo } }) {
             key={1}
             prefix="rules-tab-"
           >
-            <TableContainer component={Paper}>
+            <TableContainer>
               <Table sx={{ minWidth: 650 }} aria-label="repo rules novel">
                 <TableBody>
                   {rulesNovel.map((repo) => (
@@ -255,7 +352,7 @@ export default function Repo({ data: { repo } }: { data: { repo: Repo } }) {
             key={1}
             prefix="rules-tab-"
           >
-            <TableContainer component={Paper}>
+            <TableContainer>
               <Table sx={{ minWidth: 650 }} aria-label="repo rules suggested">
                 <TableBody>
                   {rulesSuggested.map((repo) => (
@@ -300,7 +397,7 @@ export default function Repo({ data: { repo } }: { data: { repo: Repo } }) {
             key={1}
             prefix="prs-tab-"
           >
-            <TableContainer component={Paper}>
+            <TableContainer>
               <Table sx={{ minWidth: 650 }} aria-label="repo PRs open">
                 <TableBody>
                   {prsActive.map((repo) => (
@@ -330,7 +427,7 @@ export default function Repo({ data: { repo } }: { data: { repo: Repo } }) {
             key={1}
             prefix="prs-tab-"
           >
-            <TableContainer component={Paper}>
+            <TableContainer>
               <Table sx={{ minWidth: 650 }} aria-label="repo PRs closed">
                 <TableBody>
                   {prsClosed.map((repo) => (
