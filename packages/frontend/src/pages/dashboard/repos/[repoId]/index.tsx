@@ -211,7 +211,11 @@ export default function Repo({ data: { repo } }: { data: { repo: Repo } }) {
                 </AccordionSummary>
                 <AccordionDetails>
                   <TableContainer>
-                    <Table sx={{ minWidth: 650 }} aria-label="repo rules novel">
+                    <Table
+                      sx={{ minWidth: 650 }}
+                      aria-label="repo rules novel"
+                      size="small"
+                    >
                       <TableHead>
                         <TableRow>
                           <TableCell>Config</TableCell>
