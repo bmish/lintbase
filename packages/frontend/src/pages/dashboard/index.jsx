@@ -25,13 +25,8 @@ export default function Dashboard() {
         <Paper className="p-8">
           <p>Welcome, {session.user.name}.</p>
           <br></br>
-          <p>Coming soon.</p>
-          <br></br>
           <p>
-            <Link href="https://docs.google.com/forms/d/e/1FAIpQLSfc5yLA4DVIYsNAQVc-I-0By0fizM1gxJ96YjP23oVHg7Ku5A/viewform">
-              Sign up
-            </Link>{' '}
-            for announcements.
+            View your <Link href="/dashboard/repos">repositories</Link>.
           </p>
         </Paper>
         <Footer />
