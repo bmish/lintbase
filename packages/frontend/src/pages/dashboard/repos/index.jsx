@@ -24,9 +24,9 @@ export default function Repos() {
   }
 
   const repos = [
-    { name: 'dashboard' },
-    { name: 'invoices' },
-    { name: 'appointments' },
+    { name: 'username/dashboard' },
+    { name: 'username/invoices' },
+    { name: 'username/appointments' },
   ];
 
   return (
@@ -68,7 +68,9 @@ export default function Repos() {
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   <TableCell scope="row">
-                    <Link href={`/dashboard/repos/${repo.name}`}>
+                    <Link
+                      href={`/dashboard/repos/${encodeURIComponent(repo.name)}`}
+                    >
                       {repo.name}
                     </Link>
                   </TableCell>
