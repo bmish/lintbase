@@ -15,19 +15,36 @@ import {
   TableRow,
 } from '@mui/material';
 import Link from 'next/link';
+import { App } from 'octokit';
+import { type GetServerSideProps } from 'next';
+import { env } from '@/env.mjs';
 
-export default function Repos() {
+export const getServerSideProps: GetServerSideProps = async () => {
+  const appId = 361_377; // https://github.com/settings/apps/lintbase
+  const privateKey = env.GITHUB_PRIVATE_KEY;
+  const app = new App({ appId, privateKey });
+
+  const repos: { full_name: string }[] = [];
+
+  for await (const { repository } of app.eachRepository.iterator()) {
+    repos.push({ full_name: repository.full_name });
+  }
+
+  return { props: { data: { repositories: repos } } };
+};
+
+export default function Repos({
+  data: { repositories },
+}: {
+  data: {
+    repositories: { full_name: string }[];
+  };
+}) {
   const { data: session } = useSession();
 
   if (!session) {
     return <AccessDenied />;
   }
-
-  const repos = [
-    { name: 'username/dashboard' },
-    { name: 'username/invoices' },
-    { name: 'username/appointments' },
-  ];
 
   return (
     <div className="bg-gray-100 h-full">
@@ -47,6 +64,7 @@ export default function Repos() {
             'background-color':
               '#1976d2' /* Color is to avoid this issue https://stackoverflow.com/questions/75202373/button-in-material-ui-is-transparent-when-loading */,
           }}
+          href="https://github.com/apps/lintbase/installations/select_target"
         >
           Import Repository
         </Button>
@@ -62,16 +80,18 @@ export default function Repos() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {repos.map((repo) => (
+              {repositories.map((repo) => (
                 <TableRow
-                  key={repo.name}
+                  key={repo.full_name}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   <TableCell scope="row">
                     <Link
-                      href={`/dashboard/repos/${encodeURIComponent(repo.name)}`}
+                      href={`/dashboard/repos/${encodeURIComponent(
+                        repo.full_name
+                      )}`}
                     >
-                      {repo.name}
+                      {repo.full_name}
                     </Link>
                   </TableCell>
                 </TableRow>

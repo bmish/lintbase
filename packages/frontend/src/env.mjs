@@ -32,8 +32,9 @@ export const env = createEnv({
 
     OPENAI_API_KEY: z.string(),
 
-    GITHUB_ID: z.string(),
-    GITHUB_SECRET: z.string(),
+    GITHUB_ID: z.string(), // client ID from app
+    GITHUB_SECRET: z.string(), // client secret from app
+    GITHUB_PRIVATE_KEY: z.string(), // private key from app
 
     PINECONE_API_KEY: z.string(),
     PINECONE_ENVIRONMENT: z.string(),
@@ -71,6 +72,7 @@ export const env = createEnv({
 
     GITHUB_ID: process.env.GITHUB_ID,
     GITHUB_SECRET: process.env.GITHUB_SECRET,
+    GITHUB_PRIVATE_KEY: process.env.GITHUB_PRIVATE_KEY,
 
     PINECONE_API_KEY: process.env.PINECONE_API_KEY,
     PINECONE_ENVIRONMENT: process.env.PINECONE_ENVIRONMENT,
