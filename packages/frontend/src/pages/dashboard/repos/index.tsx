@@ -61,7 +61,7 @@ export default function Repos({
         <Button
           variant="contained"
           style={{
-            'background-color':
+            backgroundColor:
               '#1976d2' /* Color is to avoid this issue https://stackoverflow.com/questions/75202373/button-in-material-ui-is-transparent-when-loading */,
           }}
           href="https://github.com/apps/lintbase/installations/select_target"
