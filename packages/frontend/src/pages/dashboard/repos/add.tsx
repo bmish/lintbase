@@ -33,7 +33,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   return { props: { data: { repositories: repos } } };
 };
 
-export default function Repos({
+export default function Add({
   data: { repositories },
 }: {
   data: {
@@ -64,8 +64,11 @@ export default function Repos({
               <TableRow>
                 <TableCell scope="col">Repository</TableCell>
                 <TableCell align="right">
-                  <Button variant="outlined" href="/dashboard/repos/add">
-                    Add Repository
+                  <Button
+                    variant="outlined"
+                    href="https://github.com/apps/lintbase/installations/select_target"
+                  >
+                    Update GitHub Permissions
                   </Button>
                 </TableCell>
               </TableRow>
@@ -77,13 +80,20 @@ export default function Repos({
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   <TableCell scope="row">
-                    <Link
-                      href={`/dashboard/repos/${encodeURIComponent(
-                        repo.full_name
-                      )}`}
-                    >
+                    <Link href={`https://github.com/${repo.full_name}`}>
                       {repo.full_name}
                     </Link>
+                  </TableCell>
+                  <TableCell scope="row" align="right">
+                    <Button
+                      variant="contained"
+                      style={{
+                        backgroundColor:
+                          '#1976d2' /* Color is to avoid this issue https://stackoverflow.com/questions/75202373/button-in-material-ui-is-transparent-when-loading */,
+                      }}
+                    >
+                      Import
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
