@@ -8,6 +8,9 @@ import {
   AccordionSummary,
   Box,
   Button,
+  Card,
+  CardActions,
+  CardContent,
   Paper,
   Tab,
   Table,
@@ -161,21 +164,26 @@ export default function Repo({ data: { repo } }: { data: { repo: Repo } }) {
       <DatabaseNavigation />
 
       <main className="py-8 px-6 mx-auto min-h-screen">
-        <Paper className="p-8">
-          <Typography variant="h5">{repo.name}</Typography>
-          <br />
-          <p>Some description about the repository.</p>
-          <br />
-          <p>
-            App detected at <code>/package.json</code>. ESLint detected at{' '}
-            <code>/.eslintrc.js</code>.
-          </p>
-          <br />
-          <p>
-            Imported 3 days ago. Suggestions generated yesterday (updated daily
-            when repo has activity).
-          </p>
-        </Paper>
+        <Card>
+          <CardContent>
+            <Typography variant="h5">{repo.name}</Typography>
+            <br />
+            <p>Some description about the repository.</p>
+            <br />
+            <p>
+              App detected at <code>/package.json</code>. ESLint detected at{' '}
+              <code>/.eslintrc.js</code>.
+            </p>
+            <br />
+            <p>
+              Imported 3 days ago. Suggestions generated yesterday (updated
+              daily when repo has activity).
+            </p>
+          </CardContent>
+          <CardActions>
+            <Button href={`https://github.com/${repo.name}`}>Repository</Button>
+          </CardActions>
+        </Card>
 
         <Paper className="mt-8">
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
