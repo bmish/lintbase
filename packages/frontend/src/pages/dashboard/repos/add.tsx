@@ -18,16 +18,48 @@ import Link from 'next/link';
 import { App } from 'octokit';
 import { type GetServerSideProps } from 'next';
 import { env } from '@/env.mjs';
+import { api } from '@/utils/api';
+import { useRouter } from 'next/router';
+import { getServerAuthSession } from '@/server/auth';
+import { prisma } from '@/server/db';
 
-export const getServerSideProps: GetServerSideProps = async () => {
+type Repo = {
+  full_name: string;
+  language: string | null;
+  size: number;
+  description: string | null;
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
   const appId = 361_377; // https://github.com/settings/apps/lintbase
   const privateKey = env.GITHUB_PRIVATE_KEY;
   const app = new App({ appId, privateKey });
 
-  const repos: { full_name: string }[] = [];
+  const session = await getServerAuthSession(context);
+  if (!session) {
+    return { props: {} };
+  }
+
+  const repositories = await prisma.repository.findMany({
+    where: {
+      owner: { id: session.user.id },
+    },
+  });
+
+  const repos: Repo[] = [];
 
   for await (const { repository } of app.eachRepository.iterator()) {
-    repos.push({ full_name: repository.full_name });
+    if (repositories.some((repo) => repo.fullName === repository.full_name)) {
+      // Already imported this repository.
+      continue;
+    }
+    repos.push({
+      full_name: repository.full_name,
+      language: repository.language,
+      size: repository.size,
+      description: repository.description,
+      // commitSha
+    });
   }
 
   return { props: { data: { repositories: repos } } };
@@ -37,14 +69,41 @@ export default function Add({
   data: { repositories },
 }: {
   data: {
-    repositories: { full_name: string }[];
+    repositories: Repo[];
   };
 }) {
+  const router = useRouter();
   const { data: session } = useSession();
+  const repositoryAddMutation = api.repository.add.useMutation();
 
   if (!session) {
     return <AccessDenied />;
   }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // @ts-expect-error -- custom hidden element
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const repositoryFullName = e.currentTarget.elements.repositoryFullName
+      .value as string;
+    const repository = repositories.find(
+      (repo) => repo.full_name === repositoryFullName
+    );
+
+    if (!repository) {
+      return;
+    }
+
+    repositoryAddMutation.mutate({
+      fullName: repository.full_name,
+      language: repository.language || undefined,
+      size: repository.size,
+      description: repository.description || undefined,
+    });
+
+    await router.push('/dashboard/repos');
+  };
 
   return (
     <div className="bg-gray-100 h-full">
@@ -85,15 +144,24 @@ export default function Add({
                     </Link>
                   </TableCell>
                   <TableCell scope="row" align="right">
-                    <Button
-                      variant="contained"
-                      style={{
-                        backgroundColor:
-                          '#1976d2' /* Color is to avoid this issue https://stackoverflow.com/questions/75202373/button-in-material-ui-is-transparent-when-loading */,
-                      }}
-                    >
-                      Import
-                    </Button>
+                    {/* eslint-disable-next-line @typescript-eslint/no-misused-promises*/}
+                    <form onSubmit={handleSubmit}>
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        style={{
+                          backgroundColor:
+                            '#1976d2' /* Color is to avoid this issue https://stackoverflow.com/questions/75202373/button-in-material-ui-is-transparent-when-loading */,
+                        }}
+                      >
+                        Import
+                      </Button>
+                      <input
+                        type="hidden"
+                        name="repositoryFullName"
+                        value={repo.full_name}
+                      />
+                    </form>
                   </TableCell>
                 </TableRow>
               ))}

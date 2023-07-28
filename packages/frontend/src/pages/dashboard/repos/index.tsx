@@ -15,29 +15,38 @@ import {
   TableRow,
 } from '@mui/material';
 import Link from 'next/link';
-import { App } from 'octokit';
 import { type GetServerSideProps } from 'next';
-import { env } from '@/env.mjs';
+import { prisma } from '@/server/db';
+import { Prisma } from '@prisma/client';
+import { fixAnyDatesInObject } from '@/utils/normalize';
+import { getServerAuthSession } from '@/server/auth';
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const appId = 361_377; // https://github.com/settings/apps/lintbase
-  const privateKey = env.GITHUB_PRIVATE_KEY;
-  const app = new App({ appId, privateKey });
-
-  const repos: { full_name: string }[] = [];
-
-  for await (const { repository } of app.eachRepository.iterator()) {
-    repos.push({ full_name: repository.full_name });
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getServerAuthSession(context);
+  if (!session) {
+    return { props: {} };
   }
 
-  return { props: { data: { repositories: repos } } };
+  const repositories = await prisma.repository.findMany({
+    where: {
+      owner: { id: session.user.id },
+    },
+  });
+
+  return {
+    props: {
+      data: {
+        repositories: repositories.map((repo) => fixAnyDatesInObject(repo)),
+      },
+    },
+  };
 };
 
 export default function Repos({
   data: { repositories },
 }: {
   data: {
-    repositories: { full_name: string }[];
+    repositories: Prisma.RepositoryGetPayload<Record<string, never>>[];
   };
 }) {
   const { data: session } = useSession();
@@ -73,16 +82,16 @@ export default function Repos({
             <TableBody>
               {repositories.map((repo) => (
                 <TableRow
-                  key={repo.full_name}
+                  key={repo.fullName}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
                   <TableCell scope="row">
                     <Link
                       href={`/dashboard/repos/${encodeURIComponent(
-                        repo.full_name
+                        repo.fullName
                       )}`}
                     >
-                      {repo.full_name}
+                      {repo.fullName}
                     </Link>
                   </TableCell>
                 </TableRow>

@@ -9,29 +9,6 @@ datasource db {
   shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
-model User {
-  id        String   @id
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  visitedAt DateTime
-
-  email String? @unique
-  image String?
-  name  String?
-
-  locale String?
-
-  accountProvider String?
-}
-
-model UserWaitlist {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  email String @unique
-}
-
 model RuleOption {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -235,4 +212,48 @@ model Ecosystem {
 
   packages      Package[]
   LintFramework LintFramework[]
+}
+
+model UserWaitlist {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email String @unique
+}
+
+model User {
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  visitedAt DateTime
+
+  email String? @unique
+  image String?
+  name  String?
+
+  locale String?
+
+  accountProvider String?
+
+  Repository Repository[]
+}
+
+model Repository {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner   User   @relation(fields: [ownerId], references: [id])
+  ownerId String
+
+  fullName    String  @unique
+  description String?
+
+  commitSha  String?
+  importedAt DateTime?
+  scannedAt  DateTime?
+
+  language String?
+  size     Int?
 }

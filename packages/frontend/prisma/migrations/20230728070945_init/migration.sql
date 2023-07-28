@@ -1,29 +1,4 @@
 -- CreateTable
-CREATE TABLE "User" (
-    "id" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "visitedAt" TIMESTAMP(3) NOT NULL,
-    "email" TEXT,
-    "image" TEXT,
-    "name" TEXT,
-    "locale" TEXT,
-    "accountProvider" TEXT,
-
-    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "UserWaitlist" (
-    "id" SERIAL NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "email" TEXT NOT NULL,
-
-    CONSTRAINT "UserWaitlist_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "RuleOption" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -175,11 +150,47 @@ CREATE TABLE "Ecosystem" (
     CONSTRAINT "Ecosystem_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+-- CreateTable
+CREATE TABLE "UserWaitlist" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "email" TEXT NOT NULL,
 
--- CreateIndex
-CREATE UNIQUE INDEX "UserWaitlist_email_key" ON "UserWaitlist"("email");
+    CONSTRAINT "UserWaitlist_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "User" (
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "visitedAt" TIMESTAMP(3) NOT NULL,
+    "email" TEXT,
+    "image" TEXT,
+    "name" TEXT,
+    "locale" TEXT,
+    "accountProvider" TEXT,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Repository" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "ownerId" TEXT NOT NULL,
+    "fullName" TEXT NOT NULL,
+    "description" TEXT,
+    "commitSha" TEXT,
+    "importedAt" TIMESTAMP(3),
+    "scannedAt" TIMESTAMP(3),
+    "language" TEXT,
+    "size" INTEGER,
+
+    CONSTRAINT "Repository_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateIndex
 CREATE UNIQUE INDEX "RuleOption_name_ruleId_key" ON "RuleOption"("name", "ruleId");
@@ -219,6 +230,15 @@ CREATE UNIQUE INDEX "LintFramework_name_ecosystemId_key" ON "LintFramework"("nam
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Ecosystem_name_key" ON "Ecosystem"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserWaitlist_email_key" ON "UserWaitlist"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Repository_fullName_key" ON "Repository"("fullName");
 
 -- AddForeignKey
 ALTER TABLE "RuleOption" ADD CONSTRAINT "RuleOption_ruleId_fkey" FOREIGN KEY ("ruleId") REFERENCES "Rule"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -261,3 +281,6 @@ ALTER TABLE "LintFramework" ADD CONSTRAINT "LintFramework_ecosystemId_fkey" FORE
 
 -- AddForeignKey
 ALTER TABLE "LintFramework" ADD CONSTRAINT "LintFramework_linterId_fkey" FOREIGN KEY ("linterId") REFERENCES "Linter"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Repository" ADD CONSTRAINT "Repository_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
