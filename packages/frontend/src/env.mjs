@@ -35,6 +35,7 @@ export const env = createEnv({
     GITHUB_ID: z.string(), // client ID from app
     GITHUB_SECRET: z.string(), // client secret from app
     GITHUB_PRIVATE_KEY: z.string(), // private key from app
+    GITHUB_PERSONAL_ACCESS_TOKEN: z.string(), // TODO: replace with user access token for logged-in user https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-with-a-github-app-on-behalf-of-a-user
 
     PINECONE_API_KEY: z.string(),
     PINECONE_ENVIRONMENT: z.string(),
@@ -73,6 +74,7 @@ export const env = createEnv({
     GITHUB_ID: process.env.GITHUB_ID,
     GITHUB_SECRET: process.env.GITHUB_SECRET,
     GITHUB_PRIVATE_KEY: process.env.GITHUB_PRIVATE_KEY,
+    GITHUB_PERSONAL_ACCESS_TOKEN: process.env.GITHUB_PERSONAL_ACCESS_TOKEN,
 
     PINECONE_API_KEY: process.env.PINECONE_API_KEY,
     PINECONE_ENVIRONMENT: process.env.PINECONE_ENVIRONMENT,

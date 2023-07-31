@@ -75,6 +75,7 @@ export default function Add({
   const router = useRouter();
   const { data: session } = useSession();
   const repositoryAddMutation = api.repository.add.useMutation();
+  const repositoryRefreshMutation = api.repository.refresh.useMutation();
 
   if (!session) {
     return <AccessDenied />;
@@ -101,6 +102,8 @@ export default function Add({
       size: repository.size,
       description: repository.description || undefined,
     });
+
+    repositoryRefreshMutation.mutate({ fullName: repository.full_name });
 
     await router.push('/dashboard/repos');
   };
