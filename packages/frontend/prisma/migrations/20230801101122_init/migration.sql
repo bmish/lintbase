@@ -194,11 +194,22 @@ CREATE TABLE "Repository" (
 );
 
 -- CreateTable
-CREATE TABLE "RepositoryLintFramework" (
+CREATE TABLE "LocalPackage" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "repositoryId" INTEGER NOT NULL,
+    "path" TEXT NOT NULL,
+
+    CONSTRAINT "LocalPackage_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "LocalPackageLintFramework" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "localPackageId" INTEGER NOT NULL,
     "lintFrameworkId" INTEGER NOT NULL,
     "pathApp" TEXT,
     "pathConfig" TEXT,
@@ -206,29 +217,29 @@ CREATE TABLE "RepositoryLintFramework" (
     "isPresent" BOOLEAN,
     "isSuggested" BOOLEAN,
 
-    CONSTRAINT "RepositoryLintFramework_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "LocalPackageLintFramework_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "RepositoryLinter" (
+CREATE TABLE "LocalPackageLinter" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "repositoryId" INTEGER NOT NULL,
+    "localPackageId" INTEGER NOT NULL,
     "linterId" INTEGER NOT NULL,
     "version" TEXT,
     "isPresent" BOOLEAN,
     "isSuggested" BOOLEAN,
 
-    CONSTRAINT "RepositoryLinter_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "LocalPackageLinter_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "RepositoryRule" (
+CREATE TABLE "LocalPackageRule" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "repositoryId" INTEGER NOT NULL,
+    "localPackageId" INTEGER NOT NULL,
     "ruleId" INTEGER NOT NULL,
     "countViolations" INTEGER,
     "countAutofixable" INTEGER,
@@ -236,22 +247,22 @@ CREATE TABLE "RepositoryRule" (
     "severity" TEXT,
     "isSuggested" BOOLEAN,
 
-    CONSTRAINT "RepositoryRule_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "LocalPackageRule_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "RepositoryConfig" (
+CREATE TABLE "LocalPackageConfig" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "repositoryId" INTEGER NOT NULL,
+    "localPackageId" INTEGER NOT NULL,
     "configId" INTEGER NOT NULL,
     "countViolations" INTEGER,
     "countAutofixable" INTEGER,
     "isEnabled" BOOLEAN,
     "isSuggested" BOOLEAN,
 
-    CONSTRAINT "RepositoryConfig_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "LocalPackageConfig_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -303,16 +314,19 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 CREATE UNIQUE INDEX "Repository_fullName_key" ON "Repository"("fullName");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "RepositoryLintFramework_repositoryId_lintFrameworkId_key" ON "RepositoryLintFramework"("repositoryId", "lintFrameworkId");
+CREATE UNIQUE INDEX "LocalPackage_repositoryId_path_key" ON "LocalPackage"("repositoryId", "path");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "RepositoryLinter_repositoryId_linterId_key" ON "RepositoryLinter"("repositoryId", "linterId");
+CREATE UNIQUE INDEX "LocalPackageLintFramework_localPackageId_lintFrameworkId_key" ON "LocalPackageLintFramework"("localPackageId", "lintFrameworkId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "RepositoryRule_repositoryId_ruleId_key" ON "RepositoryRule"("repositoryId", "ruleId");
+CREATE UNIQUE INDEX "LocalPackageLinter_localPackageId_linterId_key" ON "LocalPackageLinter"("localPackageId", "linterId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "RepositoryConfig_repositoryId_configId_key" ON "RepositoryConfig"("repositoryId", "configId");
+CREATE UNIQUE INDEX "LocalPackageRule_localPackageId_ruleId_key" ON "LocalPackageRule"("localPackageId", "ruleId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "LocalPackageConfig_localPackageId_configId_key" ON "LocalPackageConfig"("localPackageId", "configId");
 
 -- AddForeignKey
 ALTER TABLE "RuleOption" ADD CONSTRAINT "RuleOption_ruleId_fkey" FOREIGN KEY ("ruleId") REFERENCES "Rule"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -360,25 +374,28 @@ ALTER TABLE "LintFramework" ADD CONSTRAINT "LintFramework_linterId_fkey" FOREIGN
 ALTER TABLE "Repository" ADD CONSTRAINT "Repository_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "RepositoryLintFramework" ADD CONSTRAINT "RepositoryLintFramework_repositoryId_fkey" FOREIGN KEY ("repositoryId") REFERENCES "Repository"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "LocalPackage" ADD CONSTRAINT "LocalPackage_repositoryId_fkey" FOREIGN KEY ("repositoryId") REFERENCES "Repository"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "RepositoryLintFramework" ADD CONSTRAINT "RepositoryLintFramework_lintFrameworkId_fkey" FOREIGN KEY ("lintFrameworkId") REFERENCES "LintFramework"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "LocalPackageLintFramework" ADD CONSTRAINT "LocalPackageLintFramework_localPackageId_fkey" FOREIGN KEY ("localPackageId") REFERENCES "LocalPackage"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "RepositoryLinter" ADD CONSTRAINT "RepositoryLinter_repositoryId_fkey" FOREIGN KEY ("repositoryId") REFERENCES "Repository"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "LocalPackageLintFramework" ADD CONSTRAINT "LocalPackageLintFramework_lintFrameworkId_fkey" FOREIGN KEY ("lintFrameworkId") REFERENCES "LintFramework"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "RepositoryLinter" ADD CONSTRAINT "RepositoryLinter_linterId_fkey" FOREIGN KEY ("linterId") REFERENCES "Linter"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "LocalPackageLinter" ADD CONSTRAINT "LocalPackageLinter_localPackageId_fkey" FOREIGN KEY ("localPackageId") REFERENCES "LocalPackage"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "RepositoryRule" ADD CONSTRAINT "RepositoryRule_repositoryId_fkey" FOREIGN KEY ("repositoryId") REFERENCES "Repository"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "LocalPackageLinter" ADD CONSTRAINT "LocalPackageLinter_linterId_fkey" FOREIGN KEY ("linterId") REFERENCES "Linter"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "RepositoryRule" ADD CONSTRAINT "RepositoryRule_ruleId_fkey" FOREIGN KEY ("ruleId") REFERENCES "Rule"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "LocalPackageRule" ADD CONSTRAINT "LocalPackageRule_localPackageId_fkey" FOREIGN KEY ("localPackageId") REFERENCES "LocalPackage"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "RepositoryConfig" ADD CONSTRAINT "RepositoryConfig_repositoryId_fkey" FOREIGN KEY ("repositoryId") REFERENCES "Repository"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "LocalPackageRule" ADD CONSTRAINT "LocalPackageRule_ruleId_fkey" FOREIGN KEY ("ruleId") REFERENCES "Rule"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "RepositoryConfig" ADD CONSTRAINT "RepositoryConfig_configId_fkey" FOREIGN KEY ("configId") REFERENCES "Config"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "LocalPackageConfig" ADD CONSTRAINT "LocalPackageConfig_localPackageId_fkey" FOREIGN KEY ("localPackageId") REFERENCES "LocalPackage"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "LocalPackageConfig" ADD CONSTRAINT "LocalPackageConfig_configId_fkey" FOREIGN KEY ("configId") REFERENCES "Config"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

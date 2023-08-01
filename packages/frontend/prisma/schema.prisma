@@ -54,10 +54,10 @@ model Rule {
   linterId Int
   linter   Linter @relation(fields: [linterId], references: [id])
 
-  ruleConfigs    RuleConfig[]
-  options        RuleOption[]
-  replacedBy     RuleReplacedBy[]
-  RepositoryRule RepositoryRule[]
+  ruleConfigs      RuleConfig[]
+  options          RuleOption[]
+  replacedBy       RuleReplacedBy[]
+  localPackageRule LocalPackageRule[]
 
   @@unique([name, linterId])
 }
@@ -72,8 +72,8 @@ model Config {
   linterId Int
   linter   Linter @relation(fields: [linterId], references: [id])
 
-  ruleConfigs      RuleConfig[]
-  RepositoryConfig RepositoryConfig[]
+  ruleConfigs        RuleConfig[]
+  localPackageConfig LocalPackageConfig[]
 
   @@unique([name, linterId])
 }
@@ -178,11 +178,11 @@ model Linter {
   lintFrameworkForCore LintFramework? @relation("LintFrameworkForCore")
 
   // Package for the linter.
-  packageId        Int                @unique
-  package          Package            @relation(fields: [packageId], references: [id])
+  packageId Int     @unique
+  package   Package @relation(fields: [packageId], references: [id])
 
   // Instances of repositories using this linter.
-  RepositoryLinter RepositoryLinter[]
+  localPackageLinter LocalPackageLinter[]
 }
 
 model LintFramework {
@@ -203,7 +203,7 @@ model LintFramework {
   linter   Linter? @relation("LintFrameworkForCore", fields: [linterId], references: [id])
 
   // Instances of repositories using this framework.
-  RepositoryLintFramework RepositoryLintFramework[]
+  localPackageLintFramework LocalPackageLintFramework[]
 
   @@unique([name, ecosystemId])
 }
@@ -267,20 +267,36 @@ model Repository {
   language String?
   size     Int?
 
-  // Instances of things in this repository.
-  RepositoryLintFramework RepositoryLintFramework[]
-  RepositoryLinter        RepositoryLinter[]
-  RepositoryRule          RepositoryRule[]
-  RepositoryConfig        RepositoryConfig[]
+  localPackages LocalPackage[]
 }
 
-model RepositoryLintFramework {
+model LocalPackage {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Repository containing this local package.
   repositoryId Int
   repository   Repository @relation(fields: [repositoryId], references: [id])
+
+  path String // Package to this local package in the repository.
+
+  // Instances of things in this local repository package.
+  localPackageLintFramework LocalPackageLintFramework[]
+  localPackageLinter        LocalPackageLinter[]
+  localPackageRule          LocalPackageRule[]
+  localPackageConfig        LocalPackageConfig[]
+
+  @@unique([repositoryId, path])
+}
+
+model LocalPackageLintFramework {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  localPackageId Int
+  localPackage   LocalPackage @relation(fields: [localPackageId], references: [id])
 
   lintFrameworkId Int
   lintFramework   LintFramework @relation(fields: [lintFrameworkId], references: [id])
@@ -292,16 +308,16 @@ model RepositoryLintFramework {
   isPresent   Boolean?
   isSuggested Boolean?
 
-  @@unique([repositoryId, lintFrameworkId])
+  @@unique([localPackageId, lintFrameworkId])
 }
 
-model RepositoryLinter {
+model LocalPackageLinter {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  repositoryId Int
-  repository   Repository @relation(fields: [repositoryId], references: [id])
+  localPackageId Int
+  localPackage   LocalPackage @relation(fields: [localPackageId], references: [id])
 
   linterId Int
   linter   Linter @relation(fields: [linterId], references: [id])
@@ -310,16 +326,16 @@ model RepositoryLinter {
   isPresent   Boolean?
   isSuggested Boolean?
 
-  @@unique([repositoryId, linterId])
+  @@unique([localPackageId, linterId])
 }
 
-model RepositoryRule {
+model LocalPackageRule {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  repositoryId Int
-  repository   Repository @relation(fields: [repositoryId], references: [id])
+  localPackageId Int
+  localPackage   LocalPackage @relation(fields: [localPackageId], references: [id])
 
   ruleId Int
   rule   Rule @relation(fields: [ruleId], references: [id])
@@ -331,16 +347,16 @@ model RepositoryRule {
   severity    String?
   isSuggested Boolean?
 
-  @@unique([repositoryId, ruleId])
+  @@unique([localPackageId, ruleId])
 }
 
-model RepositoryConfig {
+model LocalPackageConfig {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  repositoryId Int
-  repository   Repository @relation(fields: [repositoryId], references: [id])
+  localPackageId Int
+  localPackage   LocalPackage @relation(fields: [localPackageId], references: [id])
 
   configId Int
   config   Config @relation(fields: [configId], references: [id])
@@ -351,5 +367,5 @@ model RepositoryConfig {
   isEnabled   Boolean?
   isSuggested Boolean?
 
-  @@unique([repositoryId, configId])
+  @@unique([localPackageId, configId])
 }
