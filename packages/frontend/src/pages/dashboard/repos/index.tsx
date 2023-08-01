@@ -33,6 +33,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     where: {
       owner: { id: session.user.id },
     },
+    orderBy: {
+      fullName: Prisma.SortOrder.asc,
+    },
   });
 
   return {

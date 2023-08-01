@@ -54,9 +54,10 @@ model Rule {
   linterId Int
   linter   Linter @relation(fields: [linterId], references: [id])
 
-  ruleConfigs RuleConfig[]
-  options     RuleOption[]
-  replacedBy  RuleReplacedBy[]
+  ruleConfigs    RuleConfig[]
+  options        RuleOption[]
+  replacedBy     RuleReplacedBy[]
+  RepositoryRule RepositoryRule[]
 
   @@unique([name, linterId])
 }
@@ -71,7 +72,8 @@ model Config {
   linterId Int
   linter   Linter @relation(fields: [linterId], references: [id])
 
-  ruleConfigs RuleConfig[]
+  ruleConfigs      RuleConfig[]
+  RepositoryConfig RepositoryConfig[]
 
   @@unique([name, linterId])
 }
@@ -176,8 +178,11 @@ model Linter {
   lintFrameworkForCore LintFramework? @relation("LintFrameworkForCore")
 
   // Package for the linter.
-  packageId Int     @unique
-  package   Package @relation(fields: [packageId], references: [id])
+  packageId        Int                @unique
+  package          Package            @relation(fields: [packageId], references: [id])
+
+  // Instances of repositories using this linter.
+  RepositoryLinter RepositoryLinter[]
 }
 
 model LintFramework {
@@ -196,6 +201,9 @@ model LintFramework {
   // Linter for the framework core.
   linterId Int?    @unique
   linter   Linter? @relation("LintFrameworkForCore", fields: [linterId], references: [id])
+
+  // Instances of repositories using this framework.
+  RepositoryLintFramework RepositoryLintFramework[]
 
   @@unique([name, ecosystemId])
 }
@@ -250,10 +258,98 @@ model Repository {
   fullName    String  @unique
   description String?
 
-  commitSha  String?
+  commitSha   String?
+  committedAt DateTime?
+
   importedAt DateTime?
   scannedAt  DateTime?
 
   language String?
   size     Int?
+
+  // Instances of things in this repository.
+  RepositoryLintFramework RepositoryLintFramework[]
+  RepositoryLinter        RepositoryLinter[]
+  RepositoryRule          RepositoryRule[]
+  RepositoryConfig        RepositoryConfig[]
+}
+
+model RepositoryLintFramework {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  repositoryId Int
+  repository   Repository @relation(fields: [repositoryId], references: [id])
+
+  lintFrameworkId Int
+  lintFramework   LintFramework @relation(fields: [lintFrameworkId], references: [id])
+
+  pathApp    String?
+  pathConfig String?
+
+  version     String?
+  isPresent   Boolean?
+  isSuggested Boolean?
+
+  @@unique([repositoryId, lintFrameworkId])
+}
+
+model RepositoryLinter {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  repositoryId Int
+  repository   Repository @relation(fields: [repositoryId], references: [id])
+
+  linterId Int
+  linter   Linter @relation(fields: [linterId], references: [id])
+
+  version     String?
+  isPresent   Boolean?
+  isSuggested Boolean?
+
+  @@unique([repositoryId, linterId])
+}
+
+model RepositoryRule {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  repositoryId Int
+  repository   Repository @relation(fields: [repositoryId], references: [id])
+
+  ruleId Int
+  rule   Rule @relation(fields: [ruleId], references: [id])
+
+  countViolations  Int?
+  countAutofixable Int?
+
+  isEnabled   Boolean?
+  severity    String?
+  isSuggested Boolean?
+
+  @@unique([repositoryId, ruleId])
+}
+
+model RepositoryConfig {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  repositoryId Int
+  repository   Repository @relation(fields: [repositoryId], references: [id])
+
+  configId Int
+  config   Config @relation(fields: [configId], references: [id])
+
+  countViolations  Int?
+  countAutofixable Int?
+
+  isEnabled   Boolean?
+  isSuggested Boolean?
+
+  @@unique([repositoryId, configId])
 }

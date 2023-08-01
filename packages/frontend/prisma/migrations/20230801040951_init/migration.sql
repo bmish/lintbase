@@ -184,12 +184,74 @@ CREATE TABLE "Repository" (
     "fullName" TEXT NOT NULL,
     "description" TEXT,
     "commitSha" TEXT,
+    "committedAt" TIMESTAMP(3),
     "importedAt" TIMESTAMP(3),
     "scannedAt" TIMESTAMP(3),
     "language" TEXT,
     "size" INTEGER,
 
     CONSTRAINT "Repository_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "RepositoryLintFramework" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "repositoryId" INTEGER NOT NULL,
+    "lintFrameworkId" INTEGER NOT NULL,
+    "pathApp" TEXT,
+    "pathConfig" TEXT,
+    "version" TEXT,
+    "isPresent" BOOLEAN,
+    "isSuggested" BOOLEAN,
+
+    CONSTRAINT "RepositoryLintFramework_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "RepositoryLinter" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "repositoryId" INTEGER NOT NULL,
+    "linterId" INTEGER NOT NULL,
+    "version" TEXT,
+    "isPresent" BOOLEAN,
+    "isSuggested" BOOLEAN,
+
+    CONSTRAINT "RepositoryLinter_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "RepositoryRule" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "repositoryId" INTEGER NOT NULL,
+    "ruleId" INTEGER NOT NULL,
+    "countViolations" INTEGER,
+    "countAutofixable" INTEGER,
+    "isEnabled" BOOLEAN,
+    "severity" TEXT,
+    "isSuggested" BOOLEAN,
+
+    CONSTRAINT "RepositoryRule_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "RepositoryConfig" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "repositoryId" INTEGER NOT NULL,
+    "configId" INTEGER NOT NULL,
+    "countViolations" INTEGER,
+    "countAutofixable" INTEGER,
+    "isEnabled" BOOLEAN,
+    "isSuggested" BOOLEAN,
+
+    CONSTRAINT "RepositoryConfig_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -240,6 +302,18 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 -- CreateIndex
 CREATE UNIQUE INDEX "Repository_fullName_key" ON "Repository"("fullName");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "RepositoryLintFramework_repositoryId_lintFrameworkId_key" ON "RepositoryLintFramework"("repositoryId", "lintFrameworkId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "RepositoryLinter_repositoryId_linterId_key" ON "RepositoryLinter"("repositoryId", "linterId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "RepositoryRule_repositoryId_ruleId_key" ON "RepositoryRule"("repositoryId", "ruleId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "RepositoryConfig_repositoryId_configId_key" ON "RepositoryConfig"("repositoryId", "configId");
+
 -- AddForeignKey
 ALTER TABLE "RuleOption" ADD CONSTRAINT "RuleOption_ruleId_fkey" FOREIGN KEY ("ruleId") REFERENCES "Rule"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -284,3 +358,27 @@ ALTER TABLE "LintFramework" ADD CONSTRAINT "LintFramework_linterId_fkey" FOREIGN
 
 -- AddForeignKey
 ALTER TABLE "Repository" ADD CONSTRAINT "Repository_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RepositoryLintFramework" ADD CONSTRAINT "RepositoryLintFramework_repositoryId_fkey" FOREIGN KEY ("repositoryId") REFERENCES "Repository"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RepositoryLintFramework" ADD CONSTRAINT "RepositoryLintFramework_lintFrameworkId_fkey" FOREIGN KEY ("lintFrameworkId") REFERENCES "LintFramework"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RepositoryLinter" ADD CONSTRAINT "RepositoryLinter_repositoryId_fkey" FOREIGN KEY ("repositoryId") REFERENCES "Repository"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RepositoryLinter" ADD CONSTRAINT "RepositoryLinter_linterId_fkey" FOREIGN KEY ("linterId") REFERENCES "Linter"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RepositoryRule" ADD CONSTRAINT "RepositoryRule_repositoryId_fkey" FOREIGN KEY ("repositoryId") REFERENCES "Repository"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RepositoryRule" ADD CONSTRAINT "RepositoryRule_ruleId_fkey" FOREIGN KEY ("ruleId") REFERENCES "Rule"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RepositoryConfig" ADD CONSTRAINT "RepositoryConfig_repositoryId_fkey" FOREIGN KEY ("repositoryId") REFERENCES "Repository"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RepositoryConfig" ADD CONSTRAINT "RepositoryConfig_configId_fkey" FOREIGN KEY ("configId") REFERENCES "Config"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
