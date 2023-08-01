@@ -8,6 +8,7 @@ export const repositoryRouter = createTRPCRouter({
     .input(
       z.object({
         fullName: z.string().min(1),
+        // TODO: Query the GitHub API here to get this data.
         description: z.string().optional(),
         commitSha: z.string().optional(),
         language: z.string().optional(),
@@ -56,6 +57,7 @@ export const repositoryRouter = createTRPCRouter({
         where: { owner: { id: ctx.session.user.id }, fullName: input.fullName },
         data: {
           commitSha: lastCommit.sha,
+          committedAt: lastCommit.commit.committer?.date,
           // TODO: update anything else, commit time
         },
       });

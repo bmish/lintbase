@@ -100,10 +100,10 @@ export default function Repos({
               <TableRow>
                 <TableCell scope="col">Repository</TableCell>
                 <TableCell scope="col" align="right">
-                  Updated
+                  Refreshed
                 </TableCell>
                 <TableCell scope="col" align="right">
-                  Commit
+                  Last Commit
                 </TableCell>
                 <TableCell align="right">
                   <Button variant="outlined" href="/dashboard/repos/add">
@@ -134,11 +134,15 @@ export default function Repos({
                   </TableCell>
                   <TableCell scope="row" align="right">
                     {repo.commitSha && (
-                      <Link
-                        href={`https://github.com/${repo.fullName}/commit/${repo.commitSha}`}
-                      >
-                        <code>{repo.commitSha.slice(0, 7)}</code>
-                      </Link>
+                      <span>
+                        <Link
+                          href={`https://github.com/${repo.fullName}/commit/${repo.commitSha}`}
+                        >
+                          <code>{repo.commitSha.slice(0, 7)}</code>
+                        </Link>
+                        {repo.committedAt &&
+                          ` (${format(repo.committedAt.toString())})`}
+                      </span>
                     )}
                   </TableCell>
                   <TableCell scope="row" align="right">
