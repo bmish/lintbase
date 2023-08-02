@@ -37,7 +37,7 @@ export default function RuleCard({
         };
       };
       options: true;
-      replacedBy: true;
+      replacedBys: true;
     };
   }>;
   detailed?: boolean;
@@ -89,9 +89,9 @@ export default function RuleCard({
             {rule.type === 'suggestion' ? <EmojiTypeSuggestion /> : ''}
             {rule.deprecated ? <EmojiDeprecated /> : ''}
           </Typography>
-          {detailed && rule.replacedBy.length > 0 && (
+          {detailed && rule.replacedBys.length > 0 && (
             <Typography sx={{ fontSize: 14 }} color="text.secondary">
-              Replaced by: {rule.replacedBy.map((obj) => obj.name).join(', ')}
+              Replaced by: {rule.replacedBys.map((obj) => obj.name).join(', ')}
             </Typography>
           )}
         </div>

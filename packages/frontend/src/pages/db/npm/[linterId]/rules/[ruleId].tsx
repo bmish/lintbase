@@ -37,7 +37,7 @@ const include = {
       name: Prisma.SortOrder.asc,
     },
   },
-  replacedBy: true,
+  replacedBys: true,
   ruleConfigs: {
     include: {
       config: true,

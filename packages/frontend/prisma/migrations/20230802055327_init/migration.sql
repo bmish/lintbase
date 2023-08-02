@@ -211,11 +211,10 @@ CREATE TABLE "LocalPackageLintFramework" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "localPackageId" INTEGER NOT NULL,
     "lintFrameworkId" INTEGER NOT NULL,
-    "pathApp" TEXT,
     "pathConfig" TEXT,
     "version" TEXT,
-    "isPresent" BOOLEAN,
-    "isSuggested" BOOLEAN,
+    "isPresent" BOOLEAN NOT NULL DEFAULT false,
+    "isSuggested" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "LocalPackageLintFramework_pkey" PRIMARY KEY ("id")
 );
@@ -228,8 +227,8 @@ CREATE TABLE "LocalPackageLinter" (
     "localPackageId" INTEGER NOT NULL,
     "linterId" INTEGER NOT NULL,
     "version" TEXT,
-    "isPresent" BOOLEAN,
-    "isSuggested" BOOLEAN,
+    "isPresent" BOOLEAN NOT NULL DEFAULT false,
+    "isSuggested" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "LocalPackageLinter_pkey" PRIMARY KEY ("id")
 );
@@ -243,9 +242,9 @@ CREATE TABLE "LocalPackageRule" (
     "ruleId" INTEGER NOT NULL,
     "countViolations" INTEGER,
     "countAutofixable" INTEGER,
-    "isEnabled" BOOLEAN,
+    "isEnabled" BOOLEAN NOT NULL DEFAULT false,
     "severity" TEXT,
-    "isSuggested" BOOLEAN,
+    "isSuggested" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "LocalPackageRule_pkey" PRIMARY KEY ("id")
 );
@@ -259,8 +258,8 @@ CREATE TABLE "LocalPackageConfig" (
     "configId" INTEGER NOT NULL,
     "countViolations" INTEGER,
     "countAutofixable" INTEGER,
-    "isEnabled" BOOLEAN,
-    "isSuggested" BOOLEAN,
+    "isEnabled" BOOLEAN NOT NULL DEFAULT false,
+    "isSuggested" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "LocalPackageConfig_pkey" PRIMARY KEY ("id")
 );

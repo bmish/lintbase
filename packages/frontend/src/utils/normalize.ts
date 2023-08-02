@@ -76,7 +76,7 @@ const linterInclude = {
   rules: {
     include: {
       options: true,
-      replacedBy: true,
+      replacedBys: true,
     },
   },
   configs: true,
@@ -226,7 +226,7 @@ async function eslintLinterToNormalizedLinter(
         hasSuggestions: rule.meta?.hasSuggestions || false,
         type: rule.meta?.type || null,
         deprecated: rule.meta?.deprecated || false,
-        replacedBy: {
+        replacedBys: {
           // asArray in case user has mistakenly added a string instead of an array.
           create: uniqueItems(asArray(rule.meta?.replacedBy))
             .filter((name) => typeof name === 'string')

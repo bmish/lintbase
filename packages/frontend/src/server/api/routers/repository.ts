@@ -16,16 +16,59 @@ export const repositoryRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.repository.upsert({
-        where: { owner: { id: ctx.session.user.id }, fullName: input.fullName },
-        update: {},
-        create: {
+      const octokit = new Octokit({
+        auth: env.GITHUB_PERSONAL_ACCESS_TOKEN,
+      });
+
+      // TODO: search recursively for local packages in monorepos.
+      const contents = (await octokit.request(
+        'GET /repos/{owner}/{repo}/contents',
+        {
+          owner: input.fullName.split('/')[0],
+          repo: input.fullName.split('/')[1],
+          headers: {
+            'X-GitHub-Api-Version': '2022-11-28',
+          },
+        }
+      )) as { data: { name: string; path: string }[] };
+
+      // TODO: support other lint frameworks.
+      const lintFramework = await ctx.prisma.lintFramework.findFirstOrThrow({
+        where: {
+          name: 'eslint',
+          ecosystem: {
+            name: 'node',
+          },
+        },
+      });
+
+      await ctx.prisma.repository.create({
+        data: {
           fullName: input.fullName,
           description: input.description,
           commitSha: input.commitSha,
           language: input.language,
           size: input.size,
+          importedAt: new Date(),
           owner: { connect: { id: ctx.session.user.id } },
+          localPackages: {
+            create: contents.data
+              .filter((data) => data.name === 'package.json')
+              .map((data) => ({
+                path: data.path,
+                localPackageLintFrameworks: {
+                  create: contents.data
+                    .filter((data) => data.name === '.eslintrc.js')
+                    .map((data) => ({
+                      pathConfig: data.path,
+                      isPresent: true,
+                      lintFramework: {
+                        connect: { id: lintFramework.id },
+                      },
+                    })),
+                },
+              })),
+          },
         },
       });
     }),
@@ -58,7 +101,8 @@ export const repositoryRouter = createTRPCRouter({
         data: {
           commitSha: lastCommit.sha,
           committedAt: lastCommit.commit.committer?.date,
-          // TODO: update anything else, commit time
+          scannedAt: new Date(),
+          // TODO: update anything else
         },
       });
     }),

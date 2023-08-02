@@ -25,10 +25,15 @@ import {
 import { useSession } from 'next-auth/react';
 import AccessDenied from '@/components/AccessDenied';
 import DatabaseNavigation from '@/components/DashboardNavigation';
+import { getServerAuthSession } from '@/server/auth';
 import { type GetServerSideProps } from 'next';
 import React from 'react';
 import Link from 'next/link';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Prisma } from '@prisma/client';
+import { prisma } from '@/server/db';
+import { fixAnyDatesInObject } from '@/utils/normalize';
+import { format } from 'timeago.js';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -56,18 +61,37 @@ function TabPanel(props: TabPanelProps) {
 
 type Repo = { name: string };
 
-// eslint-disable-next-line @typescript-eslint/require-await
+const include = {
+  localPackages: { include: { localPackageLintFrameworks: true } },
+};
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { params } = context;
 
   const repoId = params?.repoId as string;
 
-  const repo: Repo = { name: repoId };
+  const session = await getServerAuthSession(context);
+  if (!session) {
+    return { props: {} };
+  }
 
-  return { props: { data: { repo } } };
+  const repo = await prisma.repository.findFirstOrThrow({
+    where: {
+      fullName: repoId,
+      owner: { id: session?.user.id },
+    },
+    include,
+  });
+  const repoFixed = fixAnyDatesInObject(repo);
+
+  return { props: { data: { repo: repoFixed } } };
 };
 
-export default function Repo({ data: { repo } }: { data: { repo: Repo } }) {
+export default function Repo({
+  data: { repo },
+}: {
+  data: { repo: Prisma.RepositoryGetPayload<{ include: typeof include }> };
+}) {
   const { data: session } = useSession();
 
   const [currentLintersTabIndex, setCurrentLintersTabIndex] = React.useState(0);
@@ -154,10 +178,10 @@ export default function Repo({ data: { repo } }: { data: { repo: Repo } }) {
   return (
     <div className="bg-gray-100 h-full">
       <Head>
-        <title>LintBase Dashboard Repository - {repo.name}</title>
+        <title>LintBase Dashboard Repository - {repo.fullName}</title>
         <meta
           property="og:title"
-          content={`LintBase Dashboard Repository - ${repo.name}`}
+          content={`LintBase Dashboard Repository - ${repo.fullName}`}
           key="title"
         />
       </Head>
@@ -166,22 +190,63 @@ export default function Repo({ data: { repo } }: { data: { repo: Repo } }) {
       <main className="py-8 px-6 mx-auto min-h-screen">
         <Card>
           <CardContent>
-            <Typography variant="h5">{repo.name}</Typography>
+            <Typography variant="h5">{repo.fullName}</Typography>
             <br />
-            <p>Some description about the repository.</p>
+            <p>{repo.description}</p>
             <br />
             <p>
-              App detected at <code>/package.json</code>. ESLint detected at{' '}
-              <code>/.eslintrc.js</code>.
+              Apps / linters detected at:{' '}
+              {repo.localPackages.map((localPackage, i) => (
+                <span key={localPackage.id}>
+                  <code>{localPackage.path}</code>
+                  {localPackage.localPackageLintFrameworks.length > 0 && ' ('}
+                  {localPackage.localPackageLintFrameworks.map(
+                    (localPackageLintFramework) => (
+                      <code key={localPackageLintFramework.id}>
+                        {localPackageLintFramework.pathConfig}
+                      </code>
+                    )
+                  )}
+                  {localPackage.localPackageLintFrameworks.length > 0 && ')'}
+                  {repo.localPackages.length > i + 1 && ', '}
+                </span>
+              ))}
+              .
             </p>
             <br />
             <p>
-              Imported 3 days ago. Suggestions generated yesterday (updated
-              daily when repo has activity).
+              Imported:{' '}
+              {repo.importedAt && (
+                <span>{format(new Date(repo.importedAt).toString())} </span>
+              )}
+            </p>
+            <br />
+            <p>
+              Refreshed:{' '}
+              {repo.scannedAt && (
+                <span>{format(new Date(repo.scannedAt).toString())} </span>
+              )}
+            </p>
+            <br />
+            <p>
+              {repo.commitSha && (
+                <span>
+                  Last Commit:{' '}
+                  <Link
+                    href={`https://github.com/${repo.fullName}/commit/${repo.commitSha}`}
+                  >
+                    <code>{repo.commitSha.slice(0, 7)}</code>
+                  </Link>
+                  {repo.committedAt &&
+                    ` (${format(repo.committedAt.toString())})`}
+                </span>
+              )}
             </p>
           </CardContent>
           <CardActions>
-            <Button href={`https://github.com/${repo.name}`}>Repository</Button>
+            <Button href={`https://github.com/${repo.fullName}`}>
+              Repository
+            </Button>
           </CardActions>
         </Card>
 

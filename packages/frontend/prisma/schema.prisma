@@ -54,10 +54,10 @@ model Rule {
   linterId Int
   linter   Linter @relation(fields: [linterId], references: [id])
 
-  ruleConfigs      RuleConfig[]
-  options          RuleOption[]
-  replacedBy       RuleReplacedBy[]
-  localPackageRule LocalPackageRule[]
+  ruleConfigs       RuleConfig[]
+  options           RuleOption[]
+  replacedBys       RuleReplacedBy[]
+  localPackageRules LocalPackageRule[]
 
   @@unique([name, linterId])
 }
@@ -72,8 +72,8 @@ model Config {
   linterId Int
   linter   Linter @relation(fields: [linterId], references: [id])
 
-  ruleConfigs        RuleConfig[]
-  localPackageConfig LocalPackageConfig[]
+  ruleConfigs         RuleConfig[]
+  localPackageConfigs LocalPackageConfig[]
 
   @@unique([name, linterId])
 }
@@ -182,7 +182,7 @@ model Linter {
   package   Package @relation(fields: [packageId], references: [id])
 
   // Instances of repositories using this linter.
-  localPackageLinter LocalPackageLinter[]
+  localPackageLinters LocalPackageLinter[]
 }
 
 model LintFramework {
@@ -203,7 +203,7 @@ model LintFramework {
   linter   Linter? @relation("LintFrameworkForCore", fields: [linterId], references: [id])
 
   // Instances of repositories using this framework.
-  localPackageLintFramework LocalPackageLintFramework[]
+  localPackageLintFrameworks LocalPackageLintFramework[]
 
   @@unique([name, ecosystemId])
 }
@@ -218,8 +218,8 @@ model Ecosystem {
   linkRepository String
   linkHomepage   String
 
-  packages      Package[]
-  LintFramework LintFramework[]
+  packages       Package[]
+  lintFrameworks LintFramework[]
 }
 
 model UserWaitlist {
@@ -244,7 +244,7 @@ model User {
 
   accountProvider String?
 
-  Repository Repository[]
+  repositories Repository[]
 }
 
 model Repository {
@@ -282,10 +282,10 @@ model LocalPackage {
   path String // Package to this local package in the repository.
 
   // Instances of things in this local repository package.
-  localPackageLintFramework LocalPackageLintFramework[]
-  localPackageLinter        LocalPackageLinter[]
-  localPackageRule          LocalPackageRule[]
-  localPackageConfig        LocalPackageConfig[]
+  localPackageLintFrameworks LocalPackageLintFramework[]
+  localPackageLinters        LocalPackageLinter[]
+  localPackageRules          LocalPackageRule[]
+  localPackageConfigs        LocalPackageConfig[]
 
   @@unique([repositoryId, path])
 }
@@ -301,12 +301,11 @@ model LocalPackageLintFramework {
   lintFrameworkId Int
   lintFramework   LintFramework @relation(fields: [lintFrameworkId], references: [id])
 
-  pathApp    String?
   pathConfig String?
 
   version     String?
-  isPresent   Boolean?
-  isSuggested Boolean?
+  isPresent   Boolean @default(false)
+  isSuggested Boolean @default(false)
 
   @@unique([localPackageId, lintFrameworkId])
 }
@@ -323,8 +322,8 @@ model LocalPackageLinter {
   linter   Linter @relation(fields: [linterId], references: [id])
 
   version     String?
-  isPresent   Boolean?
-  isSuggested Boolean?
+  isPresent   Boolean @default(false)
+  isSuggested Boolean @default(false)
 
   @@unique([localPackageId, linterId])
 }
@@ -343,9 +342,9 @@ model LocalPackageRule {
   countViolations  Int?
   countAutofixable Int?
 
-  isEnabled   Boolean?
+  isEnabled   Boolean @default(false)
   severity    String?
-  isSuggested Boolean?
+  isSuggested Boolean @default(false)
 
   @@unique([localPackageId, ruleId])
 }
@@ -364,8 +363,8 @@ model LocalPackageConfig {
   countViolations  Int?
   countAutofixable Int?
 
-  isEnabled   Boolean?
-  isSuggested Boolean?
+  isEnabled   Boolean @default(false)
+  isSuggested Boolean @default(false)
 
   @@unique([localPackageId, configId])
 }
