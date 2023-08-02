@@ -59,10 +59,12 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-type Repo = { name: string };
-
 const include = {
-  localPackages: { include: { localPackageLintFrameworks: true } },
+  localPackages: {
+    include: {
+      localPackageLintFrameworks: { include: { lintFramework: true } },
+    },
+  },
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -198,14 +200,31 @@ export default function Repo({
               Apps / linters detected at:{' '}
               {repo.localPackages.map((localPackage, i) => (
                 <span key={localPackage.id}>
-                  <code>{localPackage.path}</code>
+                  <Link
+                    key={localPackage.id}
+                    href={`https://github.com/${repo.fullName}/blob/${
+                      repo.commitSha as string
+                    }/${localPackage.path}`}
+                  >
+                    <code>{localPackage.path}</code>
+                  </Link>
                   {localPackage.localPackageLintFrameworks.length > 0 && ' ('}
                   {localPackage.localPackageLintFrameworks.map(
-                    (localPackageLintFramework) => (
-                      <code key={localPackageLintFramework.id}>
-                        {localPackageLintFramework.pathConfig}
-                      </code>
-                    )
+                    (localPackageLintFramework) =>
+                      localPackageLintFramework.pathConfig ? (
+                        <Link
+                          key={localPackageLintFramework.id}
+                          href={`https://github.com/${repo.fullName}/blob/${
+                            repo.commitSha as string
+                          }/${localPackageLintFramework.pathConfig}`}
+                        >
+                          <code>{localPackageLintFramework.pathConfig}</code>
+                        </Link>
+                      ) : (
+                        <span key={localPackageLintFramework.lintFramework.id}>
+                          {localPackageLintFramework.lintFramework.name}
+                        </span>
+                      )
                   )}
                   {localPackage.localPackageLintFrameworks.length > 0 && ')'}
                   {repo.localPackages.length > i + 1 && ', '}
