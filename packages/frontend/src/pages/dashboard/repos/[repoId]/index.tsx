@@ -203,14 +203,12 @@ export default function Repo({
                 <span>{format(new Date(repo.importedAt).toString())} </span>
               )}
             </p>
-            <br />
             <p>
               Refreshed:{' '}
               {repo.scannedAt && (
                 <span>{format(new Date(repo.scannedAt).toString())} </span>
               )}
             </p>
-            <br />
             <p>
               {repo.commitSha && (
                 <span>
