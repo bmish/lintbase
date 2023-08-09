@@ -26,3 +26,7 @@ export function lintFrameworkToLinkUs(linter: PrismaLintFramework) {
 export function ecosystemToDisplayName(ecosystem: PrismaEcosystem) {
   return ecosystem.name === 'node' ? 'Node.js' : ecosystem.name;
 }
+
+export function lintFrameworkToDisplayName(lintFramework: PrismaLintFramework) {
+  return lintFramework.name === 'eslint' ? 'ESLint' : lintFramework.name;
+}

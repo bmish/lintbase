@@ -34,6 +34,7 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '@/server/db';
 import { fixAnyDatesInObject } from '@/utils/normalize';
 import { format } from 'timeago.js';
+import { lintFrameworkToDisplayName } from '@/utils/dynamic-fields';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -257,7 +258,9 @@ export default function Repo({
                       (localPackageLintFramework) => (
                         <TableRow key={localPackageLintFramework.id}>
                           <TableCell>
-                            {localPackageLintFramework.lintFramework.name}
+                            {lintFrameworkToDisplayName(
+                              localPackageLintFramework.lintFramework
+                            )}
                           </TableCell>
                           <TableCell align="right">
                             {localPackageLintFramework.pathConfig && (

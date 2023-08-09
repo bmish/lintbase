@@ -1,6 +1,7 @@
 import {
   ecosystemToDisplayName,
   lintFrameworkToLinkUs,
+  lintFrameworkToDisplayName,
   linterToLinkPackageRegistry,
   packageToLinkUs,
 } from '@/utils/dynamic-fields';
@@ -71,9 +72,7 @@ export default function LinterCard({
             color="text.secondary"
             href={lintFrameworkToLinkUs(linter.lintFramework)}
           >
-            {linter.lintFramework.name === 'eslint'
-              ? 'ESLint'
-              : linter.lintFramework.name}
+            {lintFrameworkToDisplayName(linter.lintFramework)}
           </Link>
         </Breadcrumbs>
 

@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import {
   ecosystemToDisplayName,
+  lintFrameworkToDisplayName,
   lintFrameworkToLinkUs,
   packageToLinkUs,
   ruleToLinkUs,
@@ -55,9 +56,7 @@ export default function RuleCard({
             color="text.secondary"
             href={lintFrameworkToLinkUs(rule.linter.lintFramework)}
           >
-            {rule.linter.lintFramework.name === 'eslint'
-              ? 'ESLint'
-              : rule.linter.lintFramework.name}
+            {lintFrameworkToDisplayName(rule.linter.lintFramework)}
           </Link>
           <Link
             underline="hover"
