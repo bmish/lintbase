@@ -197,43 +197,6 @@ export default function Repo({
             <p>{repo.description}</p>
             <br />
             <p>
-              Apps / linters detected at:{' '}
-              {repo.localPackages.map((localPackage, i) => (
-                <span key={localPackage.id}>
-                  <Link
-                    key={localPackage.id}
-                    href={`https://github.com/${repo.fullName}/blob/${
-                      repo.commitSha as string
-                    }/${localPackage.path}`}
-                  >
-                    <code>{localPackage.path}</code>
-                  </Link>
-                  {localPackage.localPackageLintFrameworks.length > 0 && ' ('}
-                  {localPackage.localPackageLintFrameworks.map(
-                    (localPackageLintFramework) =>
-                      localPackageLintFramework.pathConfig ? (
-                        <Link
-                          key={localPackageLintFramework.id}
-                          href={`https://github.com/${repo.fullName}/blob/${
-                            repo.commitSha as string
-                          }/${localPackageLintFramework.pathConfig}`}
-                        >
-                          <code>{localPackageLintFramework.pathConfig}</code>
-                        </Link>
-                      ) : (
-                        <span key={localPackageLintFramework.lintFramework.id}>
-                          {localPackageLintFramework.lintFramework.name}
-                        </span>
-                      )
-                  )}
-                  {localPackage.localPackageLintFrameworks.length > 0 && ')'}
-                  {repo.localPackages.length > i + 1 && ', '}
-                </span>
-              ))}
-              .
-            </p>
-            <br />
-            <p>
               Imported:{' '}
               {repo.importedAt && (
                 <span>{format(new Date(repo.importedAt).toString())} </span>
@@ -268,6 +231,59 @@ export default function Repo({
             </Button>
           </CardActions>
         </Card>
+
+        {repo.localPackages.length > 0 && (
+          <TableContainer component={Paper} className="mt-8">
+            <Table aria-label="linter config list">
+              {repo.localPackages.map((localPackage) => (
+                <>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell scope="col">(Repository Root)</TableCell>
+                      <TableCell align="right">
+                        <Link
+                          key={localPackage.id}
+                          href={`https://github.com/${repo.fullName}/blob/${
+                            repo.commitSha as string
+                          }/${localPackage.path}`}
+                        >
+                          <code>{localPackage.path}</code>
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {localPackage.localPackageLintFrameworks.map(
+                      (localPackageLintFramework) => (
+                        <TableRow key={localPackageLintFramework.id}>
+                          <TableCell>
+                            {localPackageLintFramework.lintFramework.name}
+                          </TableCell>
+                          <TableCell align="right">
+                            {localPackageLintFramework.pathConfig && (
+                              <Link
+                                key={localPackageLintFramework.id}
+                                href={`https://github.com/${
+                                  repo.fullName
+                                }/blob/${repo.commitSha as string}/${
+                                  localPackageLintFramework.pathConfig
+                                }`}
+                              >
+                                <code>
+                                  {localPackageLintFramework.pathConfig}
+                                </code>
+                              </Link>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      )
+                    )}
+                  </TableBody>
+                </>
+              ))}
+            </Table>
+          </TableContainer>
+        )}
 
         <Paper className="mt-8">
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
