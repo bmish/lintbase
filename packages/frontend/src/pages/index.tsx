@@ -98,6 +98,7 @@ export default function index({
         </div>
       </section>
 
+      {/*
       <section className="bg-gray-800 text-white ">
         <div className="container mx-auto py-20 px-8 md:px-0  max-w-3xl ">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
@@ -150,13 +151,14 @@ export default function index({
           </Link>
         </div>
       </section>
+      */}
 
-      <section className=" bg-gray-100 text-black ">
+      <section className="bg-gray-800 text-white ">
         <div className="container mx-auto py-20 px-8 md:px-0  max-w-3xl ">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
             Automated pull requests
           </h1>
-          <p className="text-xl sm:text-2xl mb-8 text-gray-700">
+          <p className="text-xl sm:text-2xl mb-8">
             We&apos;ll open PRs to enable and fix relevant lint coverage gaps
             for you.
           </p>
@@ -169,7 +171,7 @@ export default function index({
         </div>
       </section>
 
-      <section className="bg-gray-800 text-white ">
+      <section className=" bg-gray-100 text-black">
         <div className="container mx-auto pt-20  max-w-3xl">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight px-8 md:px-0">
             Up your linting game
