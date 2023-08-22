@@ -279,7 +279,8 @@ model LocalPackage {
   repositoryId Int
   repository   Repository @relation(fields: [repositoryId], references: [id])
 
-  path String // Package to this local package in the repository.
+  path String // Path to this local package folder in the repository.
+  pathManifest String // Path to the manifest config file for this package.
 
   // Instances of things in this local repository package.
   localPackageLintFrameworks LocalPackageLintFramework[]

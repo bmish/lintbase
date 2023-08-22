@@ -200,6 +200,7 @@ CREATE TABLE "LocalPackage" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "repositoryId" INTEGER NOT NULL,
     "path" TEXT NOT NULL,
+    "pathManifest" TEXT NOT NULL,
 
     CONSTRAINT "LocalPackage_pkey" PRIMARY KEY ("id")
 );

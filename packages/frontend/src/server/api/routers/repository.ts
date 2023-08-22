@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 import { Octokit } from 'octokit';
 import { env } from '@/env.mjs';
+import { dirname } from 'node:path';
 
 export const repositoryRouter = createTRPCRouter({
   add: protectedProcedure
@@ -109,7 +110,8 @@ export const repositoryRouter = createTRPCRouter({
             create: contents.data
               .filter((data) => data.name === 'package.json')
               .map((data) => ({
-                path: data.path,
+                path: dirname(data.path),
+                pathManifest: data.path,
                 localPackageLintFrameworks: {
                   create: contents.data
                     .filter((data) => data.name === '.eslintrc.js')
