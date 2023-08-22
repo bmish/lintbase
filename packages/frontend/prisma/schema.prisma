@@ -279,6 +279,8 @@ model LocalPackage {
   repositoryId Int
   repository   Repository @relation(fields: [repositoryId], references: [id])
 
+  // TODO: name of package (from package.json)
+
   path String // Path to this local package folder in the repository.
   pathManifest String // Path to the manifest config file for this package.
 

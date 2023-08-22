@@ -138,7 +138,11 @@ export default function Repo({
                             repo.commitSha as string
                           }/${localPackage.path}`}
                         >
-                          <code>{localPackage.path}</code>
+                          <code>
+                            {localPackage.path === '.'
+                              ? '/'
+                              : localPackage.path}
+                          </code>
                         </Link>
                       </TableCell>
                     </TableRow>
