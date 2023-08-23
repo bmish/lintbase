@@ -65,11 +65,17 @@ const include = {
     include: {
       repository: true,
       localPackageLinters: {
-        include: { linter: { include: { package: true } } },
+        include: {
+          linter: { include: { package: true, rules: true, configs: true } },
+        },
       },
     },
   },
-  lintFramework: { include: { linter: { include: { package: true } } } },
+  lintFramework: {
+    include: {
+      linter: { include: { package: true } },
+    },
+  },
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -151,10 +157,6 @@ export default function Repo({
     setCurrentRulesTabIndex(newValue);
   };
 
-  const lintersSuggested =
-    localPackageLintFramework.localPackage.localPackageLinters.map(
-      (localPackageLinter) => ({ name: localPackageLinter.linter.package.name })
-    );
   const lintersCurrent = [{ name: 'eslint' }, { name: 'eslint-plugin-import' }];
 
   const prsActive = [
@@ -171,37 +173,6 @@ export default function Repo({
     { name: 'Another recurring issue in PRs.' },
   ];
   const rulesSuggested = [{ name: 'yoda' }, { name: 'ember/no-get' }];
-
-  const configsInLinter = [
-    { name: 'recommended', enabled: true },
-    {
-      name: 'stylistic',
-      enabled: false,
-      violations: 67,
-      violationsFixable: 82,
-    },
-  ];
-  const rulesInLinter = [
-    { name: 'no-get', enabled: true },
-    {
-      name: 'no-get-with-properties',
-      enabled: false,
-      violations: 15,
-      violationsFixable: 75,
-    },
-    {
-      name: 'order-in-components',
-      enabled: false,
-      violations: 7,
-      violationsFixable: 100,
-    },
-    {
-      name: 'order-in-routes',
-      enabled: false,
-      violations: 23,
-      violationsFixable: 100,
-    },
-  ];
 
   const localPackage = { path: '.eslintrc.js' };
 
@@ -290,93 +261,118 @@ export default function Repo({
             key={1}
             prefix="linters-tab-"
           >
-            {lintersSuggested.map((repo) => (
-              <Accordion key={repo.name}>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  aria-controls="panel1a-content"
-                  id="panel1a-header"
-                >
-                  <Typography>{repo.name}</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <TableContainer>
-                    <Table
-                      sx={{ minWidth: 650 }}
-                      aria-label="repo rules novel"
-                      size="small"
-                    >
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Config</TableCell>
-                          <TableCell>Violations</TableCell>
-                          <TableCell>Autofixable</TableCell>
-                          <TableCell></TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {configsInLinter.map((repo) => (
-                          <TableRow
-                            key="recommended"
-                            sx={{
-                              '&:last-child td, &:last-child th': { border: 0 },
-                            }}
-                          >
-                            <TableCell scope="row">{repo.name}</TableCell>
-                            <TableCell scope="row">{repo.violations}</TableCell>
-                            <TableCell scope="row">
-                              {repo.violationsFixable &&
-                                `${repo.violationsFixable}%`}
-                            </TableCell>
-                            <TableCell scope="row" align="right">
-                              {repo.enabled && (
-                                <Button variant="outlined">Disable</Button>
-                              )}
-                              {!repo.enabled && (
-                                <Button variant="outlined">Enable</Button>
-                              )}
-                            </TableCell>
+            {localPackageLintFramework.localPackage.localPackageLinters.map(
+              (localPackageLinter) => (
+                <Accordion key={localPackageLinter.linter.package.name}>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1a-content"
+                    id="panel1a-header"
+                  >
+                    <Typography>
+                      {localPackageLinter.linter.package.name}
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <TableContainer>
+                      <Table
+                        sx={{ minWidth: 650 }}
+                        aria-label="repo rules novel"
+                        size="small"
+                      >
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Linter</TableCell>
+                            <TableCell>Current</TableCell>
+                            <TableCell></TableCell>
+                            <TableCell align="right"></TableCell>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Rule</TableCell>
-                          <TableCell></TableCell>
-                          <TableCell></TableCell>
-                          <TableCell></TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {rulesInLinter.map((repo) => (
-                          <TableRow
-                            key={repo.name}
-                            sx={{
-                              '&:last-child td, &:last-child th': { border: 0 },
-                            }}
-                          >
-                            <TableCell scope="row">{repo.name}</TableCell>
-                            <TableCell scope="row">{repo.violations}</TableCell>
+                        </TableHead>
+                        <TableBody>
+                          <TableRow>
                             <TableCell scope="row">
-                              {repo.violationsFixable &&
-                                `${repo.violationsFixable}%`}
+                              <Link
+                                href={`/db/npm/${localPackageLinter.linter.package.name}`}
+                              >
+                                {localPackageLinter.linter.package.name}
+                              </Link>
                             </TableCell>
-                            <TableCell scope="row" align="right">
-                              {repo.enabled && (
-                                <Button variant="outlined">Disable</Button>
-                              )}
-                              {!repo.enabled && (
-                                <Button variant="outlined">Enable</Button>
-                              )}
+                            <TableCell scope="row">
+                              {localPackageLinter.version}
                             </TableCell>
+                            <TableCell scope="row"></TableCell>
+                            <TableCell scope="row"></TableCell>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </AccordionDetails>
-              </Accordion>
-            ))}
+                        </TableBody>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Config</TableCell>
+                            <TableCell>Violations</TableCell>
+                            <TableCell>Autofixable</TableCell>
+                            <TableCell></TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {localPackageLinter.linter.configs.map((config) => (
+                            <TableRow key="recommended">
+                              <TableCell scope="row">{config.name}</TableCell>
+                              <TableCell scope="row">50</TableCell>
+                              <TableCell scope="row">0%</TableCell>
+                              <TableCell scope="row" align="right">
+                                {true && (
+                                  <Button variant="outlined">Disable</Button>
+                                )}
+                                {false && (
+                                  <Button variant="outlined">Enable</Button>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Rule</TableCell>
+                            <TableCell></TableCell>
+                            <TableCell></TableCell>
+                            <TableCell></TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {localPackageLinter.linter.rules.map((rule) => (
+                            <TableRow
+                              key={rule.name}
+                              sx={{
+                                '&:last-child td, &:last-child th': {
+                                  border: 0,
+                                },
+                              }}
+                            >
+                              <TableCell scope="row">
+                                <Link
+                                  href={`/db/npm/${localPackageLinter.linter.package.name}/rules/${rule.name}`}
+                                >
+                                  {rule.name}
+                                </Link>
+                              </TableCell>
+                              <TableCell scope="row">25</TableCell>
+                              <TableCell scope="row">25%</TableCell>
+                              <TableCell scope="row" align="right">
+                                {true && (
+                                  <Button variant="outlined">Disable</Button>
+                                )}
+                                {false && (
+                                  <Button variant="outlined">Enable</Button>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </AccordionDetails>
+                </Accordion>
+              )
+            )}
           </TabPanel>
           <TabPanel
             value={currentLintersTabIndex}
