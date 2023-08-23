@@ -3,6 +3,7 @@ import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 import { Octokit } from 'octokit';
 import { env } from '@/env.mjs';
 import { dirname } from 'node:path';
+import { PackageJson } from 'type-fest';
 
 export const repositoryRouter = createTRPCRouter({
   add: protectedProcedure
@@ -65,6 +66,44 @@ export const repositoryRouter = createTRPCRouter({
         }
       )) as { data: { name: string; path: string }[] };
 
+      // TODO: search recursively for local packages in monorepos.
+      const contentsLocalPackageManifest = (await octokit.request(
+        'GET /repos/{owner}/{repo}/contents/{path}',
+        {
+          owner: input.fullName.split('/')[0],
+          repo: input.fullName.split('/')[1],
+          path: 'package.json',
+          headers: {
+            'X-GitHub-Api-Version': '2022-11-28',
+          },
+        }
+      )) as { data: { content: string } };
+      // decode base64 from contentsLocalPackageManifest.data.content
+      const localPackageManifest = JSON.parse(
+        Buffer.from(
+          contentsLocalPackageManifest.data.content,
+          'base64'
+        ).toString('utf8')
+      ) as PackageJson;
+      const localPackageAllDependencies = {
+        ...localPackageManifest.dependencies,
+        ...localPackageManifest.devDependencies,
+      };
+      const localPackageLinters = Object.keys(
+        localPackageAllDependencies
+      ).filter((dependency) => dependency.startsWith('eslint-plugin-'));
+      const localPackageLinterPackageIds = await ctx.prisma.package.findMany({
+        where: {
+          name: {
+            in: localPackageLinters,
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+        },
+      });
+
       // TODO: support other lint frameworks.
       const lintFramework = await ctx.prisma.lintFramework.findFirstOrThrow({
         where: {
@@ -95,9 +134,21 @@ export const repositoryRouter = createTRPCRouter({
             },
           },
         });
+      const deleteLocalPackageLinters =
+        ctx.prisma.localPackageLinter.deleteMany({
+          where: {
+            localPackage: {
+              repository: {
+                owner: { id: ctx.session.user.id },
+                fullName: input.fullName,
+              },
+            },
+          },
+        });
       await ctx.prisma.$transaction([
         deleteLocalPackageLintFrameworks,
         deleteLocalPackages,
+        deleteLocalPackageLinters,
       ]); // Must be done in a transaction to satisfy constraints.
 
       await ctx.prisma.repository.update({
@@ -122,6 +173,17 @@ export const repositoryRouter = createTRPCRouter({
                         connect: { id: lintFramework.id },
                       },
                     })),
+                },
+                localPackageLinters: {
+                  create: localPackageLinterPackageIds.map((obj) => ({
+                    isPresent: true,
+                    version: localPackageAllDependencies[obj.name],
+                    linter: {
+                      connect: {
+                        packageId: obj.id,
+                      },
+                    },
+                  })),
                 },
               })),
           },

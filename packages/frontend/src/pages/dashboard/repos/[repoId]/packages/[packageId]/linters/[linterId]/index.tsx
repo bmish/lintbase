@@ -61,7 +61,14 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const include = {
-  localPackage: { include: { repository: true } },
+  localPackage: {
+    include: {
+      repository: true,
+      localPackageLinters: {
+        include: { linter: { include: { package: true } } },
+      },
+    },
+  },
   lintFramework: { include: { linter: { include: { package: true } } } },
 };
 
@@ -144,10 +151,10 @@ export default function Repo({
     setCurrentRulesTabIndex(newValue);
   };
 
-  const lintersSuggested = [
-    { name: 'eslint-plugin-ember' },
-    { name: 'eslint-plugin-qunit' },
-  ];
+  const lintersSuggested =
+    localPackageLintFramework.localPackage.localPackageLinters.map(
+      (localPackageLinter) => ({ name: localPackageLinter.linter.package.name })
+    );
   const lintersCurrent = [{ name: 'eslint' }, { name: 'eslint-plugin-import' }];
 
   const prsActive = [
