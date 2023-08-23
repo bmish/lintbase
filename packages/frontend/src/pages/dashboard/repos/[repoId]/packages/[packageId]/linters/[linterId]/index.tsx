@@ -262,7 +262,7 @@ export default function Repo({
                   .name as string
               }`}
             >
-              Linter
+              Linter in Database
             </Button>
           </CardActions>
         </Card>
