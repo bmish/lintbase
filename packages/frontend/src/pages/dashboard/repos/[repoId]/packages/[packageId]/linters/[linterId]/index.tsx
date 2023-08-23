@@ -283,7 +283,7 @@ export default function Repo({
                         <TableHead>
                           <TableRow>
                             <TableCell>Linter</TableCell>
-                            <TableCell>Current</TableCell>
+                            <TableCell>Version</TableCell>
                             <TableCell></TableCell>
                             <TableCell align="right"></TableCell>
                           </TableRow>
@@ -320,10 +320,14 @@ export default function Repo({
                               <TableCell scope="row">0%</TableCell>
                               <TableCell scope="row" align="right">
                                 {true && (
-                                  <Button variant="outlined">Disable</Button>
+                                  <Button variant="outlined" size="small">
+                                    Disable
+                                  </Button>
                                 )}
                                 {false && (
-                                  <Button variant="outlined">Enable</Button>
+                                  <Button variant="outlined" size="small">
+                                    Enable
+                                  </Button>
                                 )}
                               </TableCell>
                             </TableRow>
@@ -332,8 +336,8 @@ export default function Repo({
                         <TableHead>
                           <TableRow>
                             <TableCell>Rule</TableCell>
-                            <TableCell></TableCell>
-                            <TableCell></TableCell>
+                            <TableCell>Violations</TableCell>
+                            <TableCell>Autofixable</TableCell>
                             <TableCell></TableCell>
                           </TableRow>
                         </TableHead>
@@ -358,10 +362,14 @@ export default function Repo({
                               <TableCell scope="row">25%</TableCell>
                               <TableCell scope="row" align="right">
                                 {true && (
-                                  <Button variant="outlined">Disable</Button>
+                                  <Button variant="outlined" size="small">
+                                    Disable
+                                  </Button>
                                 )}
                                 {false && (
-                                  <Button variant="outlined">Enable</Button>
+                                  <Button variant="outlined" size="small">
+                                    Enable
+                                  </Button>
                                 )}
                               </TableCell>
                             </TableRow>
