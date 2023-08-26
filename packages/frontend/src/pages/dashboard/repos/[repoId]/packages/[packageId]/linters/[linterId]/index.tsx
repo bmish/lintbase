@@ -27,7 +27,6 @@ import { getServerAuthSession } from '@/server/auth';
 import { type GetServerSideProps } from 'next';
 import React from 'react';
 import Link from 'next/link';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Prisma } from '@prisma/client';
 import { prisma } from '@/server/db';
 import { fixAnyDatesInObject } from '@/utils/normalize';
@@ -125,12 +124,20 @@ export default function Repo({
 }) {
   const { data: session } = useSession();
 
+  const [currentLintersTabIndex, setCurrentLintersTabIndex] = React.useState(0);
   const [currentPRsTabIndex, setCurrentPRsTabIndex] = React.useState(0);
   const [currentRulesTabIndex, setCurrentRulesTabIndex] = React.useState(0);
 
   if (!session) {
     return <AccessDenied />;
   }
+
+  const handleLintersTabIndex = (
+    event: React.SyntheticEvent,
+    newValue: number
+  ) => {
+    setCurrentLintersTabIndex(newValue);
+  };
 
   const handleCurrentPRsTabIndex = (
     event: React.SyntheticEvent,
@@ -225,115 +232,141 @@ export default function Repo({
           </CardActions>
         </Card>
 
-        {localPackageLintFramework.localPackage.localPackageLinters.map(
-          (localPackageLinter) => (
-            <Paper className="mt-8" key={localPackageLinter.id}>
-              <TableContainer>
-                <Table
-                  sx={{ minWidth: 650 }}
-                  aria-label="repo rules novel"
-                  size="small"
-                >
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Linter</TableCell>
-                      <TableCell width="100px">Version</TableCell>
-                      <TableCell width="100px">Latest</TableCell>
-                      <TableCell width="100px" align="right"></TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell scope="row">
-                        <Link
-                          href={`/db/npm/${localPackageLinter.linter.package.name}`}
-                        >
-                          {localPackageLinter.linter.package.name}
-                        </Link>
-                      </TableCell>
-                      <TableCell scope="row">
-                        {localPackageLinter.version}
-                      </TableCell>
-                      <TableCell scope="row">24.0.0</TableCell>
-                      <TableCell scope="row"></TableCell>
-                    </TableRow>
-                  </TableBody>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Config</TableCell>
-                      <TableCell>Violations</TableCell>
-                      <TableCell>Autofixable</TableCell>
-                      <TableCell></TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {localPackageLinter.linter.configs.map((config) => (
-                      <TableRow key="recommended">
-                        <TableCell scope="row">{config.name}</TableCell>
-                        <TableCell scope="row">50</TableCell>
-                        <TableCell scope="row">0%</TableCell>
-                        <TableCell scope="row" align="right">
-                          {true && (
-                            <Button variant="outlined" size="small">
-                              Disable
-                            </Button>
-                          )}
-                          {false && (
-                            <Button variant="outlined" size="small">
-                              Enable
-                            </Button>
-                          )}
-                        </TableCell>
+        <Paper className="mt-8">
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs
+              value={currentLintersTabIndex}
+              onChange={handleLintersTabIndex}
+              aria-label="repo linters"
+              variant="scrollable"
+              scrollButtons="auto"
+            >
+              {localPackageLintFramework.localPackage.localPackageLinters.map(
+                (localPackageLinter, i) => (
+                  <Tab
+                    key={i}
+                    label={localPackageLinter.linter.package.name}
+                    id={`linters-tab-${i}`}
+                  />
+                )
+              )}{' '}
+            </Tabs>
+          </Box>
+          {localPackageLintFramework.localPackage.localPackageLinters.map(
+            (localPackageLinter, i) => (
+              <TabPanel
+                value={currentLintersTabIndex}
+                index={i}
+                key={i}
+                prefix="linters-tab-"
+              >
+                <TableContainer>
+                  <Table
+                    sx={{ minWidth: 650 }}
+                    aria-label="repo rules novel"
+                    size="small"
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Linter</TableCell>
+                        <TableCell width="100px">Version</TableCell>
+                        <TableCell width="100px">Latest</TableCell>
+                        <TableCell width="100px" align="right"></TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Rule</TableCell>
-                      <TableCell>Violations</TableCell>
-                      <TableCell>Autofixable</TableCell>
-                      <TableCell></TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {localPackageLinter.linter.rules.map((rule) => (
-                      <TableRow
-                        key={rule.name}
-                        sx={{
-                          '&:last-child td, &:last-child th': {
-                            border: 0,
-                          },
-                        }}
-                      >
+                    </TableHead>
+                    <TableBody>
+                      <TableRow>
                         <TableCell scope="row">
                           <Link
-                            href={`/db/npm/${localPackageLinter.linter.package.name}/rules/${rule.name}`}
+                            href={`/db/npm/${localPackageLinter.linter.package.name}`}
                           >
-                            {rule.name}
+                            {localPackageLinter.linter.package.name}
                           </Link>
                         </TableCell>
-                        <TableCell scope="row">25</TableCell>
-                        <TableCell scope="row">25%</TableCell>
-                        <TableCell scope="row" align="right">
-                          {true && (
-                            <Button variant="outlined" size="small">
-                              Disable
-                            </Button>
-                          )}
-                          {false && (
-                            <Button variant="outlined" size="small">
-                              Enable
-                            </Button>
-                          )}
+                        <TableCell scope="row">
+                          {localPackageLinter.version}
                         </TableCell>
+                        <TableCell scope="row">24.0.0</TableCell>
+                        <TableCell scope="row"></TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Paper>
-          )
-        )}
+                    </TableBody>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Config</TableCell>
+                        <TableCell>Violations</TableCell>
+                        <TableCell>Autofixable</TableCell>
+                        <TableCell></TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {localPackageLinter.linter.configs.map((config) => (
+                        <TableRow key="recommended">
+                          <TableCell scope="row">{config.name}</TableCell>
+                          <TableCell scope="row">50</TableCell>
+                          <TableCell scope="row">0%</TableCell>
+                          <TableCell scope="row" align="right">
+                            {true && (
+                              <Button variant="outlined" size="small">
+                                Disable
+                              </Button>
+                            )}
+                            {false && (
+                              <Button variant="outlined" size="small">
+                                Enable
+                              </Button>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Rule</TableCell>
+                        <TableCell>Violations</TableCell>
+                        <TableCell>Autofixable</TableCell>
+                        <TableCell></TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {localPackageLinter.linter.rules.map((rule) => (
+                        <TableRow
+                          key={rule.name}
+                          sx={{
+                            '&:last-child td, &:last-child th': {
+                              border: 0,
+                            },
+                          }}
+                        >
+                          <TableCell scope="row">
+                            <Link
+                              href={`/db/npm/${localPackageLinter.linter.package.name}/rules/${rule.name}`}
+                            >
+                              {rule.name}
+                            </Link>
+                          </TableCell>
+                          <TableCell scope="row">25</TableCell>
+                          <TableCell scope="row">25%</TableCell>
+                          <TableCell scope="row" align="right">
+                            {true && (
+                              <Button variant="outlined" size="small">
+                                Disable
+                              </Button>
+                            )}
+                            {false && (
+                              <Button variant="outlined" size="small">
+                                Enable
+                              </Button>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </TabPanel>
+            )
+          )}
+        </Paper>
 
         <Paper className="mt-8">
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
