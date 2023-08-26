@@ -3,9 +3,6 @@
 import Footer from '@/components/Footer';
 import Head from 'next/head';
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Box,
   Breadcrumbs,
   Button,
@@ -128,20 +125,12 @@ export default function Repo({
 }) {
   const { data: session } = useSession();
 
-  const [currentLintersTabIndex, setCurrentLintersTabIndex] = React.useState(0);
   const [currentPRsTabIndex, setCurrentPRsTabIndex] = React.useState(0);
   const [currentRulesTabIndex, setCurrentRulesTabIndex] = React.useState(0);
 
   if (!session) {
     return <AccessDenied />;
   }
-
-  const handleLintersTabIndex = (
-    event: React.SyntheticEvent,
-    newValue: number
-  ) => {
-    setCurrentLintersTabIndex(newValue);
-  };
 
   const handleCurrentPRsTabIndex = (
     event: React.SyntheticEvent,
@@ -156,8 +145,6 @@ export default function Repo({
   ) => {
     setCurrentRulesTabIndex(newValue);
   };
-
-  const lintersCurrent = [{ name: 'eslint' }, { name: 'eslint-plugin-import' }];
 
   const prsActive = [
     { name: 'eslint-plugin-ember / no-get' },
@@ -238,179 +225,115 @@ export default function Repo({
           </CardActions>
         </Card>
 
-        <Paper className="mt-8">
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs
-              value={currentLintersTabIndex}
-              onChange={handleLintersTabIndex}
-              aria-label="repo linters"
-              variant="scrollable"
-              scrollButtons="auto"
-            >
-              <Tab
-                key={0}
-                label={'Suggested Linters'}
-                id={`linters-tab-${0}`}
-              />
-              <Tab key={1} label={'Current Linters'} id={`linters-tab-${1}`} />
-            </Tabs>
-          </Box>
-          <TabPanel
-            value={currentLintersTabIndex}
-            index={0}
-            key={1}
-            prefix="linters-tab-"
-          >
-            {localPackageLintFramework.localPackage.localPackageLinters.map(
-              (localPackageLinter) => (
-                <Accordion key={localPackageLinter.linter.package.name}>
-                  <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel1a-content"
-                    id="panel1a-header"
-                  >
-                    <Typography>
-                      {localPackageLinter.linter.package.name}
-                    </Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <TableContainer>
-                      <Table
-                        sx={{ minWidth: 650 }}
-                        aria-label="repo rules novel"
-                        size="small"
+        {localPackageLintFramework.localPackage.localPackageLinters.map(
+          (localPackageLinter) => (
+            <Paper className="mt-8" key={localPackageLinter.id}>
+              <TableContainer>
+                <Table
+                  sx={{ minWidth: 650 }}
+                  aria-label="repo rules novel"
+                  size="small"
+                >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Linter</TableCell>
+                      <TableCell width="100px">Version</TableCell>
+                      <TableCell width="100px">Latest</TableCell>
+                      <TableCell width="100px" align="right"></TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell scope="row">
+                        <Link
+                          href={`/db/npm/${localPackageLinter.linter.package.name}`}
+                        >
+                          {localPackageLinter.linter.package.name}
+                        </Link>
+                      </TableCell>
+                      <TableCell scope="row">
+                        {localPackageLinter.version}
+                      </TableCell>
+                      <TableCell scope="row">24.0.0</TableCell>
+                      <TableCell scope="row"></TableCell>
+                    </TableRow>
+                  </TableBody>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Config</TableCell>
+                      <TableCell>Violations</TableCell>
+                      <TableCell>Autofixable</TableCell>
+                      <TableCell></TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {localPackageLinter.linter.configs.map((config) => (
+                      <TableRow key="recommended">
+                        <TableCell scope="row">{config.name}</TableCell>
+                        <TableCell scope="row">50</TableCell>
+                        <TableCell scope="row">0%</TableCell>
+                        <TableCell scope="row" align="right">
+                          {true && (
+                            <Button variant="outlined" size="small">
+                              Disable
+                            </Button>
+                          )}
+                          {false && (
+                            <Button variant="outlined" size="small">
+                              Enable
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Rule</TableCell>
+                      <TableCell>Violations</TableCell>
+                      <TableCell>Autofixable</TableCell>
+                      <TableCell></TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {localPackageLinter.linter.rules.map((rule) => (
+                      <TableRow
+                        key={rule.name}
+                        sx={{
+                          '&:last-child td, &:last-child th': {
+                            border: 0,
+                          },
+                        }}
                       >
-                        <TableHead>
-                          <TableRow>
-                            <TableCell>Linter</TableCell>
-                            <TableCell>Version</TableCell>
-                            <TableCell></TableCell>
-                            <TableCell align="right"></TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          <TableRow>
-                            <TableCell scope="row">
-                              <Link
-                                href={`/db/npm/${localPackageLinter.linter.package.name}`}
-                              >
-                                {localPackageLinter.linter.package.name}
-                              </Link>
-                            </TableCell>
-                            <TableCell scope="row">
-                              {localPackageLinter.version}
-                            </TableCell>
-                            <TableCell scope="row"></TableCell>
-                            <TableCell scope="row"></TableCell>
-                          </TableRow>
-                        </TableBody>
-                        <TableHead>
-                          <TableRow>
-                            <TableCell>Config</TableCell>
-                            <TableCell>Violations</TableCell>
-                            <TableCell>Autofixable</TableCell>
-                            <TableCell></TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {localPackageLinter.linter.configs.map((config) => (
-                            <TableRow key="recommended">
-                              <TableCell scope="row">{config.name}</TableCell>
-                              <TableCell scope="row">50</TableCell>
-                              <TableCell scope="row">0%</TableCell>
-                              <TableCell scope="row" align="right">
-                                {true && (
-                                  <Button variant="outlined" size="small">
-                                    Disable
-                                  </Button>
-                                )}
-                                {false && (
-                                  <Button variant="outlined" size="small">
-                                    Enable
-                                  </Button>
-                                )}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                        <TableHead>
-                          <TableRow>
-                            <TableCell>Rule</TableCell>
-                            <TableCell>Violations</TableCell>
-                            <TableCell>Autofixable</TableCell>
-                            <TableCell></TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {localPackageLinter.linter.rules.map((rule) => (
-                            <TableRow
-                              key={rule.name}
-                              sx={{
-                                '&:last-child td, &:last-child th': {
-                                  border: 0,
-                                },
-                              }}
-                            >
-                              <TableCell scope="row">
-                                <Link
-                                  href={`/db/npm/${localPackageLinter.linter.package.name}/rules/${rule.name}`}
-                                >
-                                  {rule.name}
-                                </Link>
-                              </TableCell>
-                              <TableCell scope="row">25</TableCell>
-                              <TableCell scope="row">25%</TableCell>
-                              <TableCell scope="row" align="right">
-                                {true && (
-                                  <Button variant="outlined" size="small">
-                                    Disable
-                                  </Button>
-                                )}
-                                {false && (
-                                  <Button variant="outlined" size="small">
-                                    Enable
-                                  </Button>
-                                )}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </AccordionDetails>
-                </Accordion>
-              )
-            )}
-          </TabPanel>
-          <TabPanel
-            value={currentLintersTabIndex}
-            index={1}
-            key={1}
-            prefix="linters-tab-"
-          >
-            <Table sx={{ minWidth: 650 }} aria-label="repo linters current">
-              <TableBody>
-                {lintersCurrent.map((repo) => (
-                  <TableRow
-                    key={repo.name}
-                    sx={{
-                      '&:last-child td, &:last-child th': { border: 0 },
-                    }}
-                  >
-                    <TableCell scope="row">
-                      <Link href={`/dashboard/repos/${repo.name}`}>
-                        {repo.name}
-                      </Link>
-                    </TableCell>
-                    <TableCell scope="row" align="right">
-                      <Button variant="outlined">See Status</Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TabPanel>
-        </Paper>
+                        <TableCell scope="row">
+                          <Link
+                            href={`/db/npm/${localPackageLinter.linter.package.name}/rules/${rule.name}`}
+                          >
+                            {rule.name}
+                          </Link>
+                        </TableCell>
+                        <TableCell scope="row">25</TableCell>
+                        <TableCell scope="row">25%</TableCell>
+                        <TableCell scope="row" align="right">
+                          {true && (
+                            <Button variant="outlined" size="small">
+                              Disable
+                            </Button>
+                          )}
+                          {false && (
+                            <Button variant="outlined" size="small">
+                              Enable
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
+          )
+        )}
 
         <Paper className="mt-8">
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
