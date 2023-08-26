@@ -233,11 +233,44 @@ export default function Repo({
         </Card>
 
         <Paper className="mt-8">
+          <TableContainer>
+            <Table sx={{ minWidth: 650 }} aria-label="repo linters list">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Linter</TableCell>
+                  <TableCell width="110px">Version</TableCell>
+                  <TableCell width="110px">Latest</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {localPackageLintFramework.localPackage.localPackageLinters.map(
+                  (localPackageLinter) => (
+                    <TableRow key={localPackageLinter.id}>
+                      <TableCell scope="row">
+                        <Link
+                          href={`/db/npm/${localPackageLinter.linter.package.name}`}
+                        >
+                          {localPackageLinter.linter.package.name}
+                        </Link>
+                      </TableCell>
+                      <TableCell scope="row">
+                        {localPackageLinter.version}
+                      </TableCell>
+                      <TableCell scope="row">24.0.0</TableCell>
+                    </TableRow>
+                  )
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
+
+        <Paper className="mt-8">
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs
               value={currentLintersTabIndex}
               onChange={handleLintersTabIndex}
-              aria-label="repo linters"
+              aria-label="repo linters configs and rules violations list"
               variant="scrollable"
               scrollButtons="auto"
             >
@@ -268,34 +301,10 @@ export default function Repo({
                   >
                     <TableHead>
                       <TableRow>
-                        <TableCell>Linter</TableCell>
-                        <TableCell width="100px">Version</TableCell>
-                        <TableCell width="100px">Latest</TableCell>
-                        <TableCell width="100px" align="right"></TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      <TableRow>
-                        <TableCell scope="row">
-                          <Link
-                            href={`/db/npm/${localPackageLinter.linter.package.name}`}
-                          >
-                            {localPackageLinter.linter.package.name}
-                          </Link>
-                        </TableCell>
-                        <TableCell scope="row">
-                          {localPackageLinter.version}
-                        </TableCell>
-                        <TableCell scope="row">24.0.0</TableCell>
-                        <TableCell scope="row"></TableCell>
-                      </TableRow>
-                    </TableBody>
-                    <TableHead>
-                      <TableRow>
                         <TableCell>Config</TableCell>
-                        <TableCell>Violations</TableCell>
-                        <TableCell>Autofixable</TableCell>
-                        <TableCell></TableCell>
+                        <TableCell width="110px">Violations</TableCell>
+                        <TableCell width="110px">Autofixable</TableCell>
+                        <TableCell width="110px"></TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
