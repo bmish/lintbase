@@ -152,13 +152,7 @@ export default function Repo({
                       (localPackageLintFramework) => (
                         <TableRow key={localPackageLintFramework.id}>
                           <TableCell>
-                            {lintFrameworkToDisplayName(
-                              localPackageLintFramework.lintFramework
-                            )}
-                          </TableCell>
-                          <TableCell align="right">
-                            <Button
-                              variant="outlined"
+                            <Link
                               href={`/dashboard/repos/${encodeURIComponent(
                                 repo.fullName
                               )}/packages/${
@@ -169,9 +163,13 @@ export default function Repo({
                                 localPackageLintFramework.lintFramework.name
                               }`}
                             >
-                              View Linter
-                            </Button>
+                              {' '}
+                              {lintFrameworkToDisplayName(
+                                localPackageLintFramework.lintFramework
+                              )}
+                            </Link>
                           </TableCell>
+                          <TableCell align="right"></TableCell>
                         </TableRow>
                       )
                     )}
