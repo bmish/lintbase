@@ -38,6 +38,7 @@ function getRepositoryLink(linkRepository: string | null): string | undefined {
   return undefined;
 }
 
+// eslint-disable-next-line complexity
 export default function LinterCard({
   linter,
   detailed = false,
@@ -48,6 +49,7 @@ export default function LinterCard({
         include: {
           keywords: true;
           ecosystem: true;
+          versions: true;
         };
       };
       configs: true;
@@ -103,6 +105,10 @@ export default function LinterCard({
             >
               {format(new Date(linter.package.packageUpdatedAt))}
             </time>
+            {detailed && linter.package.versions.length > 0 && ' • '}
+            {detailed &&
+              linter.package.versions.length > 0 &&
+              linter.package.versions.at(-1)?.version}
           </Typography>
           {detailed &&
             linter.package.keywords &&

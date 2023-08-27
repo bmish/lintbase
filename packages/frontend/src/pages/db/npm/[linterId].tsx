@@ -47,7 +47,7 @@ const include = {
     },
   },
   package: {
-    include: { keywords: true, ecosystem: true },
+    include: { keywords: true, ecosystem: true, versions: true },
   },
   lintFramework: true,
 };

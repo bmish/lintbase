@@ -24,6 +24,7 @@ const includeLinters = {
     include: {
       ecosystem: true,
       keywords: true,
+      versions: true,
     },
   },
   lintFramework: true,

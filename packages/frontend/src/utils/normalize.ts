@@ -87,7 +87,6 @@ const linterInclude = {
       keywords: true,
     },
   },
-  // versions: true,
 };
 async function baseToNormalizedLinter(
   linterName: string,
@@ -176,14 +175,15 @@ async function baseToNormalizedLinter(
             create: uniqueItems(packageJson.keywords || [])
               .filter((keyword) => !keywordsToIgnore.has(keyword))
               .map((keyword) => ({ name: keyword })),
+          },
 
-            // TODO: too expensive when some linters have thousands of versions.
-            // versions: {
-            //   create: Object.entries(npmRegistryInfo.time).map(([version, time]) => ({
-            //     version,
-            //     publishedAt: new Date(time),
-            //   })),
-            // },
+          versions: {
+            create: Object.entries(npmRegistryInfo.time)
+              .slice(-10) // TODO: only get most recent versions for now. Too expensive when some linters have thousands of versions.
+              .map(([version, time]) => ({
+                version,
+                publishedAt: new Date(time),
+              })),
           },
         },
       },
