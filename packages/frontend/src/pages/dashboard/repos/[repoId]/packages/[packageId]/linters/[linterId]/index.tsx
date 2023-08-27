@@ -212,7 +212,9 @@ export default function Repo({
               <TableHead>
                 <TableRow>
                   <TableCell>Linter</TableCell>
-                  <TableCell width="110px">Version</TableCell>
+                  <TableCell width="110px" align="right">
+                    Version
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -226,7 +228,7 @@ export default function Repo({
                           {localPackageLinter.linter.package.name}
                         </Link>
                       </TableCell>
-                      <TableCell scope="row">
+                      <TableCell scope="row" align="right">
                         {localPackageLinter.version}
                       </TableCell>
                     </TableRow>
