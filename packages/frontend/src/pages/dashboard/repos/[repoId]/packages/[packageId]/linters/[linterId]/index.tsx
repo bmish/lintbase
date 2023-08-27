@@ -161,6 +161,9 @@ export default function Repo({
           <CardContent>
             <Breadcrumbs aria-label="breadcrumb" className="mb-1">
               <Typography variant="h5">
+                <Link href={'/dashboard/repos'}>Repositories</Link>
+              </Typography>
+              <Typography variant="h5">
                 <Link
                   href={`/dashboard/repos/${encodeURIComponent(
                     localPackageLintFramework.localPackage.repository.fullName

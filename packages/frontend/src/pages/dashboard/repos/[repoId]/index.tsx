@@ -3,6 +3,7 @@
 import Footer from '@/components/Footer';
 import Head from 'next/head';
 import {
+  Breadcrumbs,
   Button,
   Card,
   CardActions,
@@ -85,7 +86,12 @@ export default function Repo({
       <main className="py-8 px-6 mx-auto min-h-screen">
         <Card>
           <CardContent>
-            <Typography variant="h5">{repo.fullName}</Typography>
+            <Breadcrumbs aria-label="breadcrumb" className="mb-1">
+              <Typography variant="h5">
+                <Link href={'/dashboard/repos'}>Repositories</Link>
+              </Typography>
+              <Typography variant="h5">{repo.fullName}</Typography>
+            </Breadcrumbs>
             <br />
             <p>{repo.description}</p>
             <br />
