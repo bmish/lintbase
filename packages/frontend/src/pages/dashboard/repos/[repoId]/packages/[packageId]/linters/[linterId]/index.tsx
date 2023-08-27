@@ -191,19 +191,21 @@ export default function Repo({
         <Card>
           <CardContent>
             <Breadcrumbs aria-label="breadcrumb" className="mb-1">
-              <Link
-                href={`/dashboard/repos/${encodeURIComponent(
-                  localPackageLintFramework.localPackage.repository.fullName
-                )}`}
-              >
-                {localPackageLintFramework.localPackage.repository.fullName}
-              </Link>
-              <Typography sx={{ fontSize: 14 }} color="text.secondary">
+              <Typography variant="h5">
+                <Link
+                  href={`/dashboard/repos/${encodeURIComponent(
+                    localPackageLintFramework.localPackage.repository.fullName
+                  )}`}
+                >
+                  {localPackageLintFramework.localPackage.repository.fullName}
+                </Link>
+              </Typography>
+              <Typography variant="h5" color="text.secondary">
                 {localPackageLintFramework.localPackage.path === '.'
                   ? '(Root)'
                   : localPackageLintFramework.localPackage.path}
               </Typography>
-              <Typography sx={{ fontSize: 14 }} color="text.secondary">
+              <Typography variant="h5" color="text.secondary">
                 {lintFrameworkToDisplayName(
                   localPackageLintFramework.lintFramework
                 )}
