@@ -15,7 +15,8 @@ export default function DashboardNavigation() {
       ? pathParts[2]
       : undefined;
 
-  return (
+  // TODO: temporarily hidden behind query parameter until we have a need for multiple Dashboard sections.
+  return router.query.showDashboardNavigation ? (
     <nav className="pt-8 w-full px-6">
       <ToggleButtonGroup
         color="primary"
@@ -33,5 +34,7 @@ export default function DashboardNavigation() {
         </ToggleButton>
       </ToggleButtonGroup>
     </nav>
+  ) : (
+    <></>
   );
 }

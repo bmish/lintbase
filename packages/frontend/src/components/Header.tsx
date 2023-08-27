@@ -81,26 +81,32 @@ export default function Header() {
               About
             </Link>
           </li>
-          {session && router.pathname !== '/dashboard' && (
-            <li>
-              <Link
-                href="/dashboard"
-                className="px-2 sm:px-4 py-2 font-semibold text-gray-600 rounded"
-              >
-                Dashboard
-              </Link>
-            </li>
-          )}
-          {session && router.pathname === '/dashboard' && (
-            <li>
-              <Link
-                href="/api/auth/signout"
-                className="px-2 sm:px-4 py-2 font-semibold text-gray-600 rounded"
-              >
-                Logout
-              </Link>
-            </li>
-          )}
+          {session &&
+            !(
+              router.pathname === '/dashboard' ||
+              router.pathname === '/dashboard/repos'
+            ) && (
+              <li>
+                <Link
+                  href="/dashboard/repos"
+                  className="px-2 sm:px-4 py-2 font-semibold text-gray-600 rounded"
+                >
+                  Dashboard
+                </Link>
+              </li>
+            )}
+          {session &&
+            (router.pathname === '/dashboard' ||
+              router.pathname === '/dashboard/repos') && (
+              <li>
+                <Link
+                  href="/api/auth/signout"
+                  className="px-2 sm:px-4 py-2 font-semibold text-gray-600 rounded"
+                >
+                  Logout
+                </Link>
+              </li>
+            )}
           {!session && (
             <li>
               <Link
