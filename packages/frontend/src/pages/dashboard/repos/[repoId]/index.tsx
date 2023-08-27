@@ -117,9 +117,7 @@ export default function Repo({
             </p>
           </CardContent>
           <CardActions>
-            <Button href={`https://github.com/${repo.fullName}`}>
-              Repository
-            </Button>
+            <Button href={`https://github.com/${repo.fullName}`}>GitHub</Button>
           </CardActions>
         </Card>
 
