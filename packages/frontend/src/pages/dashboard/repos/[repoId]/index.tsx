@@ -135,20 +135,6 @@ export default function Repo({
                   <TableHead>
                     <TableRow>
                       <TableCell scope="col">(Repository Root)</TableCell>
-                      <TableCell align="right">
-                        <Link
-                          key={localPackage.id}
-                          href={`https://github.com/${repo.fullName}/blob/${
-                            repo.commitSha as string
-                          }/${localPackage.path}`}
-                        >
-                          <code>
-                            {localPackage.path === '.'
-                              ? '/'
-                              : localPackage.path}
-                          </code>
-                        </Link>
-                      </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -173,7 +159,6 @@ export default function Repo({
                               )}
                             </Link>
                           </TableCell>
-                          <TableCell align="right"></TableCell>
                         </TableRow>
                       )
                     )}
