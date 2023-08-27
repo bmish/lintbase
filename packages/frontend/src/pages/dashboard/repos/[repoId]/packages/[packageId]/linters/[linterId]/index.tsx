@@ -125,8 +125,6 @@ export default function Repo({
   const { data: session } = useSession();
 
   const [currentLintersTabIndex, setCurrentLintersTabIndex] = React.useState(0);
-  const [currentPRsTabIndex, setCurrentPRsTabIndex] = React.useState(0);
-  const [currentRulesTabIndex, setCurrentRulesTabIndex] = React.useState(0);
 
   if (!session) {
     return <AccessDenied />;
@@ -138,35 +136,6 @@ export default function Repo({
   ) => {
     setCurrentLintersTabIndex(newValue);
   };
-
-  const handleCurrentPRsTabIndex = (
-    event: React.SyntheticEvent,
-    newValue: number
-  ) => {
-    setCurrentPRsTabIndex(newValue);
-  };
-
-  const handleCurrentRulesTabIndex = (
-    event: React.SyntheticEvent,
-    newValue: number
-  ) => {
-    setCurrentRulesTabIndex(newValue);
-  };
-
-  const prsActive = [
-    { name: 'eslint-plugin-ember / no-get' },
-    { name: 'eslint-plugin-qunit / recommended' },
-  ];
-  const prsClosed = [
-    { name: 'eslint / no-shadow' },
-    { name: 'eslint-plugin-import / recommended' },
-  ];
-
-  const rulesNovel = [
-    { name: 'Engineers frequently make some problem with x.' },
-    { name: 'Another recurring issue in PRs.' },
-  ];
-  const rulesSuggested = [{ name: 'yoda' }, { name: 'ember/no-get' }];
 
   const localPackage = { path: '.eslintrc.js' };
 
@@ -377,156 +346,6 @@ export default function Repo({
               </TabPanel>
             )
           )}
-        </Paper>
-
-        <Paper className="mt-8">
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs
-              value={currentRulesTabIndex}
-              onChange={handleCurrentRulesTabIndex}
-              aria-label="repo rules"
-              variant="scrollable"
-              scrollButtons="auto"
-            >
-              <Tab
-                key={0}
-                label={'Novel Rule Concepts'}
-                id={`rules-tab-${0}`}
-              />
-              <Tab key={1} label={'Suggested Rules'} id={`rules-tab-${1}`} />
-            </Tabs>
-          </Box>
-          <TabPanel
-            value={currentRulesTabIndex}
-            index={0}
-            key={1}
-            prefix="rules-tab-"
-          >
-            <TableContainer>
-              <Table sx={{ minWidth: 650 }} aria-label="repo rules novel">
-                <TableBody>
-                  {rulesNovel.map((repo) => (
-                    <TableRow
-                      key={repo.name}
-                      sx={{
-                        '&:last-child td, &:last-child th': { border: 0 },
-                      }}
-                    >
-                      <TableCell scope="row">{repo.name}</TableCell>
-                      <TableCell scope="row" align="right">
-                        <Button variant="outlined">Create Rule</Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </TabPanel>
-          <TabPanel
-            value={currentRulesTabIndex}
-            index={1}
-            key={1}
-            prefix="rules-tab-"
-          >
-            <TableContainer>
-              <Table sx={{ minWidth: 650 }} aria-label="repo rules suggested">
-                <TableBody>
-                  {rulesSuggested.map((repo) => (
-                    <TableRow
-                      key={repo.name}
-                      sx={{
-                        '&:last-child td, &:last-child th': { border: 0 },
-                      }}
-                    >
-                      <TableCell scope="row">
-                        <Link href={`/dashboard/repos/${repo.name}`}>
-                          {repo.name}
-                        </Link>
-                      </TableCell>
-                      <TableCell scope="row" align="right">
-                        <Button variant="outlined">Enable Rule</Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </TabPanel>
-        </Paper>
-
-        <Paper className="mt-8">
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs
-              value={currentPRsTabIndex}
-              onChange={handleCurrentPRsTabIndex}
-              aria-label="repo PRs"
-              variant="scrollable"
-              scrollButtons="auto"
-            >
-              <Tab key={0} label={'Active Lint PRs'} id={`prs-tab-${0}`} />
-              <Tab key={1} label={'Closed Lint PRs'} id={`prs-tab-${1}`} />
-            </Tabs>
-          </Box>
-          <TabPanel
-            value={currentPRsTabIndex}
-            index={0}
-            key={1}
-            prefix="prs-tab-"
-          >
-            <TableContainer>
-              <Table sx={{ minWidth: 650 }} aria-label="repo PRs open">
-                <TableBody>
-                  {prsActive.map((repo) => (
-                    <TableRow
-                      key={repo.name}
-                      sx={{
-                        '&:last-child td, &:last-child th': { border: 0 },
-                      }}
-                    >
-                      <TableCell scope="row">
-                        <Link href={`/dashboard/repos/${repo.name}`}>
-                          {repo.name}
-                        </Link>
-                      </TableCell>
-                      <TableCell scope="row" align="right">
-                        <Button variant="outlined">View PR</Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </TabPanel>
-          <TabPanel
-            value={currentPRsTabIndex}
-            index={1}
-            key={1}
-            prefix="prs-tab-"
-          >
-            <TableContainer>
-              <Table sx={{ minWidth: 650 }} aria-label="repo PRs closed">
-                <TableBody>
-                  {prsClosed.map((repo) => (
-                    <TableRow
-                      key={repo.name}
-                      sx={{
-                        '&:last-child td, &:last-child th': { border: 0 },
-                      }}
-                    >
-                      <TableCell scope="row">
-                        <Link href={`/dashboard/repos/${repo.name}`}>
-                          {repo.name}
-                        </Link>
-                      </TableCell>
-                      <TableCell scope="row" align="right">
-                        <Button variant="outlined">View PR</Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </TabPanel>
         </Paper>
 
         <Footer />
