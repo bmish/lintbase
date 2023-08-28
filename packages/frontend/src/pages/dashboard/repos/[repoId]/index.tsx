@@ -29,6 +29,7 @@ import { prisma } from '@/server/db';
 import { fixAnyDatesInObject } from '@/utils/normalize';
 import { format } from 'timeago.js';
 import { lintFrameworkToDisplayName } from '@/utils/dynamic-fields';
+import { api } from '@/utils/api';
 
 const include = {
   localPackages: {
@@ -67,9 +68,19 @@ export default function Repo({
 }) {
   const { data: session } = useSession();
 
+  const repositoryRefreshMutation = api.repository.refresh.useMutation();
+
   if (!session) {
     return <AccessDenied />;
   }
+
+  const handleRefresh = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    repositoryRefreshMutation.mutate({
+      fullName: repo.fullName,
+    });
+  };
 
   return (
     <div className="bg-gray-100 h-full">
@@ -124,6 +135,9 @@ export default function Repo({
           </CardContent>
           <CardActions>
             <Button href={`https://github.com/${repo.fullName}`}>GitHub</Button>
+            <form onSubmit={handleRefresh}>
+              <Button type="submit">Refresh</Button>
+            </form>
           </CardActions>
         </Card>
 
