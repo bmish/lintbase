@@ -147,8 +147,8 @@ export const repositoryRouter = createTRPCRouter({
         });
       await ctx.prisma.$transaction([
         deleteLocalPackageLintFrameworks,
-        deleteLocalPackages,
         deleteLocalPackageLinters,
+        deleteLocalPackages,
       ]); // Must be done in a transaction to satisfy constraints.
 
       await ctx.prisma.repository.update({
