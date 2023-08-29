@@ -9,6 +9,7 @@ import {
   Card,
   CardActions,
   CardContent,
+  Chip,
   Paper,
   Tab,
   Table,
@@ -66,7 +67,9 @@ const include = {
             include: {
               package: { include: { versions: true } },
               rules: true,
-              configs: { include: { localPackageConfigs: true } },
+              configs: {
+                include: { localPackageConfigs: true, ruleConfigs: true },
+              },
             },
           },
         },
@@ -346,16 +349,25 @@ export default function Repo({
                           <TableCell scope="row">25</TableCell>
                           <TableCell scope="row">25%</TableCell>
                           <TableCell scope="row" align="right">
-                            {false && (
-                              <Button variant="outlined" size="small">
-                                Disable
-                              </Button>
-                            )}
-                            {true && (
-                              <Button variant="outlined" size="small">
-                                Enable
-                              </Button>
-                            )}
+                            {localPackageLinter.linter.configs
+                              .filter((config) =>
+                                config.localPackageConfigs.some(
+                                  (localPackageConfig) =>
+                                    localPackageConfig.localPackageId ===
+                                    localPackageLinter.localPackageId
+                                )
+                              )
+                              .filter((config) =>
+                                config.ruleConfigs.some(
+                                  (ruleConfig) => ruleConfig.ruleId === rule.id
+                                )
+                              )
+                              .map((config) => (
+                                <Chip
+                                  label={`Enabled by: ${config.name}`}
+                                  key={config.id}
+                                />
+                              ))}
                           </TableCell>
                         </TableRow>
                       ))}
