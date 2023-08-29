@@ -5,6 +5,24 @@ import { env } from '@/env.mjs';
 import { dirname } from 'node:path';
 import { PackageJson } from 'type-fest';
 
+function extendsToInfo(
+  extendsList: string[] | undefined
+): { plugin: string; config: string }[] {
+  return (extendsList || []).flatMap(
+    (configName) =>
+      configName.startsWith('eslint:')
+        ? [{ plugin: 'eslint', config: configName.split(':')[1] }]
+        : configName.startsWith('plugin:')
+        ? [
+            {
+              plugin: `eslint-plugin-${configName.split(':')[1].split('/')[0]}`,
+              config: configName.split(':')[1].split('/')[1],
+            },
+          ]
+        : [] // TODO: unknown
+  );
+}
+
 export const repositoryRouter = createTRPCRouter({
   add: protectedProcedure
     .input(
@@ -85,6 +103,31 @@ export const repositoryRouter = createTRPCRouter({
           'base64'
         ).toString('utf8')
       ) as PackageJson;
+
+      // TODO: search recursively for linter configs in monorepos.
+      const contentsEslintrc = (await octokit.request(
+        'GET /repos/{owner}/{repo}/contents/{path}',
+        {
+          owner: input.fullName.split('/')[0],
+          repo: input.fullName.split('/')[1],
+          path: '.eslintrc.js',
+          headers: {
+            'X-GitHub-Api-Version': '2022-11-28',
+          },
+        }
+      )) as { data: { content: string } };
+      const contentsEslintrcData = Buffer.from(
+        contentsEslintrc.data.content,
+        'base64'
+      ).toString('utf8');
+
+      const eslintrc = contentsEslintrc.data.content
+        ? // eslint-disable-next-line no-eval -- TODO: eventually, we need a sandbox for installing repos and evaluating lint configs.
+          (eval(contentsEslintrcData) as {
+            extends?: string[];
+          })
+        : undefined;
+
       const localPackageAllDependencies = {
         ...localPackageManifest.dependencies,
         ...localPackageManifest.devDependencies,
@@ -145,11 +188,34 @@ export const repositoryRouter = createTRPCRouter({
             },
           },
         });
+      const deleteLocalPackageConfigs =
+        ctx.prisma.localPackageConfig.deleteMany({
+          where: {
+            localPackage: {
+              repository: {
+                owner: { id: ctx.session.user.id },
+                fullName: input.fullName,
+              },
+            },
+          },
+        });
       await ctx.prisma.$transaction([
         deleteLocalPackageLintFrameworks,
         deleteLocalPackageLinters,
+        deleteLocalPackageConfigs,
         deleteLocalPackages,
       ]); // Must be done in a transaction to satisfy constraints.
+
+      const extendsInfo = extendsToInfo(eslintrc?.extends);
+      const lintersForConfigs = await ctx.prisma.linter.findMany({
+        where: {
+          package: {
+            name: {
+              in: extendsInfo.map((obj) => obj.plugin),
+            },
+          },
+        },
+      });
 
       await ctx.prisma.repository.update({
         where: { owner: { id: ctx.session.user.id }, fullName: input.fullName },
@@ -163,6 +229,7 @@ export const repositoryRouter = createTRPCRouter({
               .map((data) => ({
                 path: dirname(data.path),
                 pathManifest: data.path,
+
                 localPackageLintFrameworks: {
                   create: contents.data
                     .filter((data) => data.name === '.eslintrc.js')
@@ -174,6 +241,7 @@ export const repositoryRouter = createTRPCRouter({
                       },
                     })),
                 },
+
                 localPackageLinters: {
                   create: localPackageLinterPackageIds.map((obj) => ({
                     isPresent: true,
@@ -181,6 +249,20 @@ export const repositoryRouter = createTRPCRouter({
                     linter: {
                       connect: {
                         packageId: obj.id,
+                      },
+                    },
+                  })),
+                },
+
+                localPackageConfigs: {
+                  create: extendsInfo.map(({ config }, i) => ({
+                    isEnabled: true,
+                    config: {
+                      connect: {
+                        name_linterId: {
+                          name: config,
+                          linterId: lintersForConfigs[i].id,
+                        },
                       },
                     },
                   })),

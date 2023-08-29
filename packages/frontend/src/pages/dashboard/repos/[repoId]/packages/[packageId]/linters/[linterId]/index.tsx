@@ -66,7 +66,7 @@ const include = {
             include: {
               package: { include: { versions: true } },
               rules: true,
-              configs: true,
+              configs: { include: { localPackageConfigs: true } },
             },
           },
         },
@@ -301,12 +301,15 @@ export default function Repo({
                           <TableCell scope="row">50</TableCell>
                           <TableCell scope="row">0%</TableCell>
                           <TableCell scope="row" align="right">
-                            {true && (
+                            {config.localPackageConfigs.some(
+                              (localPackageConfig) =>
+                                localPackageConfig.localPackageId ===
+                                localPackageLinter.localPackageId
+                            ) ? (
                               <Button variant="outlined" size="small">
                                 Disable
                               </Button>
-                            )}
-                            {false && (
+                            ) : (
                               <Button variant="outlined" size="small">
                                 Enable
                               </Button>
@@ -343,12 +346,12 @@ export default function Repo({
                           <TableCell scope="row">25</TableCell>
                           <TableCell scope="row">25%</TableCell>
                           <TableCell scope="row" align="right">
-                            {true && (
+                            {false && (
                               <Button variant="outlined" size="small">
                                 Disable
                               </Button>
                             )}
-                            {false && (
+                            {true && (
                               <Button variant="outlined" size="small">
                                 Enable
                               </Button>
