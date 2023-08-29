@@ -294,7 +294,8 @@ export default function Repo({
                         <TableCell>Config</TableCell>
                         <TableCell width="110px">Violations</TableCell>
                         <TableCell width="110px">Autofixable</TableCell>
-                        <TableCell width="110px"></TableCell>
+                        <TableCell width="110px">Status</TableCell>
+                        <TableCell width="110px">Action</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -303,6 +304,20 @@ export default function Repo({
                           <TableCell scope="row">{config.name}</TableCell>
                           <TableCell scope="row">50</TableCell>
                           <TableCell scope="row">0%</TableCell>
+                          <TableCell scope="row">
+                            {config.localPackageConfigs.some(
+                              (localPackageConfig) =>
+                                localPackageConfig.localPackageId ===
+                                localPackageLinter.localPackageId
+                            ) && (
+                              <Chip
+                                label={'Enabled'}
+                                key={config.id}
+                                color="success"
+                                size="small"
+                              />
+                            )}
+                          </TableCell>
                           <TableCell scope="row" align="right">
                             {config.localPackageConfigs.some(
                               (localPackageConfig) =>
@@ -326,7 +341,8 @@ export default function Repo({
                         <TableCell>Rule</TableCell>
                         <TableCell>Violations</TableCell>
                         <TableCell>Autofixable</TableCell>
-                        <TableCell></TableCell>
+                        <TableCell>Status</TableCell>
+                        <TableCell>Action</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -366,8 +382,33 @@ export default function Repo({
                                 <Chip
                                   label={`Enabled by: ${config.name}`}
                                   key={config.id}
+                                  color="success"
+                                  size="small"
                                 />
                               ))}
+                          </TableCell>
+                          <TableCell>
+                            {localPackageLinter.linter.configs
+                              .filter((config) =>
+                                config.localPackageConfigs.some(
+                                  (localPackageConfig) =>
+                                    localPackageConfig.localPackageId ===
+                                    localPackageLinter.localPackageId
+                                )
+                              )
+                              .some((config) =>
+                                config.ruleConfigs.some(
+                                  (ruleConfig) => ruleConfig.ruleId === rule.id
+                                )
+                              ) ? (
+                              <Button variant="outlined" size="small">
+                                Disable
+                              </Button>
+                            ) : (
+                              <Button variant="outlined" size="small">
+                                Enable
+                              </Button>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))}
