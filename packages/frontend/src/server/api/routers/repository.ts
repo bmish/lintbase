@@ -4,6 +4,7 @@ import { Octokit } from 'octokit';
 import { env } from '@/env.mjs';
 import { dirname } from 'node:path';
 import { PackageJson } from 'type-fest';
+import type { TSESLint } from '@typescript-eslint/utils';
 
 function extendsToInfo(
   extendsList: string[] | undefined
@@ -20,6 +21,50 @@ function extendsToInfo(
             },
           ]
         : [] // TODO: unknown
+  );
+}
+
+function normalizeSeverity(
+  severity: TSESLint.Linter.RuleLevel | TSESLint.Linter.Severity
+): 0 | 1 | 2 {
+  return severity === 'off' || severity === 0
+    ? 0
+    : severity === 'warn' || severity === 1
+    ? 1
+    : 2;
+}
+
+function rulesToInfo(rules: TSESLint.Linter.RulesRecord | undefined): {
+  plugin: string;
+  ruleName: string;
+  severity: 0 | 1 | 2;
+}[] {
+  return Object.entries(rules || {}).flatMap(([ruleName, entry]) =>
+    entry === undefined
+      ? []
+      : ruleName.includes('/')
+      ? [
+          {
+            plugin: `eslint-plugin-${ruleName.split('/')[0]}`,
+            ruleName: ruleName.split('/')[1],
+            severity: normalizeSeverity(
+              typeof entry === 'string' || typeof entry === 'number'
+                ? entry
+                : entry[0]
+            ),
+          },
+        ]
+      : [
+          {
+            plugin: 'eslint',
+            ruleName,
+            severity: normalizeSeverity(
+              typeof entry === 'string' || typeof entry === 'number'
+                ? entry
+                : entry[0]
+            ),
+          },
+        ]
   );
 }
 
@@ -110,7 +155,11 @@ export const repositoryRouter = createTRPCRouter({
         {
           owner: input.fullName.split('/')[0],
           repo: input.fullName.split('/')[1],
-          path: '.eslintrc.js',
+          path: contents.data
+            .filter((data) =>
+              ['.eslintrc.js', '.eslintrc.cjs'].includes(data.path)
+            )
+            .map((data) => data.path)[0],
           headers: {
             'X-GitHub-Api-Version': '2022-11-28',
           },
@@ -125,6 +174,7 @@ export const repositoryRouter = createTRPCRouter({
         ? // eslint-disable-next-line no-eval -- TODO: eventually, we need a sandbox for installing repos and evaluating lint configs.
           (eval(contentsEslintrcData) as {
             extends?: string[];
+            rules?: TSESLint.Linter.RulesRecord;
           })
         : undefined;
 
@@ -199,10 +249,21 @@ export const repositoryRouter = createTRPCRouter({
             },
           },
         });
+      const deleteLocalPackageRules = ctx.prisma.localPackageRule.deleteMany({
+        where: {
+          localPackage: {
+            repository: {
+              owner: { id: ctx.session.user.id },
+              fullName: input.fullName,
+            },
+          },
+        },
+      });
       await ctx.prisma.$transaction([
         deleteLocalPackageLintFrameworks,
         deleteLocalPackageLinters,
         deleteLocalPackageConfigs,
+        deleteLocalPackageRules,
         deleteLocalPackages,
       ]); // Must be done in a transaction to satisfy constraints.
 
@@ -214,6 +275,23 @@ export const repositoryRouter = createTRPCRouter({
               in: extendsInfo.map((obj) => obj.plugin),
             },
           },
+        },
+        include: {
+          package: true,
+        },
+      });
+
+      const rulesInfo = rulesToInfo(eslintrc?.rules);
+      const lintersForRules = await ctx.prisma.linter.findMany({
+        where: {
+          package: {
+            name: {
+              in: rulesInfo.map((obj) => obj.plugin),
+            },
+          },
+        },
+        include: {
+          package: true,
         },
       });
 
@@ -232,7 +310,9 @@ export const repositoryRouter = createTRPCRouter({
 
                 localPackageLintFrameworks: {
                   create: contents.data
-                    .filter((data) => data.name === '.eslintrc.js')
+                    .filter((data) =>
+                      ['.eslintrc.js', '.eslintrc.cjs'].includes(data.name)
+                    )
                     .map((data) => ({
                       pathConfig: data.path,
                       isPresent: true,
@@ -255,13 +335,32 @@ export const repositoryRouter = createTRPCRouter({
                 },
 
                 localPackageConfigs: {
-                  create: extendsInfo.map(({ config }, i) => ({
+                  create: extendsInfo.map(({ config, plugin }) => ({
                     isEnabled: true,
                     config: {
                       connect: {
                         name_linterId: {
                           name: config,
-                          linterId: lintersForConfigs[i].id,
+                          linterId: lintersForConfigs.find(
+                            (linter) => linter.package.name === plugin
+                          )?.id as number,
+                        },
+                      },
+                    },
+                  })),
+                },
+
+                localPackageRules: {
+                  create: rulesInfo.map(({ ruleName, plugin }, i) => ({
+                    isEnabled: true, // TODO: remove, redundant with severity
+                    severity: rulesInfo[i].severity.toString(), // TODO: avoid need to convert
+                    rule: {
+                      connect: {
+                        name_linterId: {
+                          name: ruleName,
+                          linterId: lintersForRules.find(
+                            (linter) => linter.package.name === plugin
+                          )?.id as number,
                         },
                       },
                     },

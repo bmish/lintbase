@@ -66,9 +66,16 @@ const include = {
           linter: {
             include: {
               package: { include: { versions: true } },
-              rules: true,
+              rules: {
+                include: {
+                  localPackageRules: true,
+                },
+              },
               configs: {
-                include: { localPackageConfigs: true, ruleConfigs: true },
+                include: {
+                  localPackageConfigs: true,
+                  ruleConfigs: true,
+                },
               },
             },
           },
@@ -383,6 +390,35 @@ export default function Repo({
                                   label={`Enabled By: ${config.name}`}
                                   key={config.id}
                                   color="success"
+                                  size="small"
+                                />
+                              ))}
+                            {localPackageLinter.linter.rules
+                              .flatMap((rule2) =>
+                                rule2.localPackageRules.filter(
+                                  (localPackageRule) =>
+                                    localPackageRule.localPackageId ===
+                                      localPackageLinter.localPackageId &&
+                                    localPackageRule.ruleId === rule.id
+                                )
+                              )
+                              .map((rule2) => (
+                                <Chip
+                                  label={`${
+                                    rule2.severity === '2'
+                                      ? 'Enabled'
+                                      : rule2.severity === '1'
+                                      ? 'Set To Warn'
+                                      : 'Disabled'
+                                  } Individually`}
+                                  key={rule2.id}
+                                  color={
+                                    rule2.severity === '2'
+                                      ? 'success'
+                                      : rule2.severity === '1'
+                                      ? 'warning'
+                                      : 'error'
+                                  }
                                   size="small"
                                 />
                               ))}

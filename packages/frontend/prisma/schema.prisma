@@ -345,7 +345,7 @@ model LocalPackageRule {
   countViolations  Int?
   countAutofixable Int?
 
-  isEnabled   Boolean @default(false)
+  isEnabled   Boolean @default(false) // TODO: remove, redundant with severity
   severity    String?
   isSuggested Boolean @default(false)
 
