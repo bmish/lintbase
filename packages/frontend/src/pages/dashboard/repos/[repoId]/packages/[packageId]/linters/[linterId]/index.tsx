@@ -295,7 +295,7 @@ export default function Repo({
                         <TableCell width="110px">Violations</TableCell>
                         <TableCell width="110px">Autofixable</TableCell>
                         <TableCell width="110px">Status</TableCell>
-                        <TableCell width="110px">Action</TableCell>
+                        <TableCell width="110px" align="right"></TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -342,7 +342,7 @@ export default function Repo({
                         <TableCell>Violations</TableCell>
                         <TableCell>Autofixable</TableCell>
                         <TableCell>Status</TableCell>
-                        <TableCell>Action</TableCell>
+                        <TableCell align="right"></TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -380,14 +380,14 @@ export default function Repo({
                               )
                               .map((config) => (
                                 <Chip
-                                  label={`Enabled by: ${config.name}`}
+                                  label={`Enabled By: ${config.name}`}
                                   key={config.id}
                                   color="success"
                                   size="small"
                                 />
                               ))}
                           </TableCell>
-                          <TableCell>
+                          <TableCell align="right">
                             {localPackageLinter.linter.configs
                               .filter((config) =>
                                 config.localPackageConfigs.some(
