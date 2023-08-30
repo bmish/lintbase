@@ -217,8 +217,30 @@ async function eslintLinterToNormalizedLinter(
   const rules = Object.entries(linter?.rules || {}).flatMap(
     ([ruleName, rule]) => {
       if (typeof rule !== 'object') {
-        // TODO: handle this case
-        return [];
+        // Deprecated, function-style rule.
+        return [
+          {
+            name: ruleName,
+            description: null,
+            fixable: null,
+            hasSuggestions: false,
+            // @ts-expect-error -- TODO: null should be allowed for "type"
+            type: null as 'suggestion' | 'problem' | 'layout',
+            // @ts-expect-error -- type is missing for this property
+            deprecated: rule.deprecated || false, // eslint-disable-line @typescript-eslint/no-unsafe-assignment -- type is missing for this property
+            replacedBys: { create: [] },
+            category: null,
+            options: {
+              // @ts-expect-error -- type is missing for this property
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- type is missing for this property
+              create: uniqueItems(getAllNamedOptions(rule.schema), 'name').map(
+                (obj) => ({ name: obj.name, type: obj.type })
+              ),
+            },
+            requiresTypeChecking: false,
+            linkRuleDoc: null,
+          },
+        ];
       }
 
       const ruleNormalized = {
