@@ -68,7 +68,7 @@ async function installPackages(
   );
 
   try {
-    await execP(`npm install --prefix ${downloadPath} -f`);
+    await execP(`npm install --loglevel verbose --prefix ${downloadPath} -f`);
   } catch (error) {
     console.error(`Failed to npm install. Error: ${String(error)}`);
   }
