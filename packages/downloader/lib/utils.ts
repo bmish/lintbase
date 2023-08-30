@@ -68,7 +68,9 @@ async function installPackages(
   );
 
   try {
-    await execP(`npm install --loglevel verbose --prefix ${downloadPath} -f`);
+    await execP(
+      `npm install --loglevel verbose --prefix ${downloadPath} --legacy-peer-deps`
+    );
   } catch (error) {
     console.error(`Failed to npm install. Error: ${String(error)}`);
   }
