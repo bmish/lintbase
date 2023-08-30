@@ -165,10 +165,16 @@ export const repositoryRouter = createTRPCRouter({
           },
         }
       )) as { data: { content: string } };
+      const requireRegex = /require\s*\(\s*["'][^"']+["']\s*\)\s*/u;
+      const requireResolveRegex =
+        /require\.resolve\s*\(\s*["'][^"']+["']\s*\)\s*/gu;
       const contentsEslintrcData = Buffer.from(
         contentsEslintrc.data.content,
         'base64'
-      ).toString('utf8');
+      )
+        .toString('utf8')
+        .replace(requireRegex, '{}') // Replace require statement with dummy value for now.
+        .replace(requireResolveRegex, '{}'); // Replace require statement with dummy value for now.
 
       const eslintrc = contentsEslintrc.data.content
         ? // eslint-disable-next-line no-eval -- TODO: eventually, we need a sandbox for installing repos and evaluating lint configs.
