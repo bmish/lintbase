@@ -224,7 +224,11 @@ export default function Repo({
 
         <Paper className="mt-8">
           <TableContainer>
-            <Table sx={{ minWidth: 650 }} aria-label="repo linters list">
+            <Table
+              sx={{ minWidth: 650 }}
+              aria-label="repo linters list"
+              size="small"
+            >
               <TableHead>
                 <TableRow>
                   <TableCell>Linter</TableCell>
