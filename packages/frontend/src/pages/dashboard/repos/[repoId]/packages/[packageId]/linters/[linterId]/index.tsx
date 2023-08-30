@@ -32,6 +32,7 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '@/server/db';
 import { fixAnyDatesInObject } from '@/utils/normalize';
 import { lintFrameworkToDisplayName } from '@/utils/dynamic-fields';
+import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -305,6 +306,7 @@ export default function Repo({
                         <TableHead>
                           <TableRow>
                             <TableCell>Config</TableCell>
+                            <TableCell></TableCell>
                             <TableCell width="110px">Violations</TableCell>
                             <TableCell width="110px">Autofixable</TableCell>
                             <TableCell width="110px">Status</TableCell>
@@ -315,6 +317,7 @@ export default function Repo({
                           {localPackageLinter.linter.configs.map((config) => (
                             <TableRow key="recommended">
                               <TableCell scope="row">{config.name}</TableCell>
+                              <TableCell scope="row"></TableCell>
                               <TableCell scope="row">50</TableCell>
                               <TableCell scope="row">0%</TableCell>
                               <TableCell scope="row">
@@ -357,6 +360,7 @@ export default function Repo({
                         <TableHead>
                           <TableRow>
                             <TableCell>Rule</TableCell>
+                            <TableCell>Description</TableCell>
                             <TableCell>Violations</TableCell>
                             <TableCell>Autofixable</TableCell>
                             <TableCell>Status</TableCell>
@@ -379,6 +383,15 @@ export default function Repo({
                                 >
                                   {rule.name}
                                 </Link>
+                              </TableCell>
+                              <TableCell
+                                scope="row"
+                                className="max-w-xs overflow-hidden whitespace-nowrap text-ellipsis"
+                              >
+                                {rule.description && (
+                                  // eslint-disable-next-line react/no-children-prop -- false positive
+                                  <ReactMarkdown children={rule.description} />
+                                )}
                               </TableCell>
                               <TableCell scope="row">25</TableCell>
                               <TableCell scope="row">25%</TableCell>
