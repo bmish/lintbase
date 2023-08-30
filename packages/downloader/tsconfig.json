@@ -19,14 +19,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "outDir": "dist",
-    "paths": {
-      "*": [
-        "types/*"
-      ]
-    },
-    "target": "es2022",
-    "types": [],
-    "typeRoots": ["./types"]
+    "target": "es2022"
   },
   "include": [
     "bin/**/*",
