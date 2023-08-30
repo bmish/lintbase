@@ -300,159 +300,170 @@ export default function Repo({
                     aria-label="repo rules novel"
                     size="small"
                   >
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Config</TableCell>
-                        <TableCell width="110px">Violations</TableCell>
-                        <TableCell width="110px">Autofixable</TableCell>
-                        <TableCell width="110px">Status</TableCell>
-                        <TableCell width="110px" align="right"></TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {localPackageLinter.linter.configs.map((config) => (
-                        <TableRow key="recommended">
-                          <TableCell scope="row">{config.name}</TableCell>
-                          <TableCell scope="row">50</TableCell>
-                          <TableCell scope="row">0%</TableCell>
-                          <TableCell scope="row">
-                            {config.localPackageConfigs.some(
-                              (localPackageConfig) =>
-                                localPackageConfig.localPackageId ===
-                                localPackageLinter.localPackageId
-                            ) && (
-                              <Chip
-                                label={'Enabled'}
-                                key={config.id}
-                                color="success"
-                                size="small"
-                              />
-                            )}
-                          </TableCell>
-                          <TableCell scope="row" align="right">
-                            {config.localPackageConfigs.some(
-                              (localPackageConfig) =>
-                                localPackageConfig.localPackageId ===
-                                localPackageLinter.localPackageId
-                            ) ? (
-                              <Button variant="outlined" size="small">
-                                Disable
-                              </Button>
-                            ) : (
-                              <Button variant="outlined" size="small">
-                                Enable
-                              </Button>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Rule</TableCell>
-                        <TableCell>Violations</TableCell>
-                        <TableCell>Autofixable</TableCell>
-                        <TableCell>Status</TableCell>
-                        <TableCell align="right"></TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {localPackageLinter.linter.rules.map((rule) => (
-                        <TableRow
-                          key={rule.name}
-                          sx={{
-                            '&:last-child td, &:last-child th': {
-                              border: 0,
-                            },
-                          }}
-                        >
-                          <TableCell scope="row">
-                            <Link
-                              href={`/db/npm/${localPackageLinter.linter.package.name}/rules/${rule.name}`}
+                    {localPackageLinter.linter.configs.length > 0 && (
+                      <>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Config</TableCell>
+                            <TableCell width="110px">Violations</TableCell>
+                            <TableCell width="110px">Autofixable</TableCell>
+                            <TableCell width="110px">Status</TableCell>
+                            <TableCell width="110px" align="right"></TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {localPackageLinter.linter.configs.map((config) => (
+                            <TableRow key="recommended">
+                              <TableCell scope="row">{config.name}</TableCell>
+                              <TableCell scope="row">50</TableCell>
+                              <TableCell scope="row">0%</TableCell>
+                              <TableCell scope="row">
+                                {config.localPackageConfigs.some(
+                                  (localPackageConfig) =>
+                                    localPackageConfig.localPackageId ===
+                                    localPackageLinter.localPackageId
+                                ) && (
+                                  <Chip
+                                    label={'Enabled'}
+                                    key={config.id}
+                                    color="success"
+                                    size="small"
+                                  />
+                                )}
+                              </TableCell>
+                              <TableCell scope="row" align="right">
+                                {config.localPackageConfigs.some(
+                                  (localPackageConfig) =>
+                                    localPackageConfig.localPackageId ===
+                                    localPackageLinter.localPackageId
+                                ) ? (
+                                  <Button variant="outlined" size="small">
+                                    Disable
+                                  </Button>
+                                ) : (
+                                  <Button variant="outlined" size="small">
+                                    Enable
+                                  </Button>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </>
+                    )}
+
+                    {localPackageLinter.linter.rules.length > 0 && (
+                      <>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Rule</TableCell>
+                            <TableCell>Violations</TableCell>
+                            <TableCell>Autofixable</TableCell>
+                            <TableCell>Status</TableCell>
+                            <TableCell align="right"></TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {localPackageLinter.linter.rules.map((rule) => (
+                            <TableRow
+                              key={rule.name}
+                              sx={{
+                                '&:last-child td, &:last-child th': {
+                                  border: 0,
+                                },
+                              }}
                             >
-                              {rule.name}
-                            </Link>
-                          </TableCell>
-                          <TableCell scope="row">25</TableCell>
-                          <TableCell scope="row">25%</TableCell>
-                          <TableCell scope="row" align="right">
-                            {localPackageLinter.linter.configs
-                              .filter((config) =>
-                                config.localPackageConfigs.some(
-                                  (localPackageConfig) =>
-                                    localPackageConfig.localPackageId ===
-                                    localPackageLinter.localPackageId
-                                )
-                              )
-                              .filter((config) =>
-                                config.ruleConfigs.some(
-                                  (ruleConfig) => ruleConfig.ruleId === rule.id
-                                )
-                              )
-                              .map((config) => (
-                                <Chip
-                                  label={`Enabled By: ${config.name}`}
-                                  key={config.id}
-                                  color="success"
-                                  size="small"
-                                />
-                              ))}
-                            {localPackageLinter.linter.rules
-                              .flatMap((rule2) =>
-                                rule2.localPackageRules.filter(
-                                  (localPackageRule) =>
-                                    localPackageRule.localPackageId ===
-                                      localPackageLinter.localPackageId &&
-                                    localPackageRule.ruleId === rule.id
-                                )
-                              )
-                              .map((rule2) => (
-                                <Chip
-                                  label={`${
-                                    rule2.severity === '2'
-                                      ? 'Enabled'
-                                      : rule2.severity === '1'
-                                      ? 'Set To Warn'
-                                      : 'Disabled'
-                                  } Individually`}
-                                  key={rule2.id}
-                                  color={
-                                    rule2.severity === '2'
-                                      ? 'success'
-                                      : rule2.severity === '1'
-                                      ? 'warning'
-                                      : 'error'
-                                  }
-                                  size="small"
-                                />
-                              ))}
-                          </TableCell>
-                          <TableCell align="right">
-                            {localPackageLinter.linter.configs
-                              .filter((config) =>
-                                config.localPackageConfigs.some(
-                                  (localPackageConfig) =>
-                                    localPackageConfig.localPackageId ===
-                                    localPackageLinter.localPackageId
-                                )
-                              )
-                              .some((config) =>
-                                config.ruleConfigs.some(
-                                  (ruleConfig) => ruleConfig.ruleId === rule.id
-                                )
-                              ) ? (
-                              <Button variant="outlined" size="small">
-                                Disable
-                              </Button>
-                            ) : (
-                              <Button variant="outlined" size="small">
-                                Enable
-                              </Button>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
+                              <TableCell scope="row">
+                                <Link
+                                  href={`/db/npm/${localPackageLinter.linter.package.name}/rules/${rule.name}`}
+                                >
+                                  {rule.name}
+                                </Link>
+                              </TableCell>
+                              <TableCell scope="row">25</TableCell>
+                              <TableCell scope="row">25%</TableCell>
+                              <TableCell scope="row" align="right">
+                                {localPackageLinter.linter.configs
+                                  .filter((config) =>
+                                    config.localPackageConfigs.some(
+                                      (localPackageConfig) =>
+                                        localPackageConfig.localPackageId ===
+                                        localPackageLinter.localPackageId
+                                    )
+                                  )
+                                  .filter((config) =>
+                                    config.ruleConfigs.some(
+                                      (ruleConfig) =>
+                                        ruleConfig.ruleId === rule.id
+                                    )
+                                  )
+                                  .map((config) => (
+                                    <Chip
+                                      label={`Enabled By: ${config.name}`}
+                                      key={config.id}
+                                      color="success"
+                                      size="small"
+                                    />
+                                  ))}
+                                {localPackageLinter.linter.rules
+                                  .flatMap((rule2) =>
+                                    rule2.localPackageRules.filter(
+                                      (localPackageRule) =>
+                                        localPackageRule.localPackageId ===
+                                          localPackageLinter.localPackageId &&
+                                        localPackageRule.ruleId === rule.id
+                                    )
+                                  )
+                                  .map((rule2) => (
+                                    <Chip
+                                      label={`${
+                                        rule2.severity === '2'
+                                          ? 'Enabled'
+                                          : rule2.severity === '1'
+                                          ? 'Set To Warn'
+                                          : 'Disabled'
+                                      } Individually`}
+                                      key={rule2.id}
+                                      color={
+                                        rule2.severity === '2'
+                                          ? 'success'
+                                          : rule2.severity === '1'
+                                          ? 'warning'
+                                          : 'error'
+                                      }
+                                      size="small"
+                                    />
+                                  ))}
+                              </TableCell>
+                              <TableCell align="right">
+                                {localPackageLinter.linter.configs
+                                  .filter((config) =>
+                                    config.localPackageConfigs.some(
+                                      (localPackageConfig) =>
+                                        localPackageConfig.localPackageId ===
+                                        localPackageLinter.localPackageId
+                                    )
+                                  )
+                                  .some((config) =>
+                                    config.ruleConfigs.some(
+                                      (ruleConfig) =>
+                                        ruleConfig.ruleId === rule.id
+                                    )
+                                  ) ? (
+                                  <Button variant="outlined" size="small">
+                                    Disable
+                                  </Button>
+                                ) : (
+                                  <Button variant="outlined" size="small">
+                                    Enable
+                                  </Button>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </>
+                    )}
                   </Table>
                 </TableContainer>
               </TabPanel>
