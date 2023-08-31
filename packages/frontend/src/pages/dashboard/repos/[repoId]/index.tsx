@@ -149,7 +149,7 @@ export default function Repo({
                 <>
                   <TableHead>
                     <TableRow>
-                      <TableCell scope="col">(Repository Root)</TableCell>
+                      <TableCell scope="col">Repository Root</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
