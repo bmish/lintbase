@@ -125,6 +125,11 @@ export default function Add({
       </Head>
       <DatabaseNavigation />
       <main className="py-8 px-6 mx-auto min-h-screen">
+        <Alert severity="info" className="mb-8">
+          Currently, only Node.js repositories with ESLint at the root are
+          supported. Support for monorepos and other linters will come later.
+        </Alert>
+
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="linter config list">
             <TableHead>
@@ -189,11 +194,6 @@ export default function Add({
             </TableBody>
           </Table>
         </TableContainer>
-
-        <Alert severity="info" className="mt-8">
-          Currently, only Node.js repositories with ESLint at the root are
-          supported.
-        </Alert>
         <Footer />
       </main>
     </div>

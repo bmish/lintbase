@@ -3,12 +3,12 @@
 import Footer from '@/components/Footer';
 import Head from 'next/head';
 import {
-  Alert,
   Breadcrumbs,
   Button,
   Card,
   CardActions,
   CardContent,
+  IconButton,
   Paper,
   Table,
   TableBody,
@@ -16,6 +16,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { useSession } from 'next-auth/react';
@@ -31,6 +32,7 @@ import { fixAnyDatesInObject } from '@/utils/normalize';
 import { format } from 'timeago.js';
 import { lintFrameworkToDisplayName } from '@/utils/dynamic-fields';
 import { api } from '@/utils/api';
+import { Info } from '@mui/icons-material';
 
 const include = {
   localPackages: {
@@ -149,7 +151,14 @@ export default function Repo({
                 <>
                   <TableHead>
                     <TableRow>
-                      <TableCell scope="col">Repository Root</TableCell>
+                      <TableCell scope="col">
+                        Repository Root{' '}
+                        <Tooltip title="Currently, only ESLint in the repository root is detected. Support for monorepos and other linters will come later.">
+                          <IconButton>
+                            <Info />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -183,10 +192,6 @@ export default function Repo({
             </Table>
           </TableContainer>
         )}
-
-        <Alert severity="info" className="mt-8">
-          Currently, only ESLint in the repository root is detected.
-        </Alert>
 
         <Footer />
       </main>
