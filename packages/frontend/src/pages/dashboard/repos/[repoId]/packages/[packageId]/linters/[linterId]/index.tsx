@@ -188,14 +188,12 @@ export default function Repo({
 
         <Paper className="mt-8">
           <TableContainer>
-            <Table sx={{ minWidth: 650 }} aria-label="repo lint plugin list">
+            <Table aria-label="repo lint plugin list">
               <TableHead>
                 <TableRow>
                   <TableCell>Plugin</TableCell>
-                  <TableCell width="110px">Version</TableCell>
-                  <TableCell width="110px" align="right">
-                    Latest
-                  </TableCell>
+                  <TableCell>Version</TableCell>
+                  <TableCell align="right">Latest</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

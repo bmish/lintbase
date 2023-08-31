@@ -187,17 +187,16 @@ export default function Repo({
 
         <Paper className="mt-8">
           <TableContainer>
-            <Table sx={{ minWidth: 650 }} aria-label="configs">
+            <Table aria-label="configs">
               {localPackageLinter.linter.configs.length > 0 && (
                 <>
                   <TableHead>
                     <TableRow>
                       <TableCell>Config</TableCell>
                       <TableCell></TableCell>
-                      <TableCell width="110px">Violations</TableCell>
-                      <TableCell width="110px">Autofixable</TableCell>
-                      <TableCell width="110px">Status</TableCell>
-                      <TableCell width="110px" align="right"></TableCell>
+                      <TableCell>Violations</TableCell>
+                      <TableCell>Autofixable</TableCell>
+                      <TableCell align="right"></TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -207,7 +206,7 @@ export default function Repo({
                         <TableCell scope="row"></TableCell>
                         <TableCell scope="row">50</TableCell>
                         <TableCell scope="row">0%</TableCell>
-                        <TableCell scope="row">
+                        <TableCell scope="row" align="right">
                           {config.localPackageConfigs.some(
                             (localPackageConfig) =>
                               localPackageConfig.localPackageId ===
@@ -218,10 +217,10 @@ export default function Repo({
                               key={config.id}
                               color="success"
                               size="small"
+                              className="mr-4"
                             />
                           )}
-                        </TableCell>
-                        <TableCell scope="row" align="right">
+
                           {config.localPackageConfigs.some(
                             (localPackageConfig) =>
                               localPackageConfig.localPackageId ===
@@ -256,7 +255,6 @@ export default function Repo({
                       <TableCell>Description</TableCell>
                       <TableCell>Violations</TableCell>
                       <TableCell>Autofixable</TableCell>
-                      <TableCell>Status</TableCell>
                       <TableCell align="right"></TableCell>
                     </TableRow>
                   </TableHead>
@@ -304,6 +302,7 @@ export default function Repo({
                             )
                             .map((config) => (
                               <Chip
+                                className="mr-4"
                                 label={`Enabled By: ${config.name}`}
                                 key={config.id}
                                 color="success"
@@ -321,6 +320,7 @@ export default function Repo({
                             )
                             .map((rule2) => (
                               <Chip
+                                className="mr-4"
                                 label={`${
                                   rule2.severity === '2'
                                     ? 'Enabled'
@@ -339,8 +339,6 @@ export default function Repo({
                                 size="small"
                               />
                             ))}
-                        </TableCell>
-                        <TableCell align="right">
                           {localPackageLinter.linter.configs
                             .filter((config) =>
                               config.localPackageConfigs.some(
