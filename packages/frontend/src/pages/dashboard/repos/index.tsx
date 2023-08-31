@@ -13,6 +13,8 @@ import {
   TableCell,
   TableContainer,
   TableRow,
+  Tooltip,
+  IconButton,
 } from '@mui/material';
 import Link from 'next/link';
 import { type GetServerSideProps } from 'next';
@@ -22,6 +24,7 @@ import { fixAnyDatesInObject } from '@/utils/normalize';
 import { getServerAuthSession } from '@/server/auth';
 import { api } from '@/utils/api';
 import { format } from 'timeago.js';
+import { Info } from '@mui/icons-material';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerAuthSession(context);
@@ -98,7 +101,14 @@ export default function Repos({
           <Table sx={{ minWidth: 650 }} aria-label="linter config list">
             <TableHead>
               <TableRow>
-                <TableCell scope="col">Repository</TableCell>
+                <TableCell scope="col">
+                  Repository{' '}
+                  <Tooltip title="These are repositories you've imported.">
+                    <IconButton>
+                      <Info />
+                    </IconButton>
+                  </Tooltip>
+                </TableCell>
                 <TableCell scope="col" align="right">
                   Refreshed
                 </TableCell>

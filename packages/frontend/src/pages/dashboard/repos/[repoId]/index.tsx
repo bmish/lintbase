@@ -3,6 +3,7 @@
 import Footer from '@/components/Footer';
 import Head from 'next/head';
 import {
+  Alert,
   Breadcrumbs,
   Button,
   Card,
@@ -182,6 +183,10 @@ export default function Repo({
             </Table>
           </TableContainer>
         )}
+
+        <Alert severity="info" className="mt-8">
+          Currently, only ESLint in the repository root is detected.
+        </Alert>
 
         <Footer />
       </main>

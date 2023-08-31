@@ -14,6 +14,9 @@ import {
   TableContainer,
   TableRow,
   Breadcrumbs,
+  Alert,
+  Tooltip,
+  IconButton,
 } from '@mui/material';
 import Link from 'next/link';
 import { App } from 'octokit';
@@ -23,6 +26,7 @@ import { api } from '@/utils/api';
 import { useRouter } from 'next/router';
 import { getServerAuthSession } from '@/server/auth';
 import { prisma } from '@/server/db';
+import { Info } from '@mui/icons-material';
 
 type Repo = {
   full_name: string;
@@ -132,6 +136,14 @@ export default function Add({
                   </Breadcrumbs>
                 </TableCell>
                 <TableCell align="right">
+                  <Tooltip
+                    title="If you're missing a repository, you'll need to update GitHub
+                    permissions to provide access to it."
+                  >
+                    <IconButton>
+                      <Info />
+                    </IconButton>
+                  </Tooltip>
                   <Button
                     variant="outlined"
                     href="https://github.com/apps/lintbase/installations/select_target"
@@ -177,6 +189,11 @@ export default function Add({
             </TableBody>
           </Table>
         </TableContainer>
+
+        <Alert severity="info" className="mt-8">
+          Currently, only Node.js repositories with ESLint at the root are
+          supported.
+        </Alert>
         <Footer />
       </main>
     </div>
