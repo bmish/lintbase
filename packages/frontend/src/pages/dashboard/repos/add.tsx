@@ -13,6 +13,7 @@ import {
   TableCell,
   TableContainer,
   TableRow,
+  Breadcrumbs,
 } from '@mui/material';
 import Link from 'next/link';
 import { App } from 'octokit';
@@ -124,7 +125,12 @@ export default function Add({
           <Table sx={{ minWidth: 650 }} aria-label="linter config list">
             <TableHead>
               <TableRow>
-                <TableCell scope="col">Repository</TableCell>
+                <TableCell scope="col">
+                  <Breadcrumbs aria-label="breadcrumb">
+                    <Link href={'/dashboard/repos'}>Repositories</Link>
+                    <span>Add</span>
+                  </Breadcrumbs>
+                </TableCell>
                 <TableCell align="right">
                   <Button
                     variant="outlined"
