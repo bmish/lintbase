@@ -8,6 +8,7 @@ import {
   Card,
   CardActions,
   CardContent,
+  Chip,
   IconButton,
   Paper,
   Table,
@@ -33,6 +34,9 @@ import { format } from 'timeago.js';
 import { lintFrameworkToDisplayName } from '@/utils/dynamic-fields';
 import { api } from '@/utils/api';
 import { Info } from '@mui/icons-material';
+import { Octokit } from 'octokit';
+import { env } from '@/env.mjs';
+import { useRouter } from 'next/router';
 
 const include = {
   localPackages: {
@@ -61,17 +65,41 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   });
   const repoFixed = fixAnyDatesInObject(repo);
 
-  return { props: { data: { repo: repoFixed } } };
+  const octokit = new Octokit({
+    auth: env.GITHUB_PERSONAL_ACCESS_TOKEN,
+  });
+
+  const commits = await octokit.request('GET /repos/{owner}/{repo}/commits', {
+    owner: repo.fullName.split('/')[0],
+    repo: repo.fullName.split('/')[1],
+    headers: {
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+  });
+  const lastCommit = commits.data[0];
+  const countCommitsBehind = commits.data.findIndex(
+    (commit) => commit.sha === repo.commitSha
+  );
+
+  return {
+    props: { data: { repo: repoFixed, lastCommit, countCommitsBehind } },
+  };
 };
 
 export default function Repo({
-  data: { repo },
+  data: { repo, lastCommit, countCommitsBehind },
 }: {
-  data: { repo: Prisma.RepositoryGetPayload<{ include: typeof include }> };
+  data: {
+    repo: Prisma.RepositoryGetPayload<{ include: typeof include }>;
+    lastCommit: { sha: string; commit: { committer: { date: string } } };
+    countCommitsBehind: number;
+  };
 }) {
   const { data: session } = useSession();
+  const router = useRouter();
 
   const repositoryRefreshMutation = api.repository.refresh.useMutation();
+  const repositoryRemoveMutation = api.repository.remove.useMutation();
 
   if (!session) {
     return <AccessDenied />;
@@ -83,6 +111,16 @@ export default function Repo({
     repositoryRefreshMutation.mutate({
       fullName: repo.fullName,
     });
+  };
+
+  const handleRemove = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    repositoryRemoveMutation.mutate({
+      fullName: repo.fullName,
+    });
+
+    await router.push('/dashboard/repos');
   };
 
   return (
@@ -108,41 +146,101 @@ export default function Repo({
             </Breadcrumbs>
             <br />
             <p>{repo.description}</p>
-            <br />
-            <p>
-              Imported:{' '}
-              {repo.importedAt && (
-                <span>{format(new Date(repo.importedAt).toString())} </span>
-              )}
-            </p>
-            <p>
-              Refreshed:{' '}
-              {repo.scannedAt && (
-                <span>{format(new Date(repo.scannedAt).toString())} </span>
-              )}
-            </p>
-            <p>
-              {repo.commitSha && (
-                <span>
-                  Last Commit:{' '}
-                  <Link
-                    href={`https://github.com/${repo.fullName}/commit/${repo.commitSha}`}
-                  >
-                    <code>{repo.commitSha.slice(0, 7)}</code>
-                  </Link>
-                  {repo.committedAt &&
-                    ` (${format(repo.committedAt.toString())})`}
-                </span>
-              )}
-            </p>
           </CardContent>
           <CardActions>
             <Button href={`https://github.com/${repo.fullName}`}>GitHub</Button>
-            <form onSubmit={handleRefresh}>
-              <Button type="submit">Refresh</Button>
-            </form>
           </CardActions>
         </Card>
+
+        <Paper className="mt-8">
+          <TableContainer className="border-none">
+            <Table aria-label="stats">
+              <TableBody>
+                <TableRow>
+                  <TableCell scope="row">First Imported</TableCell>
+                  <TableCell>
+                    {repo.importedAt &&
+                      format(new Date(repo.importedAt).toString())}
+                  </TableCell>
+                  <TableCell></TableCell>
+
+                  <TableCell align="right">
+                    {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
+                    <form onSubmit={handleRemove}>
+                      <Button type="submit" variant="outlined">
+                        Remove
+                      </Button>
+                    </form>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell scope="row">Last Refreshed</TableCell>
+                  <TableCell>
+                    {repo.scannedAt &&
+                      format(new Date(repo.scannedAt).toString())}{' '}
+                  </TableCell>
+                  <TableCell>
+                    {' '}
+                    {repo.commitSha && (
+                      <Link
+                        href={`https://github.com/${repo.fullName}/commit/${repo.commitSha}`}
+                      >
+                        <code>{repo.commitSha.slice(0, 7)}</code>
+                      </Link>
+                    )}
+                    {repo.committedAt &&
+                      ` (${format(repo.committedAt.toString())})`}
+                  </TableCell>
+                  <TableCell align="right">
+                    <form onSubmit={handleRefresh}>
+                      {countCommitsBehind === 0 && (
+                        <Chip
+                          color="success"
+                          label="Up-to-date"
+                          className="mr-4"
+                        ></Chip>
+                      )}
+                      <Button
+                        type="submit"
+                        variant="outlined"
+                        disabled={countCommitsBehind === 0}
+                      >
+                        Refresh
+                      </Button>
+                    </form>
+                  </TableCell>
+                </TableRow>
+                {countCommitsBehind > 0 && (
+                  <TableRow>
+                    <TableCell scope="row">Most Recent Commit</TableCell>
+                    <TableCell></TableCell>
+                    <TableCell>
+                      {lastCommit && (
+                        <Link
+                          href={`https://github.com/${repo.fullName}/commit/${lastCommit.sha}`}
+                        >
+                          <code>{lastCommit.sha.slice(0, 7)}</code>
+                        </Link>
+                      )}
+                      {lastCommit &&
+                        ` (${format(
+                          lastCommit.commit.committer.date.toString()
+                        )})`}
+                    </TableCell>
+                    <TableCell align="right">
+                      <Chip
+                        color="warning"
+                        label={`${countCommitsBehind} Commit${
+                          countCommitsBehind === 1 ? '' : 's'
+                        } Behind`}
+                      ></Chip>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
 
         {repo.localPackages.length > 0 && (
           <TableContainer component={Paper} className="mt-8">

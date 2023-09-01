@@ -94,6 +94,80 @@ export const repositoryRouter = createTRPCRouter({
       });
     }),
 
+  remove: protectedProcedure
+    .input(
+      z.object({
+        fullName: z.string().min(1),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const deleteRepository = ctx.prisma.repository.delete({
+        where: {
+          fullName: input.fullName,
+          owner: { id: ctx.session.user.id },
+        },
+      });
+      const deleteLocalPackages = ctx.prisma.localPackage.deleteMany({
+        where: {
+          repository: {
+            owner: { id: ctx.session.user.id },
+            fullName: input.fullName,
+          },
+        },
+      });
+      const deleteLocalPackageLintFrameworks =
+        ctx.prisma.localPackageLintFramework.deleteMany({
+          where: {
+            localPackage: {
+              repository: {
+                owner: { id: ctx.session.user.id },
+                fullName: input.fullName,
+              },
+            },
+          },
+        });
+      const deleteLocalPackageLinters =
+        ctx.prisma.localPackageLinter.deleteMany({
+          where: {
+            localPackage: {
+              repository: {
+                owner: { id: ctx.session.user.id },
+                fullName: input.fullName,
+              },
+            },
+          },
+        });
+      const deleteLocalPackageConfigs =
+        ctx.prisma.localPackageConfig.deleteMany({
+          where: {
+            localPackage: {
+              repository: {
+                owner: { id: ctx.session.user.id },
+                fullName: input.fullName,
+              },
+            },
+          },
+        });
+      const deleteLocalPackageRules = ctx.prisma.localPackageRule.deleteMany({
+        where: {
+          localPackage: {
+            repository: {
+              owner: { id: ctx.session.user.id },
+              fullName: input.fullName,
+            },
+          },
+        },
+      });
+      await ctx.prisma.$transaction([
+        deleteLocalPackageLintFrameworks,
+        deleteLocalPackageLinters,
+        deleteLocalPackageConfigs,
+        deleteLocalPackageRules,
+        deleteLocalPackages,
+        deleteRepository,
+      ]); // Must be done in a transaction to satisfy constraints.
+    }),
+
   refresh: protectedProcedure
     .input(
       z.object({
