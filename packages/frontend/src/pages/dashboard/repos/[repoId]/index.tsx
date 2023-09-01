@@ -167,7 +167,7 @@ export default function Repo({
                   <TableCell align="right">
                     {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
                     <form onSubmit={handleRemove}>
-                      <Button type="submit" variant="outlined">
+                      <Button type="submit" variant="outlined" color="error">
                         Remove
                       </Button>
                     </form>
