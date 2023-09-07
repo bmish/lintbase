@@ -20,12 +20,12 @@ import DatabaseNavigation from '@/components/DatabaseNavigation';
 import { kmeans } from 'ml-kmeans';
 import React from 'react';
 import RuleTableTabbed from '@/components/RuleTableTabbed';
-import { splitList } from '@/utils/split-list';
 import { related } from '@/utils/related';
 import { clusterNamesForRules } from '@/utils/summarize';
 import { getVectors } from '@/utils/pinecone';
 import { getServerAuthSession } from '@/server/auth';
 import { type GetServerSideProps } from 'next';
+import groupBy from 'lodash.groupby';
 
 const include = {
   rules: {
@@ -120,17 +120,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       ? [
           { rules: linter.rules, title: 'Alphabetical' },
           ...(linter.rules.some((rule) => rule.category)
-            ? splitList(linter.rules, ['category']).flatMap(
-                (obj) =>
-                  obj.title
-                    ? [
-                        {
-                          title: obj.title,
-                          rules: obj.items,
-                        },
-                      ]
-                    : [] // Skip rules without categories.
-              )
+            ? Object.entries(groupBy(linter.rules, 'category'))
+                .sort((a, b) => a[0].localeCompare(b[0]))
+                .flatMap(
+                  ([title, rules]) =>
+                    title
+                      ? [
+                          {
+                            title,
+                            rules,
+                          },
+                        ]
+                      : [] // Skip rules without categories.
+                )
             : []),
         ]
       : [];
