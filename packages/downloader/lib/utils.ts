@@ -85,21 +85,32 @@ function loadPackages<T>(
       const packagePath = path.join(downloadPath, 'node_modules', pkg.name);
       if (!fs.existsSync(packagePath)) {
         console.log(`No package.json found for ${pkg.name}@${pkg.version}`);
-
-        return [];
       }
 
       let loaded;
       try {
         // eslint-disable-next-line import/no-dynamic-require
         loaded = require(packagePath) as T;
+        return [[pkg.name, loaded]];
       } catch (error) {
         console.log(
           `Failed to require: ${packagePath}. Error = ${String(error)}`
         );
       }
 
-      return [[pkg.name, loaded]];
+      // Try to load from dist folder which is common for some TypeScript packages. // TODO: figure out better way to detect the right path to load.
+      const packagePathDist = path.join(packagePath, 'dist');
+      try {
+        // eslint-disable-next-line import/no-dynamic-require
+        loaded = require(packagePathDist) as T;
+        return [[pkg.name, loaded]];
+      } catch (error) {
+        console.log(
+          `Failed to require: ${packagePathDist}. Error = ${String(error)}`
+        );
+      }
+
+      return [];
     })
   );
 }
