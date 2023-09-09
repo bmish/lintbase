@@ -19,7 +19,7 @@ export function uniqueItems<T>(
 
   return array.filter((item) => {
     // @ts-expect-error -- don't know if object has property
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
     const prop = basedOnProperty ? item[basedOnProperty] : item;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     if (!seen.has(prop)) {

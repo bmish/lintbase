@@ -54,7 +54,7 @@ export const authOptions: NextAuthOptions = {
           image: user.image,
           visitedAt: new Date(),
           // @ts-expect-error -- locale is provided by Discord at least
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- locale is provided by Discord at least
+
           locale: profile?.locale,
           accountProvider: account?.provider,
         },
@@ -65,7 +65,7 @@ export const authOptions: NextAuthOptions = {
           image: user.image,
           visitedAt: new Date(),
           // @ts-expect-error -- locale is provided by Discord at least
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- locale is provided by Discord at least
+
           locale: profile?.locale,
           accountProvider: account?.provider,
         },

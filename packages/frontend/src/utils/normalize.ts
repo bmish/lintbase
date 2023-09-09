@@ -227,7 +227,7 @@ async function eslintLinterToNormalizedLinter(
             // @ts-expect-error -- TODO: null should be allowed for "type"
             type: null as 'suggestion' | 'problem' | 'layout',
             // @ts-expect-error -- type is missing for this property
-            deprecated: rule.deprecated || false, // eslint-disable-line @typescript-eslint/no-unsafe-assignment -- type is missing for this property
+            deprecated: rule.deprecated || false,
             replacedBys: { create: [] },
             category: null,
             options: {
@@ -258,7 +258,7 @@ async function eslintLinterToNormalizedLinter(
               name,
             })),
         },
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
         category:
           // @ts-expect-error -- category not an official property
           typeof rule.meta?.docs?.category === 'string'
@@ -272,7 +272,7 @@ async function eslintLinterToNormalizedLinter(
           ).map((obj) => ({ name: obj.name, type: obj.type })),
         },
         // @ts-expect-error -- requiresTypeChecking not an official property
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
         requiresTypeChecking: rule.meta?.requiresTypeChecking || false,
         linkRuleDoc: rule.meta?.docs?.url || null,
       };

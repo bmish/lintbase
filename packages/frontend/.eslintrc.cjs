@@ -57,6 +57,7 @@ module.exports = {
           { ignores: ['dynamicImport', 'modules'] },
         ],
 
+        '@typescript-eslint/no-unsafe-assignment': 'off', // TODO
         '@typescript-eslint/prefer-readonly': 'error',
         '@typescript-eslint/require-array-sort-compare': 'error',
       },

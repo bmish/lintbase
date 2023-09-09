@@ -37,8 +37,7 @@ type Repo = {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const appId = 361_377; // https://github.com/settings/apps/lintbase
-  const privateKey = env.GITHUB_PRIVATE_KEY;
-  const app = new App({ appId, privateKey });
+  const app = new App({ appId, privateKey: env.GITHUB_PRIVATE_KEY });
 
   const session = await getServerAuthSession(context);
   if (!session) {
