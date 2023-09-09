@@ -180,6 +180,7 @@ async function baseToNormalizedLinter(
           versions: {
             create: Object.entries(npmRegistryInfo.time)
               .slice(-10) // TODO: only get most recent versions for now. Too expensive when some linters have thousands of versions.
+              .filter(([, time]) => typeof time === 'string') // Skip when time is an object about being unpublished. TODO: mark as unpublished.
               .map(([version, time]) => ({
                 version,
                 publishedAt: new Date(time),
