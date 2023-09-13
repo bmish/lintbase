@@ -99,7 +99,8 @@ export default function DashboardRuleRow({
         {!isEnabled && Math.round(Math.random() * 100)}
       </TableCell>
       <TableCell scope="row">
-        {!isEnabled && `${Math.round(Math.random() * 100)}%`}
+        {!isEnabled && rule.fixable && `${Math.round(Math.random() * 100)}%`}
+        {!isEnabled && !rule.fixable && 'No'}
       </TableCell>
       <TableCell scope="row" align="right">
         {localPackageLinter.linter.configs
