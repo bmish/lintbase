@@ -116,12 +116,12 @@ export default function Repos({
                   </TableCell>
                   <TableCell scope="col" align="right">
                     {repo.importedAt && (
-                      <div>{format(new Date(repo.importedAt).toString())} </div>
+                      <div>{format(new Date(repo.importedAt))}</div>
                     )}
                   </TableCell>
                   <TableCell scope="col" align="right">
                     {repo.updatedAt && (
-                      <div>{format(new Date(repo.updatedAt).toString())} </div>
+                      <div>{format(new Date(repo.updatedAt))}</div>
                     )}
                   </TableCell>
                   <TableCell scope="row" align="right"></TableCell>

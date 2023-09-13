@@ -159,11 +159,9 @@ export default function Repo({
                 <TableRow>
                   <TableCell scope="row">First Imported</TableCell>
                   <TableCell>
-                    {repo.importedAt &&
-                      format(new Date(repo.importedAt).toString())}
+                    {repo.importedAt && format(new Date(repo.importedAt))}
                   </TableCell>
                   <TableCell></TableCell>
-
                   <TableCell align="right">
                     {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
                     <form onSubmit={handleRemove}>
@@ -176,11 +174,9 @@ export default function Repo({
                 <TableRow>
                   <TableCell scope="row">Last Refreshed</TableCell>
                   <TableCell>
-                    {repo.scannedAt &&
-                      format(new Date(repo.scannedAt).toString())}{' '}
+                    {repo.scannedAt && format(new Date(repo.scannedAt))}
                   </TableCell>
                   <TableCell>
-                    {' '}
                     {repo.commitSha && (
                       <Link
                         href={`https://github.com/${repo.fullName}/commit/${repo.commitSha}`}
@@ -188,8 +184,7 @@ export default function Repo({
                         <code>{repo.commitSha.slice(0, 7)}</code>
                       </Link>
                     )}
-                    {repo.committedAt &&
-                      ` (${format(repo.committedAt.toString())})`}
+                    {repo.committedAt && ` (${format(repo.committedAt)})`}
                   </TableCell>
                   <TableCell align="right">
                     <form onSubmit={handleRefresh}>
