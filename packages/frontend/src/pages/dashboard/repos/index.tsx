@@ -80,7 +80,7 @@ export default function Repos({
               <TableRow>
                 <TableCell scope="col">
                   Repository{' '}
-                  <Tooltip title="These are repositories you've imported.">
+                  <Tooltip title="These are repositories you've imported for lint tracking and management.">
                     <IconButton>
                       <Info />
                     </IconButton>
