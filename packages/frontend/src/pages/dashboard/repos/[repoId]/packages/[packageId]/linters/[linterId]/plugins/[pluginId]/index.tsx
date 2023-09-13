@@ -339,7 +339,12 @@ export default function Repo({
                                 size="small"
                               />
                             ))}
-                          {localPackageLinter.linter.configs
+                          {/*
+                          Show disabled button if either:
+                            1. A config enables this rule and it's not individually disabled already.
+                            2. It's individually enabled.
+                          */}
+                          {(localPackageLinter.linter.configs
                             .filter((config) =>
                               config.localPackageConfigs.some(
                                 (localPackageConfig) =>
@@ -351,7 +356,20 @@ export default function Repo({
                               config.ruleConfigs.some(
                                 (ruleConfig) => ruleConfig.ruleId === rule.id
                               )
-                            ) ? (
+                            ) &&
+                            !rule.localPackageRules.some(
+                              (localPackageRule) =>
+                                localPackageRule.localPackageId ===
+                                  localPackageLinter.localPackageId &&
+                                localPackageRule.severity &&
+                                localPackageRule.severity === '0'
+                            )) ||
+                          rule.localPackageRules.some(
+                            (localPackageRule) =>
+                              localPackageRule.localPackageId ===
+                                localPackageLinter.localPackageId &&
+                              localPackageRule.severity !== '0'
+                          ) ? (
                             <Button variant="outlined" size="small">
                               Disable
                             </Button>
