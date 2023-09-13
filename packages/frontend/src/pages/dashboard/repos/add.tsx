@@ -17,6 +17,8 @@ import {
   Alert,
   Tooltip,
   IconButton,
+  Typography,
+  Chip,
 } from '@mui/material';
 import Link from 'next/link';
 import { App } from 'octokit';
@@ -50,30 +52,35 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
-  const repos: Repo[] = [];
-
-  for await (const { repository } of app.eachRepository.iterator()) {
-    if (repositories.some((repo) => repo.fullName === repository.full_name)) {
-      // Already imported this repository.
-      continue;
+  const reposToShow: Repo[] = [];
+  let failedToLoadGitHub = false;
+  try {
+    for await (const { repository } of app.eachRepository.iterator()) {
+      if (repositories.some((repo) => repo.fullName === repository.full_name)) {
+        // Already imported this repository.
+        continue;
+      }
+      reposToShow.push({
+        full_name: repository.full_name,
+        language: repository.language,
+        size: repository.size,
+        description: repository.description,
+        // commitSha
+      });
     }
-    repos.push({
-      full_name: repository.full_name,
-      language: repository.language,
-      size: repository.size,
-      description: repository.description,
-      // commitSha
-    });
+  } catch {
+    failedToLoadGitHub = true;
   }
 
-  return { props: { data: { repositories: repos } } };
+  return { props: { data: { repositories: reposToShow, failedToLoadGitHub } } };
 };
 
 export default function Add({
-  data: { repositories },
+  data: { repositories, failedToLoadGitHub },
 }: {
   data: {
     repositories: Repo[];
+    failedToLoadGitHub: boolean;
   };
 }) {
   const router = useRouter();
@@ -158,6 +165,26 @@ export default function Add({
               </TableRow>
             </TableHead>
             <TableBody>
+              {failedToLoadGitHub && (
+                <TableRow>
+                  <TableCell colSpan={2} align="center">
+                    <Chip
+                      color="error"
+                      label="Failed to load repositories from GitHub"
+                    ></Chip>
+                  </TableCell>
+                </TableRow>
+              )}
+              {!failedToLoadGitHub && repositories.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={2} align="center">
+                    <Chip
+                      color="warning"
+                      label="No repositories found. Try updating GitHub permissions."
+                    ></Chip>
+                  </TableCell>
+                </TableRow>
+              )}
               {repositories.map((repo) => (
                 <TableRow
                   key={repo.full_name}
