@@ -193,7 +193,7 @@ export default function Repo({
                   <TableHead>
                     <TableRow>
                       <TableCell>Config</TableCell>
-                      <TableCell></TableCell>
+                      <TableCell>Rules</TableCell>
                       <TableCell>Violations</TableCell>
                       <TableCell>Autofixable</TableCell>
                       <TableCell align="right"></TableCell>
@@ -203,7 +203,9 @@ export default function Repo({
                     {localPackageLinter.linter.configs.map((config) => (
                       <TableRow key="recommended">
                         <TableCell scope="row">{config.name}</TableCell>
-                        <TableCell scope="row"></TableCell>
+                        <TableCell scope="row">
+                          {config.ruleConfigs.length}
+                        </TableCell>
                         <TableCell scope="row">
                           {Math.round(Math.random() * 100)}
                         </TableCell>
