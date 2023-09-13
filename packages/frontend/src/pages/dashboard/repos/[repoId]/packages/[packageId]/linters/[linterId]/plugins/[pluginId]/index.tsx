@@ -230,7 +230,11 @@ export default function Repo({
                               localPackageConfig.localPackageId ===
                               localPackageLinter.localPackageId
                           ) ? (
-                            <Button variant="outlined" size="small">
+                            <Button
+                              variant="outlined"
+                              size="small"
+                              color="error"
+                            >
                               Disable
                             </Button>
                           ) : (

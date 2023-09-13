@@ -155,7 +155,7 @@ export default function DashboardRuleRow({
             />
           ))}
         {isEnabled ? (
-          <Button variant="outlined" size="small">
+          <Button variant="outlined" size="small" color="error">
             Disable
           </Button>
         ) : (
