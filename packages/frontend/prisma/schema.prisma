@@ -346,7 +346,7 @@ model LocalPackageRule {
   countAutofixable Int?
 
   isEnabled   Boolean @default(false) // TODO: remove, redundant with severity
-  severity    String?
+  severity    String? // TODO: use same convention to store this as RuleConfig severity
   isSuggested Boolean @default(false)
 
   @@unique([localPackageId, ruleId])
