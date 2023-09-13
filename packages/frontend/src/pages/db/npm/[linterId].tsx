@@ -42,6 +42,9 @@ const include = {
     },
   },
   configs: {
+    include: {
+      ruleConfigs: true,
+    },
     orderBy: {
       name: Prisma.SortOrder.asc,
     },
@@ -322,8 +325,9 @@ export default function Linter({
             <Table sx={{ minWidth: 650 }} aria-label="linter config list">
               <TableHead>
                 <TableRow>
-                  <TableCell scope="col" colSpan={2}>
-                    Configuration
+                  <TableCell scope="col">Configuration</TableCell>
+                  <TableCell scope="col" align="right">
+                    Rules
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -333,9 +337,31 @@ export default function Linter({
                     key={`${linter.package.name}/${config.name}`}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
-                    <TableCell scope="row">{config.name}</TableCell>
-                    <TableCell align="right" title={config.name}>
-                      {configToEmoji[config.name]}
+                    <TableCell scope="row">
+                      {configToEmoji[config.name]} {config.name}
+                    </TableCell>
+                    <TableCell scope="row" align="right">
+                      {
+                        config.ruleConfigs.filter(
+                          (ruleConfig) => ruleConfig.severity === 'error'
+                        ).length
+                      }
+                      {config.ruleConfigs.some(
+                        (ruleConfig) => ruleConfig.severity === 'warn'
+                      ) &&
+                        ` • ${
+                          config.ruleConfigs.filter(
+                            (ruleConfig) => ruleConfig.severity === 'warn'
+                          ).length
+                        } warn`}
+                      {config.ruleConfigs.some(
+                        (ruleConfig) => ruleConfig.severity === 'off'
+                      ) &&
+                        ` • ${
+                          config.ruleConfigs.filter(
+                            (ruleConfig) => ruleConfig.severity === 'off'
+                          ).length
+                        } disabled`}
                     </TableCell>
                   </TableRow>
                 ))}
