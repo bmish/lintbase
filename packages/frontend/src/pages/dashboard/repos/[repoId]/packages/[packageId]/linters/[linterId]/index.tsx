@@ -8,6 +8,7 @@ import {
   Card,
   CardActions,
   CardContent,
+  Chip,
   Paper,
   Table,
   TableBody,
@@ -46,7 +47,11 @@ const include = {
               },
               configs: {
                 include: {
-                  localPackageConfigs: true,
+                  localPackageConfigs: {
+                    include: {
+                      config: true,
+                    },
+                  },
                   ruleConfigs: true,
                 },
               },
@@ -193,7 +198,8 @@ export default function Repo({
                 <TableRow>
                   <TableCell>Plugin</TableCell>
                   <TableCell>Version</TableCell>
-                  <TableCell align="right">Latest</TableCell>
+                  <TableCell>Latest</TableCell>
+                  <TableCell align="right">Configs Enabled</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -219,11 +225,24 @@ export default function Repo({
                       <TableCell scope="row">
                         {localPackageLinter.version}
                       </TableCell>
-                      <TableCell scope="row" align="right">
+                      <TableCell scope="row">
                         {
                           localPackageLinter.linter.package.versions.at(-1)
                             ?.version
                         }
+                      </TableCell>
+                      <TableCell align="right">
+                        {localPackageLinter.linter.configs
+                          .filter((config) =>
+                            config.localPackageConfigs.some(
+                              (localPackageConfig) =>
+                                localPackageConfig.localPackageId ===
+                                localPackageLinter.localPackageId
+                            )
+                          )
+                          .map((config) => (
+                            <Chip key={config.id} label={config.name} />
+                          ))}
                       </TableCell>
                     </TableRow>
                   )
