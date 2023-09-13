@@ -29,7 +29,7 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '@/server/db';
 import { fixAnyDatesInObject } from '@/utils/normalize';
 import { lintFrameworkToDisplayName } from '@/utils/dynamic-fields';
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import DashboardRuleRow from '@/components/DashboardRuleRow';
 
 const include = {
   localPackage: {
@@ -260,126 +260,11 @@ export default function Repo({
                   </TableHead>
                   <TableBody>
                     {localPackageLinter.linter.rules.map((rule) => (
-                      <TableRow
-                        key={rule.name}
-                        sx={{
-                          '&:last-child td, &:last-child th': {
-                            border: 0,
-                          },
-                        }}
-                      >
-                        <TableCell scope="row">
-                          <Link
-                            href={`/db/npm/${localPackageLinter.linter.package.name}/rules/${rule.name}`}
-                          >
-                            {rule.name}
-                          </Link>
-                        </TableCell>
-                        <TableCell
-                          scope="row"
-                          className="max-w-xs overflow-hidden whitespace-nowrap text-ellipsis"
-                        >
-                          {rule.description && (
-                            // eslint-disable-next-line react/no-children-prop -- false positive
-                            <ReactMarkdown children={rule.description} />
-                          )}
-                        </TableCell>
-                        <TableCell scope="row">25</TableCell>
-                        <TableCell scope="row">25%</TableCell>
-                        <TableCell scope="row" align="right">
-                          {localPackageLinter.linter.configs
-                            .filter((config) =>
-                              config.localPackageConfigs.some(
-                                (localPackageConfig) =>
-                                  localPackageConfig.localPackageId ===
-                                  localPackageLinter.localPackageId
-                              )
-                            )
-                            .filter((config) =>
-                              config.ruleConfigs.some(
-                                (ruleConfig) => ruleConfig.ruleId === rule.id
-                              )
-                            )
-                            .map((config) => (
-                              <Chip
-                                className="mr-4"
-                                label={`Enabled By: ${config.name}`}
-                                key={config.id}
-                                color="success"
-                                size="small"
-                              />
-                            ))}
-                          {localPackageLinter.linter.rules
-                            .flatMap((rule2) =>
-                              rule2.localPackageRules.filter(
-                                (localPackageRule) =>
-                                  localPackageRule.localPackageId ===
-                                    localPackageLinter.localPackageId &&
-                                  localPackageRule.ruleId === rule.id
-                              )
-                            )
-                            .map((rule2) => (
-                              <Chip
-                                className="mr-4"
-                                label={`${
-                                  rule2.severity === '2'
-                                    ? 'Enabled'
-                                    : rule2.severity === '1'
-                                    ? 'Set To Warn'
-                                    : 'Disabled'
-                                } Individually`}
-                                key={rule2.id}
-                                color={
-                                  rule2.severity === '2'
-                                    ? 'success'
-                                    : rule2.severity === '1'
-                                    ? 'warning'
-                                    : 'error'
-                                }
-                                size="small"
-                              />
-                            ))}
-                          {/*
-                          Show disabled button if either:
-                            1. A config enables this rule and it's not individually disabled already.
-                            2. It's individually enabled.
-                          */}
-                          {(localPackageLinter.linter.configs
-                            .filter((config) =>
-                              config.localPackageConfigs.some(
-                                (localPackageConfig) =>
-                                  localPackageConfig.localPackageId ===
-                                  localPackageLinter.localPackageId
-                              )
-                            )
-                            .some((config) =>
-                              config.ruleConfigs.some(
-                                (ruleConfig) => ruleConfig.ruleId === rule.id
-                              )
-                            ) &&
-                            !rule.localPackageRules.some(
-                              (localPackageRule) =>
-                                localPackageRule.localPackageId ===
-                                  localPackageLinter.localPackageId &&
-                                localPackageRule.severity &&
-                                localPackageRule.severity === '0'
-                            )) ||
-                          rule.localPackageRules.some(
-                            (localPackageRule) =>
-                              localPackageRule.localPackageId ===
-                                localPackageLinter.localPackageId &&
-                              localPackageRule.severity !== '0'
-                          ) ? (
-                            <Button variant="outlined" size="small">
-                              Disable
-                            </Button>
-                          ) : (
-                            <Button variant="outlined" size="small">
-                              Enable
-                            </Button>
-                          )}
-                        </TableCell>
-                      </TableRow>
+                      <DashboardRuleRow
+                        key={rule.id}
+                        rule={rule}
+                        localPackageLinter={localPackageLinter}
+                      />
                     ))}
                   </TableBody>
                 </>
