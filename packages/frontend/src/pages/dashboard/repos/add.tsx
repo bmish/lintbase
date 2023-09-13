@@ -17,7 +17,6 @@ import {
   Alert,
   Tooltip,
   IconButton,
-  Typography,
   Chip,
 } from '@mui/material';
 import Link from 'next/link';
