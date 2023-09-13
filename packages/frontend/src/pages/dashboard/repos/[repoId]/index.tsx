@@ -231,7 +231,7 @@ export default function Repo({
                       )}
                       {lastCommit &&
                         ` (${format(
-                          lastCommit.commit.committer.date.toString()
+                          new Date(lastCommit.commit.committer.date)
                         )})`}
                     </TableCell>
                     <TableCell align="right">
