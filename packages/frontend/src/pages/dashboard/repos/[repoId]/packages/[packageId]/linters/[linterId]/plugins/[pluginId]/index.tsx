@@ -204,8 +204,12 @@ export default function Repo({
                       <TableRow key="recommended">
                         <TableCell scope="row">{config.name}</TableCell>
                         <TableCell scope="row"></TableCell>
-                        <TableCell scope="row">50</TableCell>
-                        <TableCell scope="row">0%</TableCell>
+                        <TableCell scope="row">
+                          {Math.round(Math.random() * 100)}
+                        </TableCell>
+                        <TableCell scope="row">
+                          {Math.round(Math.random() * 100)}%
+                        </TableCell>
                         <TableCell scope="row" align="right">
                           {config.localPackageConfigs.some(
                             (localPackageConfig) =>

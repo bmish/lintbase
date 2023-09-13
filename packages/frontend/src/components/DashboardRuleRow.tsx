@@ -67,7 +67,7 @@ export default function DashboardRuleRow({
       localPackageRule.severity !== '0'
   );
 
-  const showDisableButton =
+  const isEnabled =
     (isEnabledByConfig && !isDisableIndividually) || isEnabledIndividually;
 
   return (
@@ -95,8 +95,12 @@ export default function DashboardRuleRow({
           <ReactMarkdown children={rule.description} />
         )}
       </TableCell>
-      <TableCell scope="row">25</TableCell>
-      <TableCell scope="row">25%</TableCell>
+      <TableCell scope="row">
+        {!isEnabled && Math.round(Math.random() * 100)}
+      </TableCell>
+      <TableCell scope="row">
+        {!isEnabled && `${Math.round(Math.random() * 100)}%`}
+      </TableCell>
       <TableCell scope="row" align="right">
         {localPackageLinter.linter.configs
           .filter((config) =>
@@ -150,7 +154,7 @@ export default function DashboardRuleRow({
               size="small"
             />
           ))}
-        {showDisableButton ? (
+        {isEnabled ? (
           <Button variant="outlined" size="small">
             Disable
           </Button>
