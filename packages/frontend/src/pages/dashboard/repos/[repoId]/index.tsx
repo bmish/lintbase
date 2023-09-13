@@ -69,17 +69,22 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     auth: env.GITHUB_PERSONAL_ACCESS_TOKEN,
   });
 
-  const commits = await octokit.request('GET /repos/{owner}/{repo}/commits', {
-    owner: repo.fullName.split('/')[0],
-    repo: repo.fullName.split('/')[1],
-    headers: {
-      'X-GitHub-Api-Version': '2022-11-28',
-    },
-  });
-  const lastCommit = commits.data[0];
-  const countCommitsBehind = commits.data.findIndex(
-    (commit) => commit.sha === repo.commitSha
-  );
+  let commits;
+  try {
+    commits = await octokit.request('GET /repos/{owner}/{repo}/commits', {
+      owner: repo.fullName.split('/')[0],
+      repo: repo.fullName.split('/')[1],
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    });
+  } catch {
+    console.log('Unable to fetch commits from GitHub.'); // eslint-disable-line no-console
+  }
+  const lastCommit = commits ? commits.data[0] : null;
+  const countCommitsBehind = commits
+    ? commits.data.findIndex((commit) => commit.sha === repo.commitSha)
+    : null;
 
   return {
     props: { data: { repo: repoFixed, lastCommit, countCommitsBehind } },
@@ -91,8 +96,8 @@ export default function Repo({
 }: {
   data: {
     repo: Prisma.RepositoryGetPayload<{ include: typeof include }>;
-    lastCommit: { sha: string; commit: { committer: { date: string } } };
-    countCommitsBehind: number;
+    lastCommit: { sha: string; commit: { committer: { date: string } } } | null;
+    countCommitsBehind: number | null;
   };
 }) {
   const { data: session } = useSession();
@@ -195,6 +200,13 @@ export default function Repo({
                           className="mr-4"
                         ></Chip>
                       )}
+                      {countCommitsBehind === null && (
+                        <Chip
+                          color="warning"
+                          label="Unable to Verify Latest Commit"
+                          className="mr-4"
+                        ></Chip>
+                      )}
                       <Button
                         type="submit"
                         variant="outlined"
@@ -205,7 +217,7 @@ export default function Repo({
                     </form>
                   </TableCell>
                 </TableRow>
-                {countCommitsBehind > 0 && (
+                {countCommitsBehind && countCommitsBehind > 0 && (
                   <TableRow>
                     <TableCell scope="row">Most Recent Commit</TableCell>
                     <TableCell></TableCell>
