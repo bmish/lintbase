@@ -197,9 +197,10 @@ export default function Repo({
               <TableHead>
                 <TableRow>
                   <TableCell>Plugin</TableCell>
-                  <TableCell>Version</TableCell>
-                  <TableCell>Latest</TableCell>
+                  <TableCell align="right">Version</TableCell>
+                  <TableCell align="right">Latest</TableCell>
                   <TableCell align="right">Configs Enabled</TableCell>
+                  <TableCell align="right">Rules Enabled</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -222,16 +223,16 @@ export default function Repo({
                           {localPackageLinter.linter.package.name}
                         </Link>
                       </TableCell>
-                      <TableCell scope="row">
+                      <TableCell scope="row" align="right">
                         {localPackageLinter.version}
                       </TableCell>
-                      <TableCell scope="row">
+                      <TableCell scope="row" align="right">
                         {
                           localPackageLinter.linter.package.versions.at(-1)
                             ?.version
                         }
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell scope="row" align="right">
                         {localPackageLinter.linter.configs
                           .filter((config) =>
                             config.localPackageConfigs.some(
@@ -243,6 +244,32 @@ export default function Repo({
                           .map((config) => (
                             <Chip key={config.id} label={config.name} />
                           ))}
+                      </TableCell>
+                      <TableCell scope="row" align="right">
+                        {
+                          // Count rules that are either enabled individually or enabled by a config that is enabled.
+                          localPackageLinter.linter.rules.filter(
+                            (rule) =>
+                              rule.localPackageRules.some(
+                                (localPackageRule) =>
+                                  localPackageRule.localPackageId ===
+                                    localPackageLinter.localPackageId &&
+                                  localPackageRule.severity !== '0'
+                              ) ||
+                              localPackageLinter.linter.configs.some((config) =>
+                                config.localPackageConfigs.some(
+                                  (localPackageConfig) =>
+                                    localPackageConfig.localPackageId ===
+                                      localPackageLinter.localPackageId &&
+                                    config.ruleConfigs.some(
+                                      (ruleConfig) =>
+                                        ruleConfig.ruleId === rule.id
+                                    )
+                                )
+                              )
+                          ).length
+                        }{' '}
+                        / {localPackageLinter.linter.rules.length}
                       </TableCell>
                     </TableRow>
                   )
