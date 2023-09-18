@@ -217,33 +217,34 @@ export default function Repo({
                     </form>
                   </TableCell>
                 </TableRow>
-                {countCommitsBehind && countCommitsBehind > 0 && (
-                  <TableRow>
-                    <TableCell scope="row">Most Recent Commit</TableCell>
-                    <TableCell></TableCell>
-                    <TableCell>
-                      {lastCommit && (
-                        <Link
-                          href={`https://github.com/${repo.fullName}/commit/${lastCommit.sha}`}
-                        >
-                          <code>{lastCommit.sha.slice(0, 7)}</code>
-                        </Link>
-                      )}
-                      {lastCommit &&
-                        ` (${format(
-                          new Date(lastCommit.commit.committer.date)
-                        )})`}
-                    </TableCell>
-                    <TableCell align="right">
-                      <Chip
-                        color="warning"
-                        label={`${countCommitsBehind} Commit${
-                          countCommitsBehind === 1 ? '' : 's'
-                        } Behind`}
-                      ></Chip>
-                    </TableCell>
-                  </TableRow>
-                )}
+                {typeof countCommitsBehind === 'number' &&
+                  countCommitsBehind > 0 && (
+                    <TableRow>
+                      <TableCell scope="row">Most Recent Commit</TableCell>
+                      <TableCell></TableCell>
+                      <TableCell>
+                        {lastCommit && (
+                          <Link
+                            href={`https://github.com/${repo.fullName}/commit/${lastCommit.sha}`}
+                          >
+                            <code>{lastCommit.sha.slice(0, 7)}</code>
+                          </Link>
+                        )}
+                        {lastCommit &&
+                          ` (${format(
+                            new Date(lastCommit.commit.committer.date)
+                          )})`}
+                      </TableCell>
+                      <TableCell align="right">
+                        <Chip
+                          color="warning"
+                          label={`${countCommitsBehind} Commit${
+                            countCommitsBehind === 1 ? '' : 's'
+                          } Behind`}
+                        ></Chip>
+                      </TableCell>
+                    </TableRow>
+                  )}
               </TableBody>
             </Table>
           </TableContainer>
