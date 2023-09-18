@@ -86,12 +86,8 @@ export default function Repos({
                     </IconButton>
                   </Tooltip>
                 </TableCell>
-                <TableCell scope="col" align="right">
-                  Imported
-                </TableCell>
-                <TableCell scope="col" align="right">
-                  Refreshed
-                </TableCell>
+                <TableCell scope="col">Imported</TableCell>
+                <TableCell scope="col">Refreshed</TableCell>
                 <TableCell align="right">
                   <Button variant="outlined" href="/dashboard/repos/add">
                     Add Repository
@@ -114,12 +110,12 @@ export default function Repos({
                       {repo.fullName}
                     </Link>
                   </TableCell>
-                  <TableCell scope="col" align="right">
+                  <TableCell scope="col">
                     {repo.importedAt && (
                       <div>{format(new Date(repo.importedAt))}</div>
                     )}
                   </TableCell>
-                  <TableCell scope="col" align="right">
+                  <TableCell scope="col">
                     {repo.updatedAt && (
                       <div>{format(new Date(repo.updatedAt))}</div>
                     )}
