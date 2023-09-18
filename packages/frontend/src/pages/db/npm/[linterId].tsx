@@ -26,6 +26,7 @@ import { getServerAuthSession } from '@/server/auth';
 import { type GetServerSideProps } from 'next';
 import groupBy from 'lodash.groupby';
 import { getConfigEmojis } from '@/utils/config-emoji';
+import DatabaseConfigRow from '@/components/DatabaseConfigRow';
 
 const include = {
   rules: {
@@ -293,37 +294,11 @@ export default function Linter({
               </TableHead>
               <TableBody>
                 {linter.configs.map((config) => (
-                  <TableRow
-                    key={`${linter.package.name}/${config.name}`}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
-                    <TableCell scope="row">
-                      {configToEmoji[config.name]} {config.name}
-                    </TableCell>
-                    <TableCell scope="row" align="right">
-                      {
-                        config.ruleConfigs.filter(
-                          (ruleConfig) => ruleConfig.severity === 'error'
-                        ).length
-                      }
-                      {config.ruleConfigs.some(
-                        (ruleConfig) => ruleConfig.severity === 'warn'
-                      ) &&
-                        ` • ${
-                          config.ruleConfigs.filter(
-                            (ruleConfig) => ruleConfig.severity === 'warn'
-                          ).length
-                        } warn`}
-                      {config.ruleConfigs.some(
-                        (ruleConfig) => ruleConfig.severity === 'off'
-                      ) &&
-                        ` • ${
-                          config.ruleConfigs.filter(
-                            (ruleConfig) => ruleConfig.severity === 'off'
-                          ).length
-                        } disabled`}
-                    </TableCell>
-                  </TableRow>
+                  <DatabaseConfigRow
+                    key={config.id}
+                    config={config}
+                    configs={linter.configs}
+                  />
                 ))}
               </TableBody>
             </Table>
