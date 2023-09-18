@@ -130,12 +130,20 @@ export default function Repo({
         <title>
           LintBase Dashboard -{' '}
           {localPackageLintFramework.localPackage.repository.fullName} -{' '}
-          {localPackageLintFramework.localPackage.path} -{' '}
-          {localPackageLintFramework.lintFramework.name}
+          {localPackageLintFramework.localPackage.path === '.'
+            ? 'Root'
+            : localPackageLintFramework.localPackage.path}{' '}
+          - {localPackageLintFramework.lintFramework.name}
         </title>
         <meta
           property="og:title"
-          content={`LintBase Dashboard - ${localPackageLintFramework.localPackage.path} - ${localPackageLintFramework.localPackage.repository.fullName} - ${localPackageLintFramework.lintFramework.name}`}
+          content={`LintBase Dashboard - ${
+            localPackageLintFramework.localPackage.repository.fullName
+          } - ${
+            localPackageLintFramework.localPackage.path === '.'
+              ? 'Root'
+              : localPackageLintFramework.localPackage.path
+          } - ${localPackageLintFramework.lintFramework.name}`}
           key="title"
         />
       </Head>

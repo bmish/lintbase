@@ -65,10 +65,10 @@ export default function Repos({
   return (
     <div className="bg-gray-100 h-full">
       <Head>
-        <title>LintBase Dashboard Repositories</title>
+        <title>LintBase Dashboard - Repositories</title>
         <meta
           property="og:title"
-          content="LintBase Dashboard Repositories"
+          content="LintBase Dashboard - Repositories"
           key="title"
         />
       </Head>

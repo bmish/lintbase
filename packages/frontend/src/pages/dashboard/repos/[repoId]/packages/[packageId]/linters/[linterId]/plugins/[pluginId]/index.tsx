@@ -128,13 +128,23 @@ export default function Repo({
         <title>
           LintBase Dashboard -{' '}
           {localPackageLinter.localPackage.repository.fullName} -{' '}
-          {localPackageLinter.localPackage.path} -{' '}
-          {localPackageLinter.linter.lintFramework.name}
+          {localPackageLinter.localPackage.path === '.'
+            ? 'Root'
+            : localPackageLinter.localPackage.path}{' '}
+          - {localPackageLinter.linter.lintFramework.name} -{' '}
           {localPackageLinter.linter.package.name}
         </title>
         <meta
           property="og:title"
-          content={`LintBase Dashboard - ${localPackageLinter.localPackage.repository.fullName} - ${localPackageLinter.localPackage.path} - ${localPackageLinter.linter.lintFramework.name} - ${localPackageLinter.linter.package.name}`}
+          content={`LintBase Dashboard - ${
+            localPackageLinter.localPackage.repository.fullName
+          } - ${
+            localPackageLinter.localPackage.path === '.'
+              ? 'Root'
+              : localPackageLinter.localPackage.path
+          } - ${localPackageLinter.linter.lintFramework.name} - ${
+            localPackageLinter.linter.package.name
+          }`}
           key="title"
         />
       </Head>
