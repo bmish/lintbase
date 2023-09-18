@@ -15,17 +15,18 @@ import {
 } from '@mui/material';
 import { Prisma } from '@prisma/client';
 import Head from 'next/head';
-import { EMOJI_CONFIGS } from '@/utils/eslint';
 import EmojiSeverityWarn from '@/components/EmojiSeverityWarn';
 import EmojiSeverityOff from '@/components/EmojiSeverityOff';
 import DatabaseNavigation from '@/components/DatabaseNavigation';
 import { related } from '@/utils/related';
 import { getServerAuthSession } from '@/server/auth';
 import { type GetServerSideProps } from 'next';
+import { getConfigEmojis } from '@/utils/config-emoji';
 
 const include = {
   linter: {
     include: {
+      configs: true,
       package: {
         include: { ecosystem: true },
       },
@@ -131,10 +132,7 @@ export default function Rule({
     rulesRelated?: Prisma.RuleGetPayload<{ include: typeof include }>[];
   };
 }) {
-  const relevantConfigEmojis = Object.entries(EMOJI_CONFIGS).filter(
-    ([config]) =>
-      rule.ruleConfigs.some((ruleConfig) => config === ruleConfig.config.name)
-  );
+  const configToEmoji = getConfigEmojis(rule.linter.configs);
 
   return (
     <div className="bg-gray-100 h-full">
@@ -186,14 +184,11 @@ export default function Rule({
                     key={ruleConfig.config.name}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
-                    <TableCell scope="row">{ruleConfig.config.name}</TableCell>
+                    <TableCell scope="row">
+                      {configToEmoji[ruleConfig.config.name]}{' '}
+                      {ruleConfig.config.name}
+                    </TableCell>
                     <TableCell align="right" title={ruleConfig.config.name}>
-                      {
-                        relevantConfigEmojis.find(
-                          ([commonConfig]) =>
-                            commonConfig === ruleConfig.config.name
-                        )?.[1]
-                      }
                       {ruleConfig.severity === 'warn' && (
                         <EmojiSeverityWarn config={ruleConfig.config.name} />
                       )}

@@ -12,7 +12,6 @@ import {
 } from '@mui/material';
 import { prisma } from '@/server/db';
 import { fixAnyDatesInObject } from '@/utils/normalize';
-import { EMOJI_CONFIGS } from '@/utils/eslint';
 import { Prisma } from '@prisma/client';
 import Head from 'next/head';
 import Footer from '@/components/Footer';
@@ -26,6 +25,7 @@ import { getVectors } from '@/utils/pinecone';
 import { getServerAuthSession } from '@/server/auth';
 import { type GetServerSideProps } from 'next';
 import groupBy from 'lodash.groupby';
+import { getConfigEmojis } from '@/utils/config-emoji';
 
 const include = {
   rules: {
@@ -234,38 +234,6 @@ function embeddingsToLists(
 
   return listsOfRules;
 }
-
-function* generateEmoji() {
-  const emojis = [
-    // circles
-    '🔴',
-    '🟠',
-    '🟡',
-    '🟢',
-    '🔵',
-    '🟣',
-    '🟤',
-    '⚫',
-    '⚪',
-    // squares
-    '🟥',
-    '🟧',
-    '🟨',
-    '🟩',
-    '🟦',
-    '🟪',
-    '🟫',
-    '⬛',
-    '⬜',
-  ];
-  let i = 0;
-
-  while (true) {
-    yield emojis[i];
-    i++;
-  }
-}
-
 export default function Linter({
   data: { linter, lintersRelated, listsOfRules },
 }: {
@@ -278,15 +246,7 @@ export default function Linter({
     }[];
   };
 }) {
-  const genEmoji = generateEmoji();
-  const configToEmoji = Object.fromEntries(
-    linter.configs.map((config) => [
-      config.name,
-      (EMOJI_CONFIGS as Record<string, string | undefined>)[config.name] ||
-        genEmoji.next().value ||
-        undefined,
-    ])
-  );
+  const configToEmoji = getConfigEmojis(linter.configs);
 
   return (
     <div className="bg-gray-100 h-full">

@@ -8,7 +8,6 @@ import {
   Card,
   CardActions,
   CardContent,
-  Chip,
   Paper,
   Table,
   TableBody,
@@ -29,6 +28,7 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '@/server/db';
 import { fixAnyDatesInObject } from '@/utils/normalize';
 import { lintFrameworkToDisplayName } from '@/utils/dynamic-fields';
+import DashboardLinterRow from '@/components/DashboardLinterRow';
 
 const include = {
   localPackage: {
@@ -206,72 +206,11 @@ export default function Repo({
               <TableBody>
                 {localPackageLintFramework.localPackage.localPackageLinters.map(
                   (localPackageLinter) => (
-                    <TableRow key={localPackageLinter.id}>
-                      <TableCell scope="row">
-                        <Link
-                          href={`/dashboard/repos/${encodeURIComponent(
-                            localPackageLintFramework.localPackage.repository
-                              .fullName
-                          )}/packages/${
-                            localPackageLintFramework.localPackage.path === '.'
-                              ? 'root'
-                              : localPackageLintFramework.localPackage.path
-                          }/linters/${
-                            localPackageLinter.linter.lintFramework.name
-                          }/plugins/${localPackageLinter.linter.package.name}`}
-                        >
-                          {localPackageLinter.linter.package.name}
-                        </Link>
-                      </TableCell>
-                      <TableCell scope="row" align="right">
-                        {localPackageLinter.version}
-                      </TableCell>
-                      <TableCell scope="row" align="right">
-                        {
-                          localPackageLinter.linter.package.versions.at(-1)
-                            ?.version
-                        }
-                      </TableCell>
-                      <TableCell scope="row" align="right">
-                        {localPackageLinter.linter.configs
-                          .filter((config) =>
-                            config.localPackageConfigs.some(
-                              (localPackageConfig) =>
-                                localPackageConfig.localPackageId ===
-                                localPackageLinter.localPackageId
-                            )
-                          )
-                          .map((config) => (
-                            <Chip key={config.id} label={config.name} />
-                          ))}
-                      </TableCell>
-                      <TableCell scope="row" align="right">
-                        {
-                          // Count rules that are either enabled individually or enabled by a config that is enabled.
-                          localPackageLinter.linter.rules.filter(
-                            (rule) =>
-                              rule.localPackageRules.some(
-                                (localPackageRule) =>
-                                  localPackageRule.localPackageId ===
-                                    localPackageLinter.localPackageId &&
-                                  localPackageRule.severity !== '0'
-                              ) ||
-                              localPackageLinter.linter.configs.some((config) =>
-                                config.localPackageConfigs.some(
-                                  (localPackageConfig) =>
-                                    localPackageConfig.localPackageId ===
-                                      localPackageLinter.localPackageId &&
-                                    config.ruleConfigs.some(
-                                      (ruleConfig) =>
-                                        ruleConfig.ruleId === rule.id
-                                    )
-                                )
-                              )
-                          ).length
-                        }{' '}
-                        / {localPackageLinter.linter.rules.length}
-                      </TableCell>
-                    </TableRow>
+                    <DashboardLinterRow
+                      key={localPackageLinter.id}
+                      localPackageLintFramework={localPackageLintFramework}
+                      localPackageLinter={localPackageLinter}
+                    />
                   )
                 )}
               </TableBody>

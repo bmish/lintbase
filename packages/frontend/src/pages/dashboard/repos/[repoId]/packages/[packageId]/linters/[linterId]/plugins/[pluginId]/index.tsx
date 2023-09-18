@@ -30,6 +30,7 @@ import { prisma } from '@/server/db';
 import { fixAnyDatesInObject } from '@/utils/normalize';
 import { lintFrameworkToDisplayName } from '@/utils/dynamic-fields';
 import DashboardRuleRow from '@/components/DashboardRuleRow';
+import { getConfigEmojis } from '@/utils/config-emoji';
 
 const include = {
   localPackage: {
@@ -113,6 +114,8 @@ export default function Repo({
     }>;
   };
 }) {
+  const configToEmoji = getConfigEmojis(localPackageLinter.linter.configs);
+
   const { data: session } = useSession();
 
   if (!session) {
@@ -202,7 +205,9 @@ export default function Repo({
                   <TableBody>
                     {localPackageLinter.linter.configs.map((config) => (
                       <TableRow key="recommended">
-                        <TableCell scope="row">{config.name}</TableCell>
+                        <TableCell scope="row">
+                          {configToEmoji[config.name]} {config.name}
+                        </TableCell>
                         <TableCell scope="row">
                           {config.ruleConfigs.length}
                         </TableCell>

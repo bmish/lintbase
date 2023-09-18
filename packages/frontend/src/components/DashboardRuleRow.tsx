@@ -1,6 +1,7 @@
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { Prisma } from '@prisma/client';
 import { Button, Chip, Link, TableCell, TableRow } from '@mui/material';
+import { getConfigEmojis } from '@/utils/config-emoji';
 
 const include = {
   localPackage: {
@@ -70,6 +71,8 @@ export default function DashboardRuleRow({
   const isEnabled =
     (isEnabledByConfig && !isDisableIndividually) || isEnabledIndividually;
 
+  const configToEmoji = getConfigEmojis(localPackageLinter.linter.configs);
+
   return (
     <TableRow
       key={rule.name}
@@ -119,7 +122,7 @@ export default function DashboardRuleRow({
           .map((config) => (
             <Chip
               className="mr-4"
-              label={`Enabled By: ${config.name}`}
+              label={`${configToEmoji[config.name] || ''} ${config.name}`}
               key={config.id}
               color="success"
               size="small"
