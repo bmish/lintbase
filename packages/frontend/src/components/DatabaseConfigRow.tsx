@@ -22,8 +22,14 @@ export default function DatabaseConfigRow({
   const countOff = config.ruleConfigs.filter(
     (ruleConfig) => ruleConfig.severity === 'off'
   ).length;
-  const hasMultipleCounts =
-    [countError, countWarn, countOff].filter((item) => item > 0).length > 1;
+
+  const countsDisplay = [
+    countError > 0 ? `${countError} error` : null,
+    countWarn > 0 ? `${countWarn} warn` : null,
+    countOff > 0 ? `${countOff} off` : null,
+  ]
+    .filter(Boolean)
+    .join(' • ');
 
   return (
     <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
@@ -31,12 +37,8 @@ export default function DatabaseConfigRow({
         {configToEmoji[config.name]} {config.name}
       </TableCell>
       <TableCell scope="row" align="right">
-        {countError > 0 && countError}
-        {countError > 0 && hasMultipleCounts && ' error'}
-        {countError > 0 && countWarn > 0 && ' • '}
-        {countWarn > 0 && `${countWarn} warn`}
-        {countWarn > 0 && countOff > 0 && ' • '}
-        {countOff > 0 && `${countOff} disabled`}
+        {(countError > 0 && countWarn === 0 && countOff === 0 && countError) ||
+          countsDisplay}
       </TableCell>
     </TableRow>
   );
