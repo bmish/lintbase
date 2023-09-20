@@ -645,7 +645,9 @@ export async function loadLintersToDb(
               // TODO: consider using bulk queries to reduce number of requests.
               npmDownloadsInfo = (await fetch(
                 `https://api.npmjs.org/downloads/point/last-week/${linterName}`
-              ).then((res) => res.json())) as { downloads: number };
+              ).then((res) => res.json())) as
+                | { downloads: number }
+                | { error: string };
 
               npmRegistryInfo = (await fetch(
                 `https://registry.npmjs.org/${linterName}`
@@ -654,7 +656,15 @@ export async function loadLintersToDb(
               console.log(`Fetching npm info failed for ${linterName}.`); // eslint-disable-line no-console
               return {};
             }
-            return { npmDownloadsInfo, npmRegistryInfo };
+            return {
+              npmDownloadsInfo: {
+                downloads:
+                  'downloads' in npmDownloadsInfo
+                    ? npmDownloadsInfo.downloads
+                    : 0,
+              },
+              npmRegistryInfo,
+            };
           })
         )
     );
