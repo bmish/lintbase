@@ -119,7 +119,22 @@ model PackageVersion {
   packageId Int
   package   Package @relation(fields: [packageId], references: [id])
 
+  tags PackageVersionTag[]
+
   @@unique([version, packageId])
+}
+
+model PackageVersionTag {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+
+  packageVersionId Int
+  packageVersion   PackageVersion @relation(fields: [packageVersionId], references: [id])
+
+  @@unique([name, packageVersionId])
 }
 
 // Package. Corresponds to an npm package or package from another ecosystem.

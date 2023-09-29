@@ -24,7 +24,11 @@ const includeLinters = {
     include: {
       ecosystem: true,
       keywords: true,
-      versions: true,
+      versions: {
+        include: {
+          tags: true,
+        },
+      },
     },
   },
   lintFramework: true,

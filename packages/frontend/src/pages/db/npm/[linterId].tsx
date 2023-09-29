@@ -51,7 +51,15 @@ const include = {
     },
   },
   package: {
-    include: { keywords: true, ecosystem: true, versions: true },
+    include: {
+      keywords: true,
+      ecosystem: true,
+      versions: {
+        include: {
+          tags: true,
+        },
+      },
+    },
   },
   lintFramework: true,
 };

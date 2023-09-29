@@ -49,7 +49,11 @@ export default function LinterCard({
         include: {
           keywords: true;
           ecosystem: true;
-          versions: true;
+          versions: {
+            include: {
+              tags: true;
+            };
+          };
         };
       };
       configs: true;
@@ -60,6 +64,12 @@ export default function LinterCard({
   detailed?: boolean;
 }) {
   const repositoryLink = getRepositoryLink(linter.package.linkRepository);
+  const versionToDisplay =
+    linter.package.versions.length === 0
+      ? undefined
+      : linter.package.versions.find((version) =>
+          version.tags.some((tag) => tag.name === 'latest')
+        ) || linter.package.versions.at(-1);
 
   return (
     <Card>
@@ -98,17 +108,18 @@ export default function LinterCard({
                 linter.rules.length > 1 ? 's' : ''
               } • `}
             {millify(linter.package.countWeeklyDownloads)} Wkly{' '}
-            <GetAppIcon fontSize="inherit" titleAccess="Downloads" /> •{' '}
-            <time
-              dateTime={new Date(linter.package.packageUpdatedAt).toISOString()}
-              title={new Date(linter.package.packageUpdatedAt).toUTCString()}
-            >
-              {format(new Date(linter.package.packageUpdatedAt))}
-            </time>
-            {detailed && linter.package.versions.length > 0 && ' • '}
-            {detailed &&
-              linter.package.versions.length > 0 &&
-              linter.package.versions.at(-1)?.version}
+            <GetAppIcon fontSize="inherit" titleAccess="Downloads" />
+            {versionToDisplay && ' • '}
+            {versionToDisplay && (
+              <time
+                dateTime={new Date(versionToDisplay.publishedAt).toISOString()}
+                title={new Date(versionToDisplay.publishedAt).toUTCString()}
+              >
+                {format(new Date(versionToDisplay.publishedAt))}
+              </time>
+            )}
+            {detailed && versionToDisplay && ' • '}
+            {detailed && versionToDisplay && versionToDisplay.version}
           </Typography>
           {detailed &&
             linter.package.keywords &&
