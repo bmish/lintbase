@@ -41,7 +41,7 @@ const actualLinter = {
 export async function getServerSideProps() {
   const [
     lintersPopular,
-    lintersRecentlyUpdated,
+    packageVersionTagsLatest,
     commonLinterKeywords,
     commonRuleCategories,
   ] = await Promise.all([
@@ -55,15 +55,32 @@ export async function getServerSideProps() {
       },
       where: actualLinter,
     }),
-    prisma.linter.findMany({
-      include: includeLinters,
-      take: 5,
-      orderBy: {
-        package: {
-          packageUpdatedAt: Prisma.SortOrder.desc,
+    prisma.packageVersionTag.findMany({
+      include: {
+        packageVersion: {
+          include: {
+            package: {
+              include: {
+                linter: { include: includeLinters },
+              },
+            },
+          },
         },
       },
-      where: actualLinter,
+      take: 5,
+      orderBy: {
+        packageVersion: {
+          publishedAt: Prisma.SortOrder.desc,
+        },
+      },
+      where: {
+        packageVersion: {
+          package: {
+            linter: actualLinter,
+          },
+        },
+        name: 'latest',
+      },
     }),
     prisma.packageKeyword.groupBy({
       where: {
@@ -106,15 +123,15 @@ export async function getServerSideProps() {
     fixAnyDatesInObject(linter)
   );
 
-  const lintersRecentlyUpdatedFixed = lintersRecentlyUpdated.map((linter) =>
-    fixAnyDatesInObject(linter)
+  const packageVersionTagsLatestFixed = packageVersionTagsLatest.map((obj) =>
+    fixAnyDatesInObject(obj)
   );
 
   return {
     props: {
       data: {
         lintersPopular: lintersPopularFixed,
-        lintersRecentlyUpdated: lintersRecentlyUpdatedFixed,
+        packageVersionTagsLatest: packageVersionTagsLatestFixed,
         commonLinterKeywords,
         commonRuleCategories,
       },
@@ -125,7 +142,7 @@ export async function getServerSideProps() {
 export default function index({
   data: {
     lintersPopular,
-    lintersRecentlyUpdated,
+    packageVersionTagsLatest,
     commonLinterKeywords,
     commonRuleCategories,
   },
@@ -134,8 +151,18 @@ export default function index({
     lintersPopular: Prisma.LinterGetPayload<{
       include: typeof includeLinters;
     }>[];
-    lintersRecentlyUpdated: Prisma.LinterGetPayload<{
-      include: typeof includeLinters;
+    packageVersionTagsLatest: Prisma.PackageVersionTagGetPayload<{
+      include: {
+        packageVersion: {
+          include: {
+            package: {
+              include: {
+                linter: { include: typeof includeLinters };
+              };
+            };
+          };
+        };
+      };
     }>[];
     commonLinterKeywords: Awaited<
       Prisma.GetPackageKeywordGroupByPayload<{
@@ -181,9 +208,13 @@ export default function index({
               Recently Updated
             </Typography>
             <ul className="space-y-8">
-              {lintersRecentlyUpdated.map((p) => (
-                <li key={p.package.name}>
-                  <LinterCard linter={p}></LinterCard>
+              {packageVersionTagsLatest.map((pvt) => (
+                <li key={pvt.packageVersion.package.linter?.id}>
+                  {pvt.packageVersion.package.linter && (
+                    <LinterCard
+                      linter={pvt.packageVersion.package.linter}
+                    ></LinterCard>
+                  )}
                 </li>
               ))}
             </ul>
