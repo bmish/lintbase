@@ -72,7 +72,7 @@ const PLUGINS_SUPPORTED = [
 
 type NpmRegistryInfo = {
   time: Record<string | 'created' | 'modified', string>;
-  'dist-tags': Record<string, string> & { latest?: string };
+  'dist-tags'?: Record<string, string> & { latest?: string };
 };
 
 const linterInclude = {
@@ -186,7 +186,7 @@ async function baseToNormalizedLinter(
                 version,
                 publishedAt: new Date(time),
                 tags: {
-                  create: Object.entries(npmRegistryInfo['dist-tags'])
+                  create: Object.entries(npmRegistryInfo['dist-tags'] || {})
                     .filter(([, tagVersion]) => version === tagVersion)
                     .map(([tag]) => ({ name: tag })),
                 },
