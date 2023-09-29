@@ -119,7 +119,19 @@ export default function LinterCard({
               </time>
             )}
             {detailed && versionToDisplay && ' • '}
-            {detailed && versionToDisplay && versionToDisplay.version}
+            {detailed && versionToDisplay && (
+              <span
+                title={
+                  versionToDisplay.tags.length > 0
+                    ? `Tags for this version: ${versionToDisplay.tags
+                        .map((tag) => tag.name)
+                        .join(', ')}`
+                    : ''
+                }
+              >
+                {versionToDisplay.version}
+              </span>
+            )}
           </Typography>
           {detailed &&
             linter.package.keywords &&
