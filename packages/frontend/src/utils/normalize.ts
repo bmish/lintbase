@@ -72,7 +72,7 @@ const PLUGINS_SUPPORTED = [
 
 type NpmRegistryInfo = {
   time: Record<string | 'created' | 'modified', string>;
-  'dist-tags'?: Record<string, string> & { latest?: string };
+  'dist-tags'?: Record<string, string> & { latest?: string; next?: string };
 };
 
 const linterInclude = {
@@ -180,8 +180,32 @@ async function baseToNormalizedLinter(
 
           versions: {
             create: Object.entries(npmRegistryInfo.time)
-              .slice(-10) // TODO: only get most recent versions for now. Too expensive when some linters have thousands of versions.
-              .filter(([, time]) => typeof time === 'string') // Skip when time is an object about being unpublished. TODO: mark as unpublished.
+              .filter(([version, time], i) => {
+                if (typeof time !== 'string') {
+                  // eslint-disable-next-line no-console
+                  console.log(
+                    'Skipping version',
+                    version,
+                    'due to invalid time for package',
+                    linterName
+                  );
+                  return false; // Skip when time is an object about being unpublished. TODO: mark as unpublished.
+                }
+                if (
+                  // TODO: only get most recent versions for now. Too expensive when some linters have thousands of versions.
+                  i < 10 ||
+                  [
+                    // Always get versions for some significant tags.
+                    (npmRegistryInfo['dist-tags'] || {}).latest,
+                    (npmRegistryInfo['dist-tags'] || {}).next,
+                  ]
+                    .filter((version) => version !== undefined)
+                    .includes(version)
+                ) {
+                  return true;
+                }
+                return false;
+              })
               .map(([version, time]) => ({
                 version,
                 publishedAt: new Date(time),
