@@ -4,7 +4,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '@/server/db';
 import { Prisma } from '@prisma/client';
 
-const LIMIT = 25; // Only summarize top linters now.
+const LIMIT = 25; // Only summarize top linters now due to cost.
 
 export default async function summarizeLinters(
   req: NextApiRequest,

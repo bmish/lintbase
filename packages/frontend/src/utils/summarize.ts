@@ -75,6 +75,65 @@ export async function summarizeLinter(
   return result;
 }
 
+export async function summarizeConfig(
+  config: Prisma.ConfigGetPayload<{
+    include: {
+      ruleConfigs: { include: { rule: true } };
+      linter: { include: { package: true } };
+    };
+  }>
+): Promise<string> {
+  const messageIntro = [
+    'A lint config is a collection of lint rules that are usually related or used together.',
+    'Generate a short, concise, brief, one-sentence summary of a lint config based on the types of rules it includes.',
+    'Do not mention the name of the lint config nor the plugin.',
+  ].join('\n');
+
+  const ruleNames = config.ruleConfigs
+    .map((ruleConfig) => ruleConfig.rule.name)
+    .join(', ');
+
+  const linterInfo = [
+    `ESLint plugin name: ${config.linter.package.name}`,
+    config.linter.package.description
+      ? `Lint plugin description: ${config.linter.package.description}`
+      : '',
+    `Lint config name: ${config.name}`,
+    config.ruleConfigs.some((ruleConfig) => ruleConfig.severity === 'error')
+      ? `Rules enabled in config: ${ruleNames}`
+      : '',
+    config.ruleConfigs.some((ruleConfig) => ruleConfig.severity === 'warn')
+      ? `Rules set to warn in config: ${ruleNames}`
+      : '',
+    config.ruleConfigs.some((ruleConfig) => ruleConfig.severity === 'off')
+      ? `Rules disabled in config: ${ruleNames}`
+      : '',
+  ].join('\n');
+
+  const result = await createChatCompletion([
+    // Introduce the task.
+    {
+      role: 'system',
+      content: messageIntro,
+    },
+
+    // TODO: Demonstrate usage.
+
+    {
+      role: 'user',
+      content: linterInfo,
+    },
+  ]);
+
+  if (!result) {
+    throw new Error(
+      `Unable to generate config summary for linter ${config.linter.package.name}`
+    );
+  }
+
+  return result;
+}
+
 export async function clusterNamesForRules(
   ruleLists: string
 ): Promise<string[]> {

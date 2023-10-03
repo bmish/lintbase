@@ -27,6 +27,7 @@ import { type GetServerSideProps } from 'next';
 import groupBy from 'lodash.groupby';
 import { getConfigEmojis } from '@/utils/config-emoji';
 import DatabaseConfigRow from '@/components/DatabaseConfigRow';
+import EmojiAi from '@/components/EmojiAi';
 
 const include = {
   rules: {
@@ -301,6 +302,11 @@ export default function Linter({
               <TableHead>
                 <TableRow>
                   <TableCell scope="col">Configuration</TableCell>
+                  {linter.configs.some((config) => config.descriptionAI) && (
+                    <TableCell>
+                      <EmojiAi /> Summary
+                    </TableCell>
+                  )}
                   <TableCell scope="col" align="right">
                     Rules
                   </TableCell>
@@ -312,6 +318,9 @@ export default function Linter({
                     key={config.id}
                     config={config}
                     configs={linter.configs}
+                    includeDescription={linter.configs.some(
+                      (config) => config.descriptionAI
+                    )}
                   />
                 ))}
               </TableBody>

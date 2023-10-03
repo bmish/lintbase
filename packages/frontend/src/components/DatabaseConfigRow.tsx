@@ -5,11 +5,13 @@ import { getConfigEmojis } from '@/utils/config-emoji';
 export default function DatabaseConfigRow({
   config,
   configs,
+  includeDescription,
 }: {
   config: Prisma.ConfigGetPayload<{
     include: { ruleConfigs: true };
   }>;
   configs: Prisma.ConfigGetPayload<object>[];
+  includeDescription: boolean;
 }) {
   const configToEmoji = getConfigEmojis(configs);
 
@@ -36,6 +38,9 @@ export default function DatabaseConfigRow({
       <TableCell scope="row">
         {configToEmoji[config.name]} {config.name}
       </TableCell>
+      {includeDescription && (
+        <TableCell scope="row">{config.descriptionAI}</TableCell>
+      )}
       <TableCell scope="row" align="right">
         {(countError > 0 && countWarn === 0 && countOff === 0 && countError) ||
           countsDisplay}
