@@ -127,12 +127,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
   }
 
+  const propertyToGroupRulesBy = linter.rules.some((rule) => rule.category)
+    ? 'category'
+    : linter.rules.some((rule) => rule.type)
+    ? 'type'
+    : undefined;
+
   const listsOfRules =
     linter.rules.length > 0
       ? [
           { rules: linter.rules, title: 'Alphabetical' },
-          ...(linter.rules.some((rule) => rule.category)
-            ? Object.entries(groupBy(linter.rules, 'category'))
+          ...(propertyToGroupRulesBy
+            ? Object.entries(groupBy(linter.rules, propertyToGroupRulesBy))
                 .sort((a, b) => a[0].localeCompare(b[0]))
                 .flatMap(
                   ([title, rules]) =>
@@ -143,7 +149,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                             rules,
                           },
                         ]
-                      : [] // Skip rules without categories.
+                      : [] // Skip rules without the grouping property.
                 )
             : []),
         ]
