@@ -16,6 +16,7 @@ model RuleOption {
 
   name String
   type String?
+  descriptionAI String?
 
   ruleId Int
   rule   Rule @relation(fields: [ruleId], references: [id])
@@ -45,6 +46,7 @@ model Rule {
   category             String?
   deprecated           Boolean
   description          String?
+  descriptionAI        String?
   fixable              String?
   hasSuggestions       Boolean
   requiresTypeChecking Boolean
@@ -67,7 +69,8 @@ model Config {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name String
+  name          String
+  descriptionAI String?
 
   linterId Int
   linter   Linter @relation(fields: [linterId], references: [id])
@@ -145,6 +148,7 @@ model Package {
 
   name             String
   description      String?
+  descriptionAI    String?
   packageCreatedAt DateTime
   packageUpdatedAt DateTime
 
@@ -184,6 +188,8 @@ model Linter {
   rules       Rule[]
   ruleConfigs RuleConfig[]
   configs     Config[]
+
+  descriptionAI String?
 
   // Linting framework this linter uses.
   lintFrameworkId Int
@@ -272,6 +278,7 @@ model Repository {
 
   fullName    String  @unique
   description String?
+  descriptionAI String?
 
   commitSha   String?
   committedAt DateTime?
@@ -296,7 +303,7 @@ model LocalPackage {
 
   // TODO: name of package (from package.json)
 
-  path String // Path to this local package folder in the repository.
+  path         String // Path to this local package folder in the repository.
   pathManifest String // Path to the manifest config file for this package.
 
   // Instances of things in this local repository package.

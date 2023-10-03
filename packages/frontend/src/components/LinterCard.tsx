@@ -18,6 +18,7 @@ import millify from 'millify';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import { Prisma } from '@prisma/client';
 import { format } from 'timeago.js';
+import EmojiAi from './EmojiAi';
 
 function getRepositoryLink(linkRepository: string | null): string | undefined {
   if (!linkRepository) {
@@ -146,6 +147,14 @@ export default function LinterCard({
         </div>
 
         <Typography variant="body2">{linter.package.description}</Typography>
+
+        {detailed && linter.descriptionAI && (
+          <div className="flex flex-row mt-4">
+            <Typography variant="body2" component={'p'}>
+              <EmojiAi /> {linter.descriptionAI}
+            </Typography>
+          </div>
+        )}
       </CardContent>
       {detailed && (
         <CardActions>

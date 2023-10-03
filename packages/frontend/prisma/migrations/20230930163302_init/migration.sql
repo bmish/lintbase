@@ -5,6 +5,7 @@ CREATE TABLE "RuleOption" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
     "type" TEXT,
+    "descriptionAI" TEXT,
     "ruleId" INTEGER NOT NULL,
 
     CONSTRAINT "RuleOption_pkey" PRIMARY KEY ("id")
@@ -30,6 +31,7 @@ CREATE TABLE "Rule" (
     "category" TEXT,
     "deprecated" BOOLEAN NOT NULL,
     "description" TEXT,
+    "descriptionAI" TEXT,
     "fixable" TEXT,
     "hasSuggestions" BOOLEAN NOT NULL,
     "requiresTypeChecking" BOOLEAN NOT NULL,
@@ -46,6 +48,7 @@ CREATE TABLE "Config" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
+    "descriptionAI" TEXT,
     "linterId" INTEGER NOT NULL,
 
     CONSTRAINT "Config_pkey" PRIMARY KEY ("id")
@@ -105,6 +108,7 @@ CREATE TABLE "Package" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
+    "descriptionAI" TEXT,
     "packageCreatedAt" TIMESTAMP(3) NOT NULL,
     "packageUpdatedAt" TIMESTAMP(3) NOT NULL,
     "countContributors" INTEGER NOT NULL,
@@ -130,6 +134,7 @@ CREATE TABLE "Linter" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "descriptionAI" TEXT,
     "lintFrameworkId" INTEGER NOT NULL,
     "packageId" INTEGER NOT NULL,
 
@@ -194,6 +199,7 @@ CREATE TABLE "Repository" (
     "ownerId" TEXT NOT NULL,
     "fullName" TEXT NOT NULL,
     "description" TEXT,
+    "descriptionAI" TEXT,
     "commitSha" TEXT,
     "committedAt" TIMESTAMP(3),
     "importedAt" TIMESTAMP(3),

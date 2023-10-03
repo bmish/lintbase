@@ -1,5 +1,6 @@
 import { Configuration, OpenAIApi } from 'openai';
 import { env } from '@/env.mjs';
+import { Prisma } from '@prisma/client';
 
 async function createChatCompletion(
   messages: { role: 'user' | 'system' | 'assistant'; content: string }[]
@@ -22,6 +23,56 @@ async function createChatCompletion(
   }
 
   return response.data.choices[0].message.content;
+}
+
+export async function summarizeLinter(
+  linter: Prisma.LinterGetPayload<{
+    include: { rules: true; configs: true; package: true };
+  }>
+): Promise<string> {
+  const messageIntro = [
+    'Generate a concise, one-paragraph summary (1-3 sentences) about the specified linting plugin.',
+    'Focus on high-level information about the plugin including what categories of rules it contains.',
+    'Do not include the name of the plugin nor plain lists of rules/configs.',
+    'Do not include generalities that could apply to any linting plugin.',
+    'Do not mention the presence of recommended/all configs as these are common in most plugins.',
+    'Avoid generalities like "It offers a wide range of configurable rules and provides multiple pre-defined configurations to suit different linting needs.".',
+  ].join('\n');
+
+  const ruleNames = linter.rules.map((rule) => rule.name).join(', ');
+  const configNames = linter.configs.map((config) => config.name).join(', ');
+
+  const linterInfo = [
+    `Lint plugin: ${linter.package.name}`,
+    linter.package.description
+      ? `Description: ${linter.package.description}`
+      : '',
+    linter.rules.length > 0 ? `Rules: ${ruleNames}` : '',
+    linter.configs.length > 0 ? `Configs: ${configNames}` : '',
+  ].join('\n');
+
+  const result = await createChatCompletion([
+    // Introduce the task.
+    {
+      role: 'system',
+      content: messageIntro,
+    },
+
+    // TODO: Demonstrate usage.
+
+    {
+      role: 'user',
+      content: linterInfo,
+    },
+  ]);
+
+  if (!result) {
+    throw new Error(
+      `Unable to generate linter summary for ${linter.package.name}`
+    );
+  }
+
+  return result;
 }
 
 export async function clusterNamesForRules(
