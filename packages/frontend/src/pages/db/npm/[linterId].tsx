@@ -142,7 +142,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                 .sort((a, b) => a[0].localeCompare(b[0]))
                 .flatMap(
                   ([title, rules]) =>
-                    title
+                    title && title !== 'null'
                       ? [
                           {
                             title,
