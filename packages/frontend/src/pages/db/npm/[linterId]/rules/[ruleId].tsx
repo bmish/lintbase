@@ -209,6 +209,10 @@ export default function Rule({
               <TableHead>
                 <TableRow>
                   <TableCell scope="col">Option</TableCell>
+                  <TableCell scope="col">Description</TableCell>
+                  {rule.options.some((option) => option.isRequired) && (
+                    <TableCell scope="col">Required</TableCell>
+                  )}
                   <TableCell scope="col" align="right">
                     Type
                   </TableCell>
@@ -221,6 +225,12 @@ export default function Rule({
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell scope="row">{option.name}</TableCell>
+                    <TableCell scope="row">{option.description}</TableCell>
+                    {rule.options.some((option) => option.isRequired) && (
+                      <TableCell scope="col">
+                        {option.isRequired && 'Yes'}
+                      </TableCell>
+                    )}
                     <TableCell scope="row" align="right">
                       {option.type}
                     </TableCell>

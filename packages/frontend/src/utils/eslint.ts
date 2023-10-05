@@ -25,7 +25,12 @@ export function getAllNamedOptions(
     );
   }
 
-  const options: { name: string; type?: string }[] = [];
+  const options: {
+    name: string;
+    type?: string;
+    description?: string;
+    isRequired?: boolean;
+  }[] = [];
   traverse(jsonSchema, (js: JSONSchema.JSONSchema4) => {
     if (js.properties) {
       options.push(
@@ -34,7 +39,9 @@ export function getAllNamedOptions(
           type: value.type ? value.type.toString() : undefined,
           description: value.description,
           isRequired:
-            typeof value.required === 'boolean' ? value.required : undefined,
+            typeof value.required === 'boolean'
+              ? value.required
+              : Array.isArray(js.required) && js.required.includes(key),
         }))
       );
     }
