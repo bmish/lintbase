@@ -48,7 +48,9 @@ export async function summarizeLinter(
       ? `Description: ${linter.package.description}`
       : '',
     linter.rules.length > 0 ? `Rules: ${ruleNames}` : '',
+    linter.rules.length === 0 ? 'No rules are included.' : '',
     linter.configs.length > 0 ? `Configs: ${configNames}` : '',
+    linter.configs.length === 0 ? 'No configs are included.' : '',
   ].join('\n');
 
   const result = await createChatCompletion([
@@ -108,6 +110,7 @@ export async function summarizeConfig(
     config.ruleConfigs.some((ruleConfig) => ruleConfig.severity === 'off')
       ? `Rules disabled in config: ${ruleNames}`
       : '',
+    config.ruleConfigs.length === 0 ? 'No rules are included.' : '',
   ].join('\n');
 
   const result = await createChatCompletion([
