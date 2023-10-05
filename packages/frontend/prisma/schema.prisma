@@ -16,6 +16,8 @@ model RuleOption {
 
   name String
   type String?
+  isRequired Boolean?
+  description String?
   descriptionAI String?
 
   ruleId Int

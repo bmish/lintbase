@@ -8,7 +8,13 @@ import traverse from 'json-schema-traverse';
  */
 export function getAllNamedOptions(
   jsonSchema: JSONSchema.JSONSchema4 | undefined | null
-): readonly { name: string; type?: string }[] {
+): readonly {
+  name: string;
+  type?: string;
+  description?: string;
+  isRequired?: boolean;
+  // TODO: future JSONSchema version has `deprecated` field.
+}[] {
   if (!jsonSchema) {
     return [];
   }
@@ -26,6 +32,9 @@ export function getAllNamedOptions(
         ...Object.entries(js.properties).map(([key, value]) => ({
           name: key,
           type: value.type ? value.type.toString() : undefined,
+          description: value.description,
+          isRequired:
+            typeof value.required === 'boolean' ? value.required : undefined,
         }))
       );
     }

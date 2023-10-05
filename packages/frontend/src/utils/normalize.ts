@@ -265,7 +265,12 @@ async function eslintLinterToNormalizedLinter(
               // @ts-expect-error -- type is missing for this property
               // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- type is missing for this property
               create: uniqueItems(getAllNamedOptions(rule.schema), 'name').map(
-                (obj) => ({ name: obj.name, type: obj.type })
+                (obj) => ({
+                  name: obj.name,
+                  type: obj.type,
+                  description: obj.description,
+                  isRequired: obj.isRequired,
+                })
               ),
             },
             requiresTypeChecking: false,
@@ -300,7 +305,12 @@ async function eslintLinterToNormalizedLinter(
           create: uniqueItems(
             getAllNamedOptions(rule.meta?.schema),
             'name'
-          ).map((obj) => ({ name: obj.name, type: obj.type })),
+          ).map((obj) => ({
+            name: obj.name,
+            type: obj.type,
+            description: obj.description,
+            isRequired: obj.isRequired,
+          })),
         },
         // @ts-expect-error -- requiresTypeChecking not an official property
 
