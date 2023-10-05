@@ -72,6 +72,15 @@ export default function LinterCard({
           version.tags.some((tag) => tag.name === 'latest')
         ) || linter.package.versions.at(-1);
 
+  const versionLoaded = linter.package.versions.find(
+    (version) => version.isLoaded
+  );
+  const versionLoadedToDisplay =
+    versionLoaded &&
+    versionToDisplay &&
+    versionToDisplay.version !== versionLoaded.version &&
+    versionLoaded;
+
   return (
     <Card>
       <CardContent>
@@ -122,13 +131,18 @@ export default function LinterCard({
             {detailed && versionToDisplay && ' • '}
             {detailed && versionToDisplay && (
               <span
-                title={
+                title={[
                   versionToDisplay.tags.length > 0
                     ? `Tags for this version: ${versionToDisplay.tags
                         .map((tag) => tag.name)
                         .join(', ')}`
-                    : ''
-                }
+                    : '',
+                  versionLoadedToDisplay
+                    ? `Some data from ${versionLoadedToDisplay.version}`
+                    : undefined,
+                ]
+                  .filter((line) => line !== undefined)
+                  .join('\n')}
               >
                 {versionToDisplay.version}
               </span>

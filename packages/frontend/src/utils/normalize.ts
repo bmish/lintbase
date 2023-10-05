@@ -200,7 +200,9 @@ async function baseToNormalizedLinter(
                     (npmRegistryInfo['dist-tags'] || {}).next,
                   ]
                     .filter((version) => version !== undefined)
-                    .includes(version)
+                    .includes(version) ||
+                  // Always get version loaded.
+                  packageJson.version === version
                 ) {
                   return true;
                 }
