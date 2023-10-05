@@ -214,6 +214,7 @@ async function baseToNormalizedLinter(
                     .filter(([, tagVersion]) => version === tagVersion)
                     .map(([tag]) => ({ name: tag })),
                 },
+                isLoaded: packageJson.version === version,
               })),
           },
         },

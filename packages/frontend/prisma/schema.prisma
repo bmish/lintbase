@@ -121,6 +121,8 @@ model PackageVersion {
   version     String
   publishedAt DateTime
 
+  isLoaded Boolean @default(false)
+
   packageId Int
   package   Package @relation(fields: [packageId], references: [id])
 

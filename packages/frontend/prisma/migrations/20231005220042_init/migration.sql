@@ -5,6 +5,8 @@ CREATE TABLE "RuleOption" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
     "type" TEXT,
+    "isRequired" BOOLEAN,
+    "description" TEXT,
     "descriptionAI" TEXT,
     "ruleId" INTEGER NOT NULL,
 
@@ -85,6 +87,7 @@ CREATE TABLE "PackageVersion" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "version" TEXT NOT NULL,
     "publishedAt" TIMESTAMP(3) NOT NULL,
+    "isLoaded" BOOLEAN NOT NULL DEFAULT false,
     "packageId" INTEGER NOT NULL,
 
     CONSTRAINT "PackageVersion_pkey" PRIMARY KEY ("id")
