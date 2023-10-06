@@ -13,7 +13,7 @@ const include = {
   ecosystem: true,
 };
 
-export async function getServerSideProps({ query }: { query: { q: string } }) {
+export async function getServerSideProps({ query }: { query: { q?: string } }) {
   // Access individual query parameters
   const { q } = query;
 

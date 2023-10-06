@@ -11,7 +11,7 @@ export default function DatabaseNavigation() {
       ? 'home'
       : pathParts.length > 2 &&
         pathParts[1] === 'db' &&
-        ['linters', 'plugins', 'rules'].includes(pathParts[2])
+        ['linters', 'plugins', 'rules', 'search'].includes(pathParts[2])
       ? pathParts[2]
       : undefined;
 
@@ -34,9 +34,12 @@ export default function DatabaseNavigation() {
         <ToggleButton value="plugins" href="/db/plugins">
           Plugins
         </ToggleButton>
-        <ToggleButton value="rules" href="/db/rules">
-          Rules
-        </ToggleButton>
+        {value === 'rules' && (
+          <ToggleButton value="rules" href="/db/rules">
+            Rules
+          </ToggleButton>
+        )}
+        {router.query.q && <ToggleButton value="search">Search</ToggleButton>}
       </ToggleButtonGroup>
     </nav>
   );

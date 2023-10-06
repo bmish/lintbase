@@ -15,15 +15,9 @@ export default function Header() {
   const handleChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value);
 
-    const SEARCHABLE_PATHS = ['/db/plugins', '/db/rules'];
-
-    const newUrl = SEARCHABLE_PATHS.includes(router.pathname)
-      ? router.pathname
-      : '/db/plugins';
-
     await (event.target.value
-      ? router.push(`${newUrl}?q=${event.target.value}`)
-      : router.push(newUrl));
+      ? router.push(`/db/search?q=${event.target.value}`)
+      : router.push('/db'));
   };
 
   useEffect(() => {

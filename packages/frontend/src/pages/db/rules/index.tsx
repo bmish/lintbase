@@ -42,7 +42,7 @@ const include = {
 export async function getServerSideProps({
   query,
 }: {
-  query: { q: string; p: string; c: string; category: string };
+  query: { q?: string; p?: string; c?: string; category?: string };
 }) {
   // Access individual query parameters
   const { q, p, c, category } = query;
