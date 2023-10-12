@@ -9,6 +9,19 @@ datasource db {
   shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
+model RuleOptionChoice {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+
+  ruleOptionId Int
+  ruleOption   RuleOption @relation(fields: [ruleOptionId], references: [id])
+
+  @@unique([name, ruleOptionId])
+}
+
 model RuleOption {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -16,9 +29,13 @@ model RuleOption {
 
   name String
   type String?
-  isRequired Boolean?
+  required Boolean?
+  deprecated Boolean?
+  default String?
   description String?
   descriptionAI String?
+
+  choices RuleOptionChoice[]
 
   ruleId Int
   rule   Rule @relation(fields: [ruleId], references: [id])
@@ -54,6 +71,7 @@ model Rule {
   requiresTypeChecking Boolean
   type                 String?
   linkRuleDoc          String?
+  schema               Json?
 
   linterId Int
   linter   Linter @relation(fields: [linterId], references: [id])

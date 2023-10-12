@@ -34,6 +34,9 @@ const include = {
     },
   },
   options: {
+    include: {
+      choices: true,
+    },
     orderBy: {
       name: Prisma.SortOrder.asc,
     },
@@ -209,13 +212,24 @@ export default function Rule({
               <TableHead>
                 <TableRow>
                   <TableCell scope="col">Option</TableCell>
-                  <TableCell scope="col">Description</TableCell>
-                  {rule.options.some((option) => option.isRequired) && (
+                  {rule.options.some((option) => option.description) && (
+                    <TableCell scope="col">Description</TableCell>
+                  )}
+                  {rule.options.some((option) => option.type) && (
+                    <TableCell scope="col">Type</TableCell>
+                  )}
+                  {rule.options.some(
+                    (option) => option.choices && option.choices.length > 0
+                  ) && <TableCell scope="col">Choices</TableCell>}
+                  {rule.options.some((option) => option.default !== null) && (
+                    <TableCell scope="col">Default</TableCell>
+                  )}
+                  {rule.options.some((option) => option.required) && (
                     <TableCell scope="col">Required</TableCell>
                   )}
-                  <TableCell scope="col" align="right">
-                    Type
-                  </TableCell>
+                  {rule.options.some((option) => option.deprecated) && (
+                    <TableCell scope="col">Deprecated</TableCell>
+                  )}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -225,15 +239,38 @@ export default function Rule({
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell scope="row">{option.name}</TableCell>
-                    <TableCell scope="row">{option.description}</TableCell>
-                    {rule.options.some((option) => option.isRequired) && (
+                    {rule.options.some((option) => option.description) && (
+                      <TableCell scope="col">{option.description}</TableCell>
+                    )}
+                    {rule.options.some((option) => option.type) && (
+                      <TableCell scope="col">{option.type}</TableCell>
+                    )}
+                    {rule.options.some(
+                      (option) => option.choices && option.choices.length > 0
+                    ) && (
                       <TableCell scope="col">
-                        {option.isRequired && 'Yes'}
+                        {option.choices.length > 0
+                          ? option.choices
+                              .map((choice) => choice.name)
+                              .join(', ')
+                          : ''}
                       </TableCell>
                     )}
-                    <TableCell scope="row" align="right">
-                      {option.type}
-                    </TableCell>
+                    {rule.options.some((option) => option.default !== null) && (
+                      <TableCell scope="col">
+                        {option.default !== null && option.default}
+                      </TableCell>
+                    )}
+                    {rule.options.some((option) => option.required) && (
+                      <TableCell scope="col">
+                        {option.required && 'Yes'}
+                      </TableCell>
+                    )}
+                    {rule.options.some((option) => option.deprecated) && (
+                      <TableCell scope="col">
+                        {option.deprecated && 'Yes'}
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>

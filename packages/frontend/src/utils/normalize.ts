@@ -261,6 +261,8 @@ async function eslintLinterToNormalizedLinter(
             // @ts-expect-error -- TODO: null should be allowed for "type"
             type: null as 'suggestion' | 'problem' | 'layout',
             // @ts-expect-error -- type is missing for this property
+            schema: rule.schema,
+            // @ts-expect-error -- type is missing for this property
             deprecated: rule.deprecated || false,
             replacedBys: { create: [] },
             category: null,
@@ -272,7 +274,13 @@ async function eslintLinterToNormalizedLinter(
                   name: obj.name,
                   type: obj.type,
                   description: obj.description,
-                  isRequired: obj.isRequired,
+                  required: obj.required,
+                  choices: {
+                    create: obj.enum?.map((obj) => ({ name: String(obj) })),
+                  },
+                  default:
+                    obj.default === undefined ? undefined : String(obj.default),
+                  deprecated: obj.deprecated,
                 })
               ),
             },
@@ -288,6 +296,7 @@ async function eslintLinterToNormalizedLinter(
         fixable: normalizeFixable(rule.meta?.fixable),
         hasSuggestions: rule.meta?.hasSuggestions || false,
         type: rule.meta?.type || null,
+        schema: rule.meta?.schema,
         deprecated: rule.meta?.deprecated || false,
         replacedBys: {
           // asArray in case user has mistakenly added a string instead of an array.
@@ -304,6 +313,7 @@ async function eslintLinterToNormalizedLinter(
             ? // @ts-expect-error -- category not an official property
               rule.meta.docs.category
             : null, // Only accept strings. In rare case, a plugin provided this as an array.
+
         options: {
           create: uniqueItems(
             getAllNamedOptions(rule.meta?.schema),
@@ -312,7 +322,13 @@ async function eslintLinterToNormalizedLinter(
             name: obj.name,
             type: obj.type,
             description: obj.description,
-            isRequired: obj.isRequired,
+            required: obj.required,
+            choices: {
+              create: obj.enum?.map((obj) => ({ name: String(obj) })),
+            },
+            default:
+              obj.default === undefined ? undefined : String(obj.default),
+            deprecated: obj.deprecated,
           })),
         },
         // @ts-expect-error -- requiresTypeChecking not an official property
@@ -823,7 +839,7 @@ export async function loadLintersToDb(
 
 export function fixAnyDatesInObject(object: object): object {
   return Object.fromEntries(
-    Object.entries(object).map(([key, value]) => {
+    Object.entries(object || {}).map(([key, value]) => {
       if (value instanceof Date) {
         return [key, value.toISOString()]; // Since DataTime can't be serialized by next.
       }

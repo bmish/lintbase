@@ -1,20 +1,28 @@
 import type { JSONSchema, TSESLint } from '@typescript-eslint/utils';
 import traverse from 'json-schema-traverse';
 
+export type RuleOption = {
+  name: string;
+  type?: string;
+  description?: string;
+  required?: boolean;
+  enum?: readonly JSONSchema.JSONSchema4Type[];
+  default?: JSONSchema.JSONSchema4Type;
+  deprecated?: boolean;
+};
+
 /**
  * Gather a list of named options from a rule schema.
  * @param jsonSchema - the JSON schema to check
  * @returns - list of named options we could detect from the schema
  */
 export function getAllNamedOptions(
-  jsonSchema: JSONSchema.JSONSchema4 | undefined | null
-): readonly {
-  name: string;
-  type?: string;
-  description?: string;
-  isRequired?: boolean;
-  // TODO: future JSONSchema version has `deprecated` field.
-}[] {
+  jsonSchema:
+    | JSONSchema.JSONSchema4
+    | readonly JSONSchema.JSONSchema4[]
+    | undefined
+    | null
+): readonly RuleOption[] {
   if (!jsonSchema) {
     return [];
   }
@@ -25,12 +33,7 @@ export function getAllNamedOptions(
     );
   }
 
-  const options: {
-    name: string;
-    type?: string;
-    description?: string;
-    isRequired?: boolean;
-  }[] = [];
+  const options: RuleOption[] = [];
   traverse(jsonSchema, (js: JSONSchema.JSONSchema4) => {
     if (js.properties) {
       options.push(
@@ -38,10 +41,13 @@ export function getAllNamedOptions(
           name: key,
           type: value.type ? value.type.toString() : undefined,
           description: value.description,
-          isRequired:
+          default: value.default,
+          enum: value.enum,
+          required:
             typeof value.required === 'boolean'
               ? value.required
               : Array.isArray(js.required) && js.required.includes(key),
+          deprecated: value.deprecated,
         }))
       );
     }

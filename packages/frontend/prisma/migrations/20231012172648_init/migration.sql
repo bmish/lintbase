@@ -1,11 +1,24 @@
 -- CreateTable
+CREATE TABLE "RuleOptionChoice" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "name" TEXT NOT NULL,
+    "ruleOptionId" INTEGER NOT NULL,
+
+    CONSTRAINT "RuleOptionChoice_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "RuleOption" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
     "type" TEXT,
-    "isRequired" BOOLEAN,
+    "required" BOOLEAN,
+    "deprecated" BOOLEAN,
+    "default" TEXT,
     "description" TEXT,
     "descriptionAI" TEXT,
     "ruleId" INTEGER NOT NULL,
@@ -39,6 +52,7 @@ CREATE TABLE "Rule" (
     "requiresTypeChecking" BOOLEAN NOT NULL,
     "type" TEXT,
     "linkRuleDoc" TEXT,
+    "schema" JSONB,
     "linterId" INTEGER NOT NULL,
 
     CONSTRAINT "Rule_pkey" PRIMARY KEY ("id")
@@ -286,6 +300,9 @@ CREATE TABLE "LocalPackageConfig" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "RuleOptionChoice_name_ruleOptionId_key" ON "RuleOptionChoice"("name", "ruleOptionId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "RuleOption_name_ruleId_key" ON "RuleOption"("name", "ruleId");
 
 -- CreateIndex
@@ -350,6 +367,9 @@ CREATE UNIQUE INDEX "LocalPackageRule_localPackageId_ruleId_key" ON "LocalPackag
 
 -- CreateIndex
 CREATE UNIQUE INDEX "LocalPackageConfig_localPackageId_configId_key" ON "LocalPackageConfig"("localPackageId", "configId");
+
+-- AddForeignKey
+ALTER TABLE "RuleOptionChoice" ADD CONSTRAINT "RuleOptionChoice_ruleOptionId_fkey" FOREIGN KEY ("ruleOptionId") REFERENCES "RuleOption"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "RuleOption" ADD CONSTRAINT "RuleOption_ruleId_fkey" FOREIGN KEY ("ruleId") REFERENCES "Rule"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
