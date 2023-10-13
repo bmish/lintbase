@@ -341,13 +341,13 @@ async function eslintLinterToNormalizedLinter(
     }
   );
 
-  const configs = Object.entries(linter?.configs || {}).map(([configName]) => {
-    const config = {
+  const configs = Object.entries(linter?.configs || {}).map(
+    ([configName, config]) => ({
       name: configName,
-    };
-
-    return config;
-  });
+      // @ts-expect-error -- This is an unofficial config property.
+      description: config.description,
+    })
+  );
 
   const linterCreated = await baseToNormalizedLinter(
     linterName,

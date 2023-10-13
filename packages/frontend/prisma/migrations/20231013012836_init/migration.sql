@@ -64,6 +64,7 @@ CREATE TABLE "Config" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
+    "description" TEXT,
     "descriptionAI" TEXT,
     "linterId" INTEGER NOT NULL,
 

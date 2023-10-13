@@ -6,12 +6,14 @@ export default function DatabaseConfigRow({
   config,
   configs,
   includeDescription,
+  includeDescriptionAI,
 }: {
   config: Prisma.ConfigGetPayload<{
     include: { ruleConfigs: true };
   }>;
   configs: Prisma.ConfigGetPayload<object>[];
   includeDescription: boolean;
+  includeDescriptionAI: boolean;
 }) {
   const configToEmoji = getConfigEmojis(configs);
 
@@ -39,6 +41,9 @@ export default function DatabaseConfigRow({
         {configToEmoji[config.name]} {config.name}
       </TableCell>
       {includeDescription && (
+        <TableCell scope="row">{config.description}</TableCell>
+      )}
+      {includeDescriptionAI && (
         <TableCell scope="row">{config.descriptionAI}</TableCell>
       )}
       <TableCell scope="row" align="right">

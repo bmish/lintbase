@@ -302,6 +302,9 @@ export default function Linter({
               <TableHead>
                 <TableRow>
                   <TableCell scope="col">Configuration</TableCell>
+                  {linter.configs.some((config) => config.description) && (
+                    <TableCell>Description</TableCell>
+                  )}
                   {linter.configs.some((config) => config.descriptionAI) && (
                     <TableCell>
                       <EmojiAi /> Summary
@@ -319,6 +322,9 @@ export default function Linter({
                     config={config}
                     configs={linter.configs}
                     includeDescription={linter.configs.some(
+                      (config) => config.description
+                    )}
+                    includeDescriptionAI={linter.configs.some(
                       (config) => config.descriptionAI
                     )}
                   />

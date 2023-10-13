@@ -27,12 +27,12 @@ model RuleOption {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name String
-  type String?
-  required Boolean?
-  deprecated Boolean?
-  default String?
-  description String?
+  name          String
+  type          String?
+  required      Boolean?
+  deprecated    Boolean?
+  default       String?
+  description   String?
   descriptionAI String?
 
   choices RuleOptionChoice[]
@@ -90,6 +90,7 @@ model Config {
   updatedAt DateTime @updatedAt
 
   name          String
+  description   String?
   descriptionAI String?
 
   linterId Int
@@ -298,8 +299,8 @@ model Repository {
   owner   User   @relation(fields: [ownerId], references: [id])
   ownerId String
 
-  fullName    String  @unique
-  description String?
+  fullName      String  @unique
+  description   String?
   descriptionAI String?
 
   commitSha   String?
