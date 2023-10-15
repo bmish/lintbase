@@ -196,8 +196,11 @@ model Package {
   ecosystem   Ecosystem @relation(fields: [ecosystemId], references: [id])
 
   // A package might be a linter.
-  linter   Linter?
+  linter   Linter? @relation("LinterPackage")
   linterId Int?    @unique
+
+  // A package might be linted by various linters.
+  linters Linter[] @relation("LinterPackagesFor")
 
   @@unique([name, ecosystemId])
 }
@@ -223,7 +226,10 @@ model Linter {
 
   // Package for the linter.
   packageId Int     @unique
-  package   Package @relation(fields: [packageId], references: [id])
+  package   Package @relation("LinterPackage", fields: [packageId], references: [id])
+
+  // This linter could be intended to lint various packages.
+  lintees Package[] @relation("LinterPackagesFor")
 
   // Instances of repositories using this linter.
   localPackageLinters LocalPackageLinter[]
