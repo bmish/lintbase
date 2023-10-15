@@ -20,7 +20,7 @@ import Link from 'next/link';
 import { type GetServerSideProps } from 'next';
 import { prisma } from '@/server/db';
 import { Prisma } from '@prisma/client';
-import { fixAnyDatesInObject } from '@/utils/normalize';
+import { fixAnyDatesInObject } from '@/utils/prisma';
 import { getServerAuthSession } from '@/server/auth';
 import { format } from 'timeago.js';
 import { Info } from '@mui/icons-material';

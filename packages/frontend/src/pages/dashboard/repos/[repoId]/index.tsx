@@ -29,7 +29,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Prisma } from '@prisma/client';
 import { prisma } from '@/server/db';
-import { fixAnyDatesInObject } from '@/utils/normalize';
+import { fixAnyDatesInObject } from '@/utils/prisma';
 import { format } from 'timeago.js';
 import { lintFrameworkToDisplayName } from '@/utils/dynamic-fields';
 import { api } from '@/utils/api';

@@ -26,7 +26,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Prisma } from '@prisma/client';
 import { prisma } from '@/server/db';
-import { fixAnyDatesInObject } from '@/utils/normalize';
+import { fixAnyDatesInObject } from '@/utils/prisma';
 import { lintFrameworkToDisplayName } from '@/utils/dynamic-fields';
 import DashboardLinterRow from '@/components/DashboardLinterRow';
 

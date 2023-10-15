@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import { prisma } from '@/server/db';
-import { fixAnyDatesInObject } from '@/utils/normalize';
+import { fixAnyDatesInObject } from '@/utils/prisma';
 import { Prisma } from '@prisma/client';
 import Head from 'next/head';
 import Footer from '@/components/Footer';

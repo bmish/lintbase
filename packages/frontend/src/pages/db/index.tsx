@@ -1,7 +1,7 @@
 import DatabaseNavigation from '@/components/DatabaseNavigation';
 import LinterCard from '@/components/LinterCard';
 import { prisma } from '@/server/db';
-import { fixAnyDatesInObject } from '@/utils/normalize';
+import { fixAnyDatesInObject } from '@/utils/prisma';
 import {
   Grid,
   Paper,

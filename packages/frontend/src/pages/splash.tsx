@@ -1,4 +1,4 @@
-import { fixAnyDatesInObject } from '@/utils/normalize';
+import { fixAnyDatesInObject } from '@/utils/prisma';
 import {
   Paper,
   Table,

@@ -1,5 +1,5 @@
 import { env } from '@/env.mjs';
-import { deleteAllData } from '@/utils/normalize';
+import { deleteAllData } from '@/utils/prisma';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function deleteAll(

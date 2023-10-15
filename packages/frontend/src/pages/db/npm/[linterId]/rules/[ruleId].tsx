@@ -2,7 +2,7 @@
 import Footer from '@/components/Footer';
 import RuleCard from '@/components/RuleCard';
 import { prisma } from '@/server/db';
-import { fixAnyDatesInObject } from '@/utils/normalize';
+import { fixAnyDatesInObject } from '@/utils/prisma';
 import {
   Paper,
   Table,

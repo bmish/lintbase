@@ -13,7 +13,7 @@ import {
 import { prisma } from '@/server/db';
 import React from 'react';
 import { useRouter } from 'next/router';
-import { fixAnyDatesInObject } from '@/utils/normalize';
+import { fixAnyDatesInObject } from '@/utils/prisma';
 import { packageToLinkUs } from '@/utils/dynamic-fields';
 import { Prisma } from '@prisma/client';
 import { format } from 'timeago.js';

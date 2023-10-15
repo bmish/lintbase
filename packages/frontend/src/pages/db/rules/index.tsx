@@ -11,7 +11,7 @@ import {
   TableRow,
 } from '@mui/material';
 import { prisma } from '@/server/db';
-import { fixAnyDatesInObject } from '@/utils/normalize';
+import { fixAnyDatesInObject } from '@/utils/prisma';
 import React from 'react';
 import { useRouter } from 'next/router';
 import { ruleToLinkUs } from '@/utils/dynamic-fields';
