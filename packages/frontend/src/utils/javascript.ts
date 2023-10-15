@@ -30,3 +30,14 @@ export function uniqueItems<T>(
     return false;
   });
 }
+
+export async function createObjectAsync<T>(
+  keys: string[],
+
+  create: (_key: string) => Promise<T>
+): Promise<Record<string, T>> {
+  const results = await Promise.all(keys.map((key) => create(key)));
+  return Object.fromEntries(
+    results.map((result, index) => [keys[index], result])
+  );
+}

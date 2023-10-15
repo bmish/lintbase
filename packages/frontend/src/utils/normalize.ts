@@ -12,7 +12,7 @@ import {
   ruleEntryToStringSeverity,
 } from './eslint';
 import { Prisma } from '@prisma/client';
-import { asArray, uniqueItems } from './javascript';
+import { asArray, createObjectAsync, uniqueItems } from './javascript';
 import pLimit from 'p-limit';
 
 const LIMIT_LINTERS_PER_FRAMEWORK = Number.MAX_SAFE_INTEGER; // Useful for partial loading during testing.
@@ -73,7 +73,108 @@ const PLUGINS_SUPPORTED = [
 type NpmRegistryInfo = {
   time: Record<string | 'created' | 'modified', string>;
   'dist-tags'?: Record<string, string> & { latest?: string; next?: string };
-};
+} & PackageJson;
+
+function createPackageObject(
+  linterName: string,
+  ecosystemId: number,
+  npmDownloadsInfo: { downloads: number },
+  npmRegistryInfo: NpmRegistryInfo,
+  keywordsToIgnore: Set<string>,
+  packageJsonLocal?: PackageJson // Only used when we actually downloaded the package locally.
+): Prisma.PackageCreateInput {
+  return {
+    ecosystem: {
+      connect: { id: ecosystemId },
+    },
+
+    name: linterName,
+    description: npmRegistryInfo.description || null,
+
+    // TODO: get real data from npm/github
+    countPrs: Math.round(Math.random() * 100),
+    countIssues: Math.round(Math.random() * 100),
+    countStars: Math.round(Math.random() * 100),
+    countWatching: Math.round(Math.random() * 100),
+    countForks: Math.round(Math.random() * 100),
+    countContributors: Math.round(Math.random() * 100),
+    countWeeklyDownloads: npmDownloadsInfo.downloads,
+
+    packageCreatedAt: new Date(npmRegistryInfo.time.created),
+    packageUpdatedAt: new Date(npmRegistryInfo.time.modified),
+
+    linkRepository:
+      typeof npmRegistryInfo.repository === 'object'
+        ? npmRegistryInfo.repository.url
+        : typeof npmRegistryInfo.repository === 'string'
+        ? npmRegistryInfo.repository
+        : null,
+    repositoryDirectory:
+      typeof npmRegistryInfo.repository === 'object'
+        ? npmRegistryInfo.repository.directory
+        : null,
+
+    linkHomepage: npmRegistryInfo.homepage?.toString() || null,
+    linkBugs:
+      typeof npmRegistryInfo.bugs === 'object'
+        ? npmRegistryInfo.bugs.url
+        : typeof npmRegistryInfo.bugs === 'string'
+        ? npmRegistryInfo.bugs
+        : null,
+    emailBugs:
+      typeof npmRegistryInfo.bugs === 'object'
+        ? npmRegistryInfo.bugs.email
+        : null,
+
+    keywords: {
+      create: uniqueItems(npmRegistryInfo.keywords || [])
+        .filter((keyword) => !keywordsToIgnore.has(keyword))
+        .map((keyword) => ({ name: keyword })),
+    },
+
+    versions: {
+      create: Object.entries(npmRegistryInfo.time)
+        .filter(([version, time], i) => {
+          if (typeof time !== 'string') {
+            // eslint-disable-next-line no-console
+            console.log(
+              'Skipping version',
+              version,
+              'due to invalid time for package',
+              linterName
+            );
+            return false; // Skip when time is an object about being unpublished. TODO: mark as unpublished.
+          }
+          if (
+            // TODO: only get most recent versions for now. Too expensive when some linters have thousands of versions.
+            i < 10 ||
+            [
+              // Always get versions for some significant tags.
+              (npmRegistryInfo['dist-tags'] || {}).latest,
+              (npmRegistryInfo['dist-tags'] || {}).next,
+            ]
+              .filter((version) => version !== undefined)
+              .includes(version) ||
+            // Always get version downloaded locally.
+            (packageJsonLocal && packageJsonLocal.version === version)
+          ) {
+            return true;
+          }
+          return false;
+        })
+        .map(([version, time]) => ({
+          version,
+          publishedAt: new Date(time),
+          tags: {
+            create: Object.entries(npmRegistryInfo['dist-tags'] || {})
+              .filter(([, tagVersion]) => version === tagVersion)
+              .map(([tag]) => ({ name: tag })),
+          },
+          isLoaded: packageJsonLocal && packageJsonLocal.version === version,
+        })),
+    },
+  };
+}
 
 const linterInclude = {
   rules: {
@@ -131,95 +232,14 @@ async function baseToNormalizedLinter(
     include: linterInclude,
     data: {
       package: {
-        create: {
+        create: createPackageObject(
+          linterName,
           ecosystemId,
-
-          name: linterName,
-          description: packageJson.description || null,
-
-          // TODO: get real data from npm/github
-          countPrs: Math.round(Math.random() * 100),
-          countIssues: Math.round(Math.random() * 100),
-          countStars: Math.round(Math.random() * 100),
-          countWatching: Math.round(Math.random() * 100),
-          countForks: Math.round(Math.random() * 100),
-          countContributors: Math.round(Math.random() * 100),
-          countWeeklyDownloads: npmDownloadsInfo.downloads,
-
-          packageCreatedAt: new Date(npmRegistryInfo.time.created),
-          packageUpdatedAt: new Date(npmRegistryInfo.time.modified),
-
-          linkRepository:
-            typeof packageJson.repository === 'object'
-              ? packageJson.repository.url
-              : typeof packageJson.repository === 'string'
-              ? packageJson.repository
-              : null,
-          repositoryDirectory:
-            typeof packageJson.repository === 'object'
-              ? packageJson.repository.directory
-              : null,
-
-          linkHomepage: packageJson.homepage?.toString() || null,
-          linkBugs:
-            typeof packageJson.bugs === 'object'
-              ? packageJson.bugs.url
-              : typeof packageJson.bugs === 'string'
-              ? packageJson.bugs
-              : null,
-          emailBugs:
-            typeof packageJson.bugs === 'object'
-              ? packageJson.bugs.email
-              : null,
-
-          keywords: {
-            create: uniqueItems(packageJson.keywords || [])
-              .filter((keyword) => !keywordsToIgnore.has(keyword))
-              .map((keyword) => ({ name: keyword })),
-          },
-
-          versions: {
-            create: Object.entries(npmRegistryInfo.time)
-              .filter(([version, time], i) => {
-                if (typeof time !== 'string') {
-                  // eslint-disable-next-line no-console
-                  console.log(
-                    'Skipping version',
-                    version,
-                    'due to invalid time for package',
-                    linterName
-                  );
-                  return false; // Skip when time is an object about being unpublished. TODO: mark as unpublished.
-                }
-                if (
-                  // TODO: only get most recent versions for now. Too expensive when some linters have thousands of versions.
-                  i < 10 ||
-                  [
-                    // Always get versions for some significant tags.
-                    (npmRegistryInfo['dist-tags'] || {}).latest,
-                    (npmRegistryInfo['dist-tags'] || {}).next,
-                  ]
-                    .filter((version) => version !== undefined)
-                    .includes(version) ||
-                  // Always get version loaded.
-                  packageJson.version === version
-                ) {
-                  return true;
-                }
-                return false;
-              })
-              .map(([version, time]) => ({
-                version,
-                publishedAt: new Date(time),
-                tags: {
-                  create: Object.entries(npmRegistryInfo['dist-tags'] || {})
-                    .filter(([, tagVersion]) => version === tagVersion)
-                    .map(([tag]) => ({ name: tag })),
-                },
-                isLoaded: packageJson.version === version,
-              })),
-          },
-        },
+          npmDownloadsInfo,
+          npmRegistryInfo,
+          keywordsToIgnore,
+          packageJson
+        ),
       },
 
       rules: { create: rules },
@@ -566,17 +586,6 @@ async function stylelintPluginToNormalizedLinter(
   return linterCreated;
 }
 
-async function createObjectAsync<T>(
-  keys: string[],
-
-  create: (_key: string) => Promise<T>
-): Promise<Record<string, T>> {
-  const results = await Promise.all(keys.map((key) => create(key)));
-  return Object.fromEntries(
-    results.map((result, index) => [keys[index], result])
-  );
-}
-
 function createLintFrameworks(ecosystemId: number) {
   return createObjectAsync(
     CORE_LINTING_FRAMEWORKS,
@@ -597,6 +606,55 @@ function createLintFrameworks(ecosystemId: number) {
       return result;
     }
   );
+}
+
+async function getNpmInfo(packageNames: readonly string[]): Promise<
+  readonly {
+    npmDownloadsInfo?: {
+      downloads: number;
+    };
+    npmRegistryInfo?: NpmRegistryInfo;
+  }[]
+> {
+  // Rate-limit to avoid hitting npm's rate limit.
+  const limitNpm = pLimit(10);
+
+  const info = await Promise.all(
+    packageNames.map((linterName) =>
+      limitNpm(async () => {
+        let npmDownloadsInfo;
+        let npmRegistryInfo;
+
+        console.log('Fetching npm info for', linterName); // eslint-disable-line no-console
+        try {
+          // Get info from npm registry.
+          // https://github.com/npm/registry/blob/master/docs/download-counts.md
+          // TODO: consider using bulk queries to reduce number of requests.
+          npmDownloadsInfo = (await fetch(
+            `https://api.npmjs.org/downloads/point/last-week/${linterName}`
+          ).then((res) => res.json())) as
+            | { downloads: number }
+            | { error: string };
+
+          npmRegistryInfo = (await fetch(
+            `https://registry.npmjs.org/${linterName}`
+          ).then((res) => res.json())) as NpmRegistryInfo;
+        } catch {
+          console.log(`Fetching npm info failed for ${linterName}.`); // eslint-disable-line no-console
+          return {};
+        }
+        return {
+          npmDownloadsInfo: {
+            downloads:
+              'downloads' in npmDownloadsInfo ? npmDownloadsInfo.downloads : 0,
+          },
+          npmRegistryInfo,
+        };
+      })
+    )
+  );
+
+  return info;
 }
 
 export async function loadLintersToDb(
@@ -686,46 +744,8 @@ export async function loadLintersToDb(
       }
     }
 
-    // Rate-limit to avoid hitting npm's rate limit.
-    const limitNpm = pLimit(10);
-
-    const npmInfo = await Promise.all(
-      Object.keys(linterRecord)
-        .slice(0, LIMIT_LINTERS_PER_FRAMEWORK)
-        .map((linterName) =>
-          limitNpm(async () => {
-            let npmDownloadsInfo;
-            let npmRegistryInfo;
-
-            console.log('Fetching npm info for', linterName); // eslint-disable-line no-console
-            try {
-              // Get info from npm registry.
-              // https://github.com/npm/registry/blob/master/docs/download-counts.md
-              // TODO: consider using bulk queries to reduce number of requests.
-              npmDownloadsInfo = (await fetch(
-                `https://api.npmjs.org/downloads/point/last-week/${linterName}`
-              ).then((res) => res.json())) as
-                | { downloads: number }
-                | { error: string };
-
-              npmRegistryInfo = (await fetch(
-                `https://registry.npmjs.org/${linterName}`
-              ).then((res) => res.json())) as NpmRegistryInfo;
-            } catch {
-              console.log(`Fetching npm info failed for ${linterName}.`); // eslint-disable-line no-console
-              return {};
-            }
-            return {
-              npmDownloadsInfo: {
-                downloads:
-                  'downloads' in npmDownloadsInfo
-                    ? npmDownloadsInfo.downloads
-                    : 0,
-              },
-              npmRegistryInfo,
-            };
-          })
-        )
+    const npmInfo = await getNpmInfo(
+      Object.keys(linterRecord).slice(0, LIMIT_LINTERS_PER_FRAMEWORK)
     );
 
     const lintersCreatedForThisType = await Promise.all(
