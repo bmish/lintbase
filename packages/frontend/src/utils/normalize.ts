@@ -13,7 +13,7 @@ import {
 } from './eslint';
 import { Prisma } from '@prisma/client';
 import { asArray, createObjectAsync, uniqueItems } from './javascript';
-import pLimit from 'p-limit';
+import { NpmRegistryInfo, getNpmInfo } from './npm';
 
 const LIMIT_LINTERS_PER_FRAMEWORK = Number.MAX_SAFE_INTEGER; // Useful for partial loading during testing.
 
@@ -69,12 +69,6 @@ const PLUGINS_SUPPORTED = [
   'ember-template-lint-plugin',
   'stylelint-plugin',
 ];
-
-type NpmRegistryInfo = {
-  time: Record<string | 'created' | 'modified', string>;
-  'dist-tags'?: Record<string, string> & { latest?: string; next?: string };
-} & PackageJson;
-
 function createPackageObject(
   linterName: string,
   ecosystemId: number,
@@ -608,55 +602,6 @@ function createLintFrameworks(ecosystemId: number) {
   );
 }
 
-async function getNpmInfo(packageNames: readonly string[]): Promise<
-  readonly {
-    npmDownloadsInfo?: {
-      downloads: number;
-    };
-    npmRegistryInfo?: NpmRegistryInfo;
-  }[]
-> {
-  // Rate-limit to avoid hitting npm's rate limit.
-  const limitNpm = pLimit(10);
-
-  const info = await Promise.all(
-    packageNames.map((linterName) =>
-      limitNpm(async () => {
-        let npmDownloadsInfo;
-        let npmRegistryInfo;
-
-        console.log('Fetching npm info for', linterName); // eslint-disable-line no-console
-        try {
-          // Get info from npm registry.
-          // https://github.com/npm/registry/blob/master/docs/download-counts.md
-          // TODO: consider using bulk queries to reduce number of requests.
-          npmDownloadsInfo = (await fetch(
-            `https://api.npmjs.org/downloads/point/last-week/${linterName}`
-          ).then((res) => res.json())) as
-            | { downloads: number }
-            | { error: string };
-
-          npmRegistryInfo = (await fetch(
-            `https://registry.npmjs.org/${linterName}`
-          ).then((res) => res.json())) as NpmRegistryInfo;
-        } catch {
-          console.log(`Fetching npm info failed for ${linterName}.`); // eslint-disable-line no-console
-          return {};
-        }
-        return {
-          npmDownloadsInfo: {
-            downloads:
-              'downloads' in npmDownloadsInfo ? npmDownloadsInfo.downloads : 0,
-          },
-          npmRegistryInfo,
-        };
-      })
-    )
-  );
-
-  return info;
-}
-
 export async function loadLintersToDb(
   eslintRules: Record<
     string,
@@ -751,7 +696,7 @@ export async function loadLintersToDb(
     const lintersCreatedForThisType = await Promise.all(
       Object.entries(linterRecord)
         .slice(0, LIMIT_LINTERS_PER_FRAMEWORK)
-        .flatMap(async ([linterName, linter], index) => {
+        .flatMap(async ([linterName, linter]) => {
           const pathPackageJson = path.join(
             downloadPath,
             'node_modules',
@@ -762,7 +707,8 @@ export async function loadLintersToDb(
             readFileSync(pathPackageJson, { encoding: 'utf8' })
           ) as PackageJson;
 
-          const { npmDownloadsInfo, npmRegistryInfo } = npmInfo[index];
+          const { npmDownloadsInfo, npmRegistryInfo } =
+            npmInfo[linterName] || {};
           if (!npmDownloadsInfo || !npmRegistryInfo) {
             console.log(`Skipping ${linterName} due to missing npm info.`); // eslint-disable-line no-console
             return [];
