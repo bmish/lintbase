@@ -69,6 +69,33 @@ const PLUGINS_SUPPORTED = [
   'ember-template-lint-plugin',
   'stylelint-plugin',
 ];
+
+// Initial list.
+const LINTER_TO_LINTEES = {
+  '@angular-eslint/eslint-plugin': ['@angular/core'],
+  '@react-native-community/eslint-plugin': ['react-native'],
+  '@typescript-eslint/eslint-plugin': ['typescript'],
+  'eslint-plugin-ava': ['ava'],
+  'eslint-plugin-ember': ['ember-cli', 'ember-source'],
+  'eslint-plugin-jest': ['jest'],
+  'eslint-plugin-jest-dom': ['jest-dom'],
+  'eslint-plugin-jest-formatting': ['jest'],
+  'eslint-plugin-jsx-a11y': ['react', 'react-dom'],
+  'eslint-plugin-lodash': ['lodash'],
+  'eslint-plugin-mocha': ['mocha'],
+  'eslint-plugin-prettier': ['prettier'],
+  'eslint-plugin-qunit': ['qunit'],
+  'eslint-plugin-react': ['react', 'react-dom'],
+  'eslint-plugin-react-hooks': ['react', 'react-dom'],
+  'eslint-plugin-react-native': ['react-native'],
+  'eslint-plugin-vue': ['vue'],
+};
+
+function getLinteesForLinter(linterName: string) {
+  // @ts-expect-error TODO: figure out how to index object by string without error.
+  return (LINTER_TO_LINTEES[linterName] as readonly string[] | undefined) || [];
+}
+
 function createPackageObject(
   linterName: string,
   ecosystemId: number,
@@ -222,6 +249,8 @@ async function baseToNormalizedLinter(
     return packageFound;
   }
 
+  const lintees = getLinteesForLinter(linterName);
+
   const linterCreated = await prisma.linter.create({
     include: linterInclude,
     data: {
@@ -245,6 +274,24 @@ async function baseToNormalizedLinter(
       },
 
       ...lintFrameworkForCore,
+
+      lintees: {
+        connectOrCreate: lintees.map((lintee) => ({
+          where: {
+            name_ecosystemId: {
+              name: lintee,
+              ecosystemId,
+            },
+          },
+          create: createPackageObject(
+            lintee,
+            ecosystemId,
+            npmDownloadsInfo,
+            npmRegistryInfo,
+            keywordsToIgnore
+          ),
+        })),
+      },
     },
   });
 
@@ -689,9 +736,14 @@ export async function loadLintersToDb(
       }
     }
 
-    const npmInfo = await getNpmInfo(
-      Object.keys(linterRecord).slice(0, LIMIT_LINTERS_PER_FRAMEWORK)
+    const linterNames = Object.keys(linterRecord).slice(
+      0,
+      LIMIT_LINTERS_PER_FRAMEWORK
     );
+    const npmInfo = await getNpmInfo([
+      ...linterNames,
+      ...linterNames.flatMap((linterName) => getLinteesForLinter(linterName)),
+    ]);
 
     const lintersCreatedForThisType = await Promise.all(
       Object.entries(linterRecord)

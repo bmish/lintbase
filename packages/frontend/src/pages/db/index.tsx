@@ -31,6 +31,7 @@ const includeLinters = {
       },
     },
   },
+  lintees: true,
   lintFramework: true,
 };
 

@@ -62,6 +62,7 @@ const include = {
       },
     },
   },
+  lintees: true,
   lintFramework: true,
 };
 

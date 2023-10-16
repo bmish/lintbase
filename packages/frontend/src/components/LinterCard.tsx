@@ -60,6 +60,7 @@ export default function LinterCard({
       configs: true;
       rules: true;
       lintFramework: true;
+      lintees: true;
     };
   }>;
   detailed?: boolean;
@@ -208,6 +209,16 @@ export default function LinterCard({
               ? 'npm'
               : 'Package Registry'}
           </Button>
+
+          {linter.lintees.map((lintee) => (
+            <Button
+              key={lintee.id}
+              size="small"
+              href={linterToLinkPackageRegistry(lintee)}
+            >
+              {lintee.name}
+            </Button>
+          ))}
         </CardActions>
       )}
     </Card>
