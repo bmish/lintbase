@@ -13,17 +13,22 @@ export function asArray<T>(
 
 export function uniqueItems<T>(
   array: readonly T[],
-  basedOnProperty?: string
+  propertyOrCallback?: string | ((i: T) => unknown)
 ): readonly T[] {
-  const seen = new Set<T | string>();
+  const seen = new Set<T | unknown>();
 
   return array.filter((item) => {
-    // @ts-expect-error -- don't know if object has property
-
-    const prop = basedOnProperty ? item[basedOnProperty] : item;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const callbackEvaluation =
+      typeof propertyOrCallback === 'function'
+        ? propertyOrCallback(item)
+        : undefined;
+    const propertyEvaluation =
+      typeof propertyOrCallback === 'string'
+        ? // @ts-expect-error -- don't know if object has property
+          item[propertyOrCallback]
+        : undefined;
+    const prop = callbackEvaluation || propertyEvaluation;
     if (!seen.has(prop)) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       seen.add(prop);
       return true;
     }

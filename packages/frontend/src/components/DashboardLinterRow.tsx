@@ -33,22 +33,31 @@ export default function DashboardLinterRow({
   return (
     <TableRow key={localPackageLinter.id}>
       <TableCell scope="row">
-        <Link
-          href={`/dashboard/repos/${encodeURIComponent(
-            localPackageLintFramework.localPackage.repository.fullName
-          )}/packages/${
-            localPackageLintFramework.localPackage.path === '.'
-              ? 'root'
-              : localPackageLintFramework.localPackage.path
-          }/linters/${localPackageLinter.linter.lintFramework.name}/plugins/${
-            localPackageLinter.linter.package.name
-          }`}
-        >
-          {localPackageLinter.linter.package.name}
-        </Link>
+        {!localPackageLinter.isPresent &&
+          localPackageLinter.linter.package.name}
+        {localPackageLinter.isPresent && (
+          <Link
+            href={`/dashboard/repos/${encodeURIComponent(
+              localPackageLintFramework.localPackage.repository.fullName
+            )}/packages/${
+              localPackageLintFramework.localPackage.path === '.'
+                ? 'root'
+                : localPackageLintFramework.localPackage.path
+            }/linters/${localPackageLinter.linter.lintFramework.name}/plugins/${
+              localPackageLinter.linter.package.name
+            }`}
+          >
+            {localPackageLinter.linter.package.name}
+          </Link>
+        )}
       </TableCell>
       <TableCell scope="row" align="right">
         {localPackageLinter.version}
+        {localPackageLinter.isSuggested ? (
+          <Chip label="Suggested" color="info"></Chip>
+        ) : (
+          ''
+        )}
       </TableCell>
       <TableCell scope="row" align="right">
         {localPackageLinter.linter.package.versions.at(-1)?.version}
@@ -69,31 +78,36 @@ export default function DashboardLinterRow({
             />
           ))}
       </TableCell>
-      <TableCell scope="row" align="right">
-        {
-          // Count rules that are either enabled individually or enabled by a config that is enabled.
-          localPackageLinter.linter.rules.filter(
-            (rule) =>
-              rule.localPackageRules.some(
-                (localPackageRule) =>
-                  localPackageRule.localPackageId ===
-                    localPackageLinter.localPackageId &&
-                  localPackageRule.severity !== '0'
-              ) ||
-              localPackageLinter.linter.configs.some((config) =>
-                config.localPackageConfigs.some(
-                  (localPackageConfig) =>
-                    localPackageConfig.localPackageId ===
+      {!localPackageLinter.isPresent && (
+        <TableCell scope="row" align="right"></TableCell>
+      )}
+      {localPackageLinter.isPresent && (
+        <TableCell scope="row" align="right">
+          {
+            // Count rules that are either enabled individually or enabled by a config that is enabled.
+            localPackageLinter.linter.rules.filter(
+              (rule) =>
+                rule.localPackageRules.some(
+                  (localPackageRule) =>
+                    localPackageRule.localPackageId ===
                       localPackageLinter.localPackageId &&
-                    config.ruleConfigs.some(
-                      (ruleConfig) => ruleConfig.ruleId === rule.id
-                    )
+                    localPackageRule.severity !== '0'
+                ) ||
+                localPackageLinter.linter.configs.some((config) =>
+                  config.localPackageConfigs.some(
+                    (localPackageConfig) =>
+                      localPackageConfig.localPackageId ===
+                        localPackageLinter.localPackageId &&
+                      config.ruleConfigs.some(
+                        (ruleConfig) => ruleConfig.ruleId === rule.id
+                      )
+                  )
                 )
-              )
-          ).length
-        }{' '}
-        / {localPackageLinter.linter.rules.length}
-      </TableCell>
+            ).length
+          }{' '}
+          / {localPackageLinter.linter.rules.length}
+        </TableCell>
+      )}
     </TableRow>
   );
 }

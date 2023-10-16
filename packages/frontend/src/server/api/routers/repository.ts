@@ -5,6 +5,8 @@ import { env } from '@/env.mjs';
 import { dirname } from 'node:path';
 import { PackageJson } from 'type-fest';
 import type { TSESLint } from '@typescript-eslint/utils';
+import { uniqueItems } from '@/utils/javascript';
+import { getLintersForPackage } from '@/utils/lintees';
 
 function extendsToInfo(
   extendsList: string[] | undefined
@@ -265,10 +267,18 @@ export const repositoryRouter = createTRPCRouter({
       const localPackageLinters = Object.keys(
         localPackageAllDependencies
       ).filter((dependency) => dependency.startsWith('eslint-plugin-'));
-      const localPackageLinterPackageIds = await ctx.prisma.package.findMany({
+      const suggestedLinters = Object.keys(localPackageAllDependencies).flatMap(
+        (dep) => getLintersForPackage(dep)
+      );
+      const linterPackageIds = await ctx.prisma.package.findMany({
         where: {
           name: {
-            in: localPackageLinters,
+            in: [
+              // Installed linters.
+              ...localPackageLinters,
+              // Suggested linters.
+              ...suggestedLinters,
+            ],
           },
         },
         select: {
@@ -276,6 +286,9 @@ export const repositoryRouter = createTRPCRouter({
           name: true,
         },
       });
+      const linterToPackageId = Object.fromEntries(
+        linterPackageIds.map((obj) => [obj.name, obj.id])
+      );
 
       // TODO: support other lint frameworks.
       const lintFramework = await ctx.prisma.lintFramework.findFirstOrThrow({
@@ -403,15 +416,43 @@ export const repositoryRouter = createTRPCRouter({
                 },
 
                 localPackageLinters: {
-                  create: localPackageLinterPackageIds.map((obj) => ({
-                    isPresent: true,
-                    version: localPackageAllDependencies[obj.name],
-                    linter: {
-                      connect: {
-                        packageId: obj.id,
-                      },
-                    },
-                  })),
+                  // Dedupe in case suggested linters already installed.
+                  create: [
+                    ...uniqueItems(
+                      [
+                        // Present linters.
+                        ...localPackageLinters
+                          .filter(
+                            (linterName) =>
+                              linterToPackageId[linterName] !== undefined
+                          )
+                          .map((linterName) => ({
+                            isPresent: true,
+                            version: localPackageAllDependencies[linterName],
+                            linter: {
+                              connect: {
+                                packageId: linterToPackageId[linterName],
+                              },
+                            },
+                          })),
+                        // Suggested linters.
+                        ...suggestedLinters
+                          .filter(
+                            (linterName) =>
+                              linterToPackageId[linterName] !== undefined
+                          )
+                          .map((linterName) => ({
+                            isSuggested: true,
+                            linter: {
+                              connect: {
+                                packageId: linterToPackageId[linterName],
+                              },
+                            },
+                          })),
+                      ],
+                      (obj) => obj.linter.connect.packageId
+                    ),
+                  ],
                 },
 
                 localPackageConfigs: {
