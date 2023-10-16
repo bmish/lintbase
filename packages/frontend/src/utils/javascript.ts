@@ -33,7 +33,6 @@ export function uniqueItems<T>(
 
 export async function createObjectAsync<T>(
   keys: string[],
-
   create: (_key: string) => Promise<T>
 ): Promise<Record<string, T>> {
   const results = await Promise.all(keys.map((key) => create(key)));

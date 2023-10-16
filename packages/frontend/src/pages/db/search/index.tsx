@@ -95,6 +95,15 @@ export async function getServerSideProps({
               },
             },
           },
+          {
+            lintees: {
+              some: {
+                name: {
+                  contains: q,
+                },
+              },
+            },
+          },
         ],
       }
     : {};
