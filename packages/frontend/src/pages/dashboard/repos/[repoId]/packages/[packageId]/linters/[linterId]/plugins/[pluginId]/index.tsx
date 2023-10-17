@@ -44,11 +44,17 @@ const include = {
         include: {
           localPackageRules: true,
         },
+        orderBy: {
+          name: Prisma.SortOrder.asc,
+        },
       },
       configs: {
         include: {
           localPackageConfigs: true,
           ruleConfigs: true,
+        },
+        orderBy: {
+          name: Prisma.SortOrder.asc,
         },
       },
       package: { include: { versions: true } },

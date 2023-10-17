@@ -35,6 +35,13 @@ const include = {
     include: {
       repository: true,
       localPackageLinters: {
+        orderBy: {
+          linter: {
+            package: {
+              name: Prisma.SortOrder.asc,
+            },
+          },
+        },
         include: {
           linter: {
             include: {
