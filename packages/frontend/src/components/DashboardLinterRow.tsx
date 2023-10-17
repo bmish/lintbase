@@ -53,10 +53,12 @@ export default function DashboardLinterRow({
       </TableCell>
       <TableCell scope="row" align="right">
         {localPackageLinter.version}
-        {localPackageLinter.isSuggested ? (
+        {localPackageLinter.isSuggested && (
           <Chip label="Suggested" color="info"></Chip>
-        ) : (
-          ''
+        )}
+        {localPackageLinter.linter.package.deprecated && ' '}
+        {localPackageLinter.linter.package.deprecated && (
+          <Chip label="Deprecated" color="error" />
         )}
       </TableCell>
       <TableCell scope="row" align="right">

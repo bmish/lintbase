@@ -13,10 +13,11 @@ import {
 } from './eslint';
 import { Prisma } from '@prisma/client';
 import { asArray, createObjectAsync, uniqueItems } from './javascript';
-import { NpmRegistryInfo, getNpmInfo } from './npm';
-import { getLinteesForLinter } from './lintees';
+import { NpmRegistryInfo, getDeprecationMessage, getNpmInfo } from './npm';
+import { LINTERS_DEPRECATED, getLinteesForLinter } from './lintees';
 
 const LIMIT_LINTERS_PER_FRAMEWORK = Number.MAX_SAFE_INTEGER; // Useful for partial loading during testing.
+const LIMIT_TO_SPECIFIC_LINTERS: readonly string[] = []; // Useful for partial loading during testing.
 
 const IGNORED_KEYWORDS = new Set([
   'configs',
@@ -98,6 +99,12 @@ function createPackageObject(
 
     packageCreatedAt: new Date(npmRegistryInfo.time.created),
     packageUpdatedAt: new Date(npmRegistryInfo.time.modified),
+
+    deprecated:
+      getDeprecationMessage(npmRegistryInfo) !== undefined ||
+      linterName in LINTERS_DEPRECATED,
+    deprecatedReason: getDeprecationMessage(npmRegistryInfo),
+    // TODO: deprecatedReplacements have to be filled in after all the packages are already created.
 
     linkRepository:
       typeof npmRegistryInfo.repository === 'object'
@@ -711,117 +718,127 @@ export async function loadLintersToDb(
       }
     }
 
-    const linterNames = Object.keys(linterRecord).slice(
-      0,
-      LIMIT_LINTERS_PER_FRAMEWORK
-    );
+    // For testing purposes, limit linters.
+    if (
+      LIMIT_LINTERS_PER_FRAMEWORK !== Number.MAX_SAFE_INTEGER ||
+      LIMIT_TO_SPECIFIC_LINTERS.length > 0
+    ) {
+      linterRecord = Object.fromEntries(
+        Object.entries(linterRecord)
+          .filter(([linterName]) => {
+            if (LIMIT_TO_SPECIFIC_LINTERS.length > 0) {
+              return LIMIT_TO_SPECIFIC_LINTERS.includes(linterName);
+            }
+            return true;
+          })
+          .slice(0, LIMIT_LINTERS_PER_FRAMEWORK)
+      );
+    }
+
+    const linterNames = Object.keys(linterRecord);
     const npmInfo = await getNpmInfo([
       ...linterNames,
       ...linterNames.flatMap((linterName) => getLinteesForLinter(linterName)),
     ]);
 
     const lintersCreatedForThisType = await Promise.all(
-      Object.entries(linterRecord)
-        .slice(0, LIMIT_LINTERS_PER_FRAMEWORK)
-        .flatMap(async ([linterName, linter]) => {
-          const pathPackageJson = path.join(
-            downloadPath,
-            'node_modules',
-            linterName,
-            'package.json'
-          );
-          const packageJson = JSON.parse(
-            readFileSync(pathPackageJson, { encoding: 'utf8' })
-          ) as PackageJson;
+      Object.entries(linterRecord).flatMap(async ([linterName, linter]) => {
+        const pathPackageJson = path.join(
+          downloadPath,
+          'node_modules',
+          linterName,
+          'package.json'
+        );
+        const packageJson = JSON.parse(
+          readFileSync(pathPackageJson, { encoding: 'utf8' })
+        ) as PackageJson;
 
-          const { npmDownloadsInfo, npmRegistryInfo } =
-            npmInfo[linterName] || {};
-          if (!npmDownloadsInfo || !npmRegistryInfo) {
-            console.log(`Skipping ${linterName} due to missing npm info.`); // eslint-disable-line no-console
-            return [];
+        const { npmDownloadsInfo, npmRegistryInfo } = npmInfo[linterName] || {};
+        if (!npmDownloadsInfo || !npmRegistryInfo) {
+          console.log(`Skipping ${linterName} due to missing npm info.`); // eslint-disable-line no-console
+          return [];
+        }
+
+        let linterNormalized;
+        switch (linterType) {
+          case 'eslint':
+          case 'eslint-plugin': {
+            linterNormalized = await eslintLinterToNormalizedLinter(
+              linterName,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+              linter,
+              packageJson,
+              npmDownloadsInfo,
+              npmRegistryInfo,
+              lintFrameworks.eslint.id,
+              ecosystemNode.id
+            );
+            break;
           }
 
-          let linterNormalized;
-          switch (linterType) {
-            case 'eslint':
-            case 'eslint-plugin': {
-              linterNormalized = await eslintLinterToNormalizedLinter(
-                linterName,
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                linter,
-                packageJson,
-                npmDownloadsInfo,
-                npmRegistryInfo,
-                lintFrameworks.eslint.id,
-                ecosystemNode.id
-              );
-              break;
-            }
-
-            case 'ember-template-lint':
-            case 'ember-template-lint-plugin': {
-              linterNormalized =
-                await emberTemplateLintLinterToNormalizedLinter(
-                  linterName,
-                  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                  linter,
-                  packageJson,
-                  npmDownloadsInfo,
-                  npmRegistryInfo,
-                  lintFrameworks['ember-template-lint'].id,
-                  ecosystemNode.id
-                );
-              break;
-            }
-
-            case 'stylelint': {
-              linterNormalized = await stylelintToNormalizedLinter(
-                linterName,
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                linter,
-                packageJson,
-                npmDownloadsInfo,
-                npmRegistryInfo,
-                lintFrameworks.stylelint.id,
-                ecosystemNode.id
-              );
-              break;
-            }
-            case 'stylelint-plugin': {
-              linterNormalized = await stylelintPluginToNormalizedLinter(
-                linterName,
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                linter,
-                packageJson,
-                npmDownloadsInfo,
-                npmRegistryInfo,
-                lintFrameworks.stylelint.id,
-                ecosystemNode.id
-              );
-              break;
-            }
-
-            default: {
-              linterNormalized = await baseToNormalizedLinter(
-                linterName,
-                lintFrameworks[linterType].id,
-                ecosystemNode.id,
-                packageJson,
-                npmDownloadsInfo,
-                npmRegistryInfo,
-                [],
-                [],
-                EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS
-              );
-            }
+          case 'ember-template-lint':
+          case 'ember-template-lint-plugin': {
+            linterNormalized = await emberTemplateLintLinterToNormalizedLinter(
+              linterName,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+              linter,
+              packageJson,
+              npmDownloadsInfo,
+              npmRegistryInfo,
+              lintFrameworks['ember-template-lint'].id,
+              ecosystemNode.id
+            );
+            break;
           }
 
-          if (!linterNormalized) {
-            return [];
+          case 'stylelint': {
+            linterNormalized = await stylelintToNormalizedLinter(
+              linterName,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+              linter,
+              packageJson,
+              npmDownloadsInfo,
+              npmRegistryInfo,
+              lintFrameworks.stylelint.id,
+              ecosystemNode.id
+            );
+            break;
+          }
+          case 'stylelint-plugin': {
+            linterNormalized = await stylelintPluginToNormalizedLinter(
+              linterName,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+              linter,
+              packageJson,
+              npmDownloadsInfo,
+              npmRegistryInfo,
+              lintFrameworks.stylelint.id,
+              ecosystemNode.id
+            );
+            break;
           }
 
-          return [linterNormalized];
-        })
+          default: {
+            linterNormalized = await baseToNormalizedLinter(
+              linterName,
+              lintFrameworks[linterType].id,
+              ecosystemNode.id,
+              packageJson,
+              npmDownloadsInfo,
+              npmRegistryInfo,
+              [],
+              [],
+              EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS
+            );
+          }
+        }
+
+        if (!linterNormalized) {
+          return [];
+        }
+
+        return [linterNormalized];
+      })
     );
 
     lintersCreated.push(...lintersCreatedForThisType);

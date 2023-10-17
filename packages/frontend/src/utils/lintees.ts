@@ -30,7 +30,10 @@ export const LINTERS_RECOMMENDED_ALWAYS = [
 
 export const LINTERS_RECOMMENDED_NEVER = ['eslint-plugin-jest-formatting'];
 
-export const LINTERS_DEPRECATED = { 'eslint-plugin-node': 'eslint-plugin-n' };
+export const LINTERS_DEPRECATED: Record<string, readonly string[] | undefined> =
+  {
+    'eslint-plugin-node': ['eslint-plugin-n'],
+  };
 
 export function getLinteesForLinter(linterName: string) {
   // @ts-expect-error TODO: figure out how to index object by string without error.

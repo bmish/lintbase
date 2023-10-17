@@ -4,7 +4,21 @@ import { PackageJson } from 'type-fest';
 export type NpmRegistryInfo = {
   time: Record<string | 'created' | 'modified', string>;
   'dist-tags'?: Record<string, string> & { latest?: string; next?: string };
+  versions: Record<string, { deprecated?: string } | undefined>;
 } & PackageJson;
+
+export function getDeprecationMessage(
+  registryInfo: NpmRegistryInfo
+): string | undefined {
+  const { 'dist-tags': distTags, versions } = registryInfo;
+  if (distTags?.latest) {
+    const latestVersion = versions[distTags.latest];
+    if (latestVersion?.deprecated) {
+      return latestVersion.deprecated;
+    }
+  }
+  return undefined;
+}
 
 export async function getNpmInfo(packageNames: readonly string[]): Promise<
   Record<
@@ -38,6 +52,7 @@ export async function getNpmInfo(packageNames: readonly string[]): Promise<
             | { downloads: number }
             | { error: string };
 
+          // https://github.com/npm/registry/blob/master/docs/responses/package-metadata.md
           npmRegistryInfo = await fetch(
             `https://registry.npmjs.org/${packageName}`
           ).then((res) => res.json());

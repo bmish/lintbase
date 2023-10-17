@@ -143,6 +143,8 @@ CREATE TABLE "Package" (
     "emailBugs" TEXT,
     "ecosystemId" INTEGER NOT NULL,
     "linterId" INTEGER,
+    "deprecated" BOOLEAN NOT NULL DEFAULT false,
+    "deprecatedReason" TEXT,
 
     CONSTRAINT "Package_pkey" PRIMARY KEY ("id")
 );
@@ -301,6 +303,12 @@ CREATE TABLE "LocalPackageConfig" (
 );
 
 -- CreateTable
+CREATE TABLE "_PackageReplacements" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL
+);
+
+-- CreateTable
 CREATE TABLE "_LinterPackagesFor" (
     "A" INTEGER NOT NULL,
     "B" INTEGER NOT NULL
@@ -374,6 +382,12 @@ CREATE UNIQUE INDEX "LocalPackageRule_localPackageId_ruleId_key" ON "LocalPackag
 
 -- CreateIndex
 CREATE UNIQUE INDEX "LocalPackageConfig_localPackageId_configId_key" ON "LocalPackageConfig"("localPackageId", "configId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_PackageReplacements_AB_unique" ON "_PackageReplacements"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_PackageReplacements_B_index" ON "_PackageReplacements"("B");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_LinterPackagesFor_AB_unique" ON "_LinterPackagesFor"("A", "B");
@@ -458,6 +472,12 @@ ALTER TABLE "LocalPackageConfig" ADD CONSTRAINT "LocalPackageConfig_localPackage
 
 -- AddForeignKey
 ALTER TABLE "LocalPackageConfig" ADD CONSTRAINT "LocalPackageConfig_configId_fkey" FOREIGN KEY ("configId") REFERENCES "Config"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_PackageReplacements" ADD CONSTRAINT "_PackageReplacements_A_fkey" FOREIGN KEY ("A") REFERENCES "Package"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_PackageReplacements" ADD CONSTRAINT "_PackageReplacements_B_fkey" FOREIGN KEY ("B") REFERENCES "Package"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_LinterPackagesFor" ADD CONSTRAINT "_LinterPackagesFor_A_fkey" FOREIGN KEY ("A") REFERENCES "Linter"("id") ON DELETE CASCADE ON UPDATE CASCADE;

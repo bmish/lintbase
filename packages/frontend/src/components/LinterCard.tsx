@@ -11,6 +11,7 @@ import {
   Card,
   CardActions,
   CardContent,
+  Chip,
   Link,
   Typography,
 } from '@mui/material';
@@ -101,6 +102,14 @@ export default function LinterCard({
 
         <Typography variant="h5" component="div">
           {detailed && linter.package.name}
+          {detailed && linter.package.deprecated && ' '}
+          {detailed && linter.package.deprecated && (
+            <Chip
+              color="error"
+              label="Deprecated"
+              title={linter.package.deprecatedReason || ''}
+            />
+          )}
           {!detailed && (
             <Link href={packageToLinkUs(linter.package)} underline="none">
               {linter.package.name}

@@ -202,6 +202,11 @@ model Package {
   // A package might be linted by various linters.
   linters Linter[] @relation("LinterPackagesFor")
 
+  deprecated Boolean @default(false)
+  deprecatedReason String?
+  deprecatedReplacements Package[] @relation("PackageReplacements") // Packages replacing this package.
+  deprecatedReplaced Package[] @relation("PackageReplacements") // Packages replaced by this package.
+
   @@unique([name, ecosystemId])
 }
 
