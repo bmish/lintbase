@@ -29,6 +29,7 @@ const includeLinters = {
           tags: true,
         },
       },
+      deprecatedReplacements: true,
     },
   },
   lintees: true,

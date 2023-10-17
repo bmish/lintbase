@@ -43,6 +43,8 @@ export const env = createEnv({
     PORT: z.string().optional(),
 
     VERCEL_URL: z.string().optional(),
+
+    ADMIN_EMAIL: z.string().optional(),
   },
 
   /**

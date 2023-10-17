@@ -100,11 +100,12 @@ function createPackageObject(
     packageCreatedAt: new Date(npmRegistryInfo.time.created),
     packageUpdatedAt: new Date(npmRegistryInfo.time.modified),
 
+    // Handle deprecations.
+    // Note: deprecatedReplacements are filled in later after all the packages are already created.
     deprecated:
       getDeprecationMessage(npmRegistryInfo) !== undefined ||
       linterName in LINTERS_DEPRECATED,
     deprecatedReason: getDeprecationMessage(npmRegistryInfo),
-    // TODO: deprecatedReplacements have to be filled in after all the packages are already created.
 
     linkRepository:
       typeof npmRegistryInfo.repository === 'object'
@@ -631,16 +632,7 @@ function createLintFrameworks(ecosystemId: number) {
   );
 }
 
-export async function loadLintersToDb(
-  eslintRules: Record<
-    string,
-    | TSESLint.RuleCreateFunction
-    | TSESLint.RuleModule<string, unknown[], TSESLint.RuleListener>
-  >
-) {
-  const linterTypes = [...CORE_LINTING_FRAMEWORKS, ...PLUGINS_SUPPORTED];
-
-  // Ecosystems.
+export async function getNodeEcosystem() {
   const ecosystemNode = await prisma.ecosystem.upsert({
     where: { name: 'node' },
     create: {
@@ -652,6 +644,21 @@ export async function loadLintersToDb(
     },
     update: {},
   });
+
+  return ecosystemNode;
+}
+
+export async function loadLintersToDb(
+  eslintRules: Record<
+    string,
+    | TSESLint.RuleCreateFunction
+    | TSESLint.RuleModule<string, unknown[], TSESLint.RuleListener>
+  >
+) {
+  const linterTypes = [...CORE_LINTING_FRAMEWORKS, ...PLUGINS_SUPPORTED];
+
+  // Ecosystems.
+  const ecosystemNode = await getNodeEcosystem();
 
   // Lint frameworks.
   const lintFrameworks = await createLintFrameworks(ecosystemNode.id);
@@ -844,5 +851,34 @@ export async function loadLintersToDb(
     lintersCreated.push(...lintersCreatedForThisType);
   }
 
+  await updatePackageDeprecationReplacements(ecosystemNode.id);
+
   return lintersCreated;
+}
+
+export async function updatePackageDeprecationReplacements(
+  ecosystemId: number
+) {
+  for (const [deprecatedLinterName, replacements] of Object.entries(
+    LINTERS_DEPRECATED
+  )) {
+    await prisma.package.update({
+      where: {
+        name_ecosystemId: {
+          name: deprecatedLinterName,
+          ecosystemId,
+        },
+      },
+      data: {
+        deprecatedReplacements: {
+          connect: (replacements || []).map((replacement) => ({
+            name_ecosystemId: {
+              name: replacement,
+              ecosystemId,
+            },
+          })),
+        },
+      },
+    });
+  }
 }

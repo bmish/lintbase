@@ -60,6 +60,7 @@ const include = {
           tags: true,
         },
       },
+      deprecatedReplacements: true,
     },
   },
   lintees: true,

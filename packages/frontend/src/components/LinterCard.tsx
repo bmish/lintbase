@@ -56,6 +56,7 @@ export default function LinterCard({
               tags: true;
             };
           };
+          deprecatedReplacements: true;
         };
       };
       configs: true;
@@ -110,6 +111,16 @@ export default function LinterCard({
               title={linter.package.deprecatedReason || ''}
             />
           )}
+          {detailed && linter.package.deprecatedReplacements.length > 0 && ' '}
+          {detailed &&
+            linter.package.deprecatedReplacements.map((replacementPackage) => (
+              <Link
+                key={replacementPackage.id}
+                href={packageToLinkUs(replacementPackage)}
+              >
+                <Chip color="success" label={replacementPackage.name} />
+              </Link>
+            ))}
           {!detailed && (
             <Link href={packageToLinkUs(linter.package)} underline="none">
               {linter.package.name}

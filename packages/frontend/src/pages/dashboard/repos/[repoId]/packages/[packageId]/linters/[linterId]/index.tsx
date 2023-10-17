@@ -46,7 +46,9 @@ const include = {
           linter: {
             include: {
               lintFramework: true,
-              package: { include: { versions: true } },
+              package: {
+                include: { versions: true, deprecatedReplacements: true },
+              },
               rules: {
                 include: {
                   localPackageRules: true,

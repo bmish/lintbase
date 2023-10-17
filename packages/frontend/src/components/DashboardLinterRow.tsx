@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { Chip, Link, TableCell, TableRow } from '@mui/material';
 import { getConfigEmojis } from '@/utils/config-emoji';
+import { packageToLinkUs } from '@/utils/dynamic-fields';
 
 export default function DashboardLinterRow({
   localPackageLintFramework,
@@ -11,7 +12,9 @@ export default function DashboardLinterRow({
       linter: {
         include: {
           lintFramework: true;
-          package: { include: { versions: true } };
+          package: {
+            include: { versions: true; deprecatedReplacements: true };
+          };
           rules: { include: { ruleConfigs: true; localPackageRules: true } };
           configs: {
             include: {
@@ -59,6 +62,18 @@ export default function DashboardLinterRow({
         {localPackageLinter.linter.package.deprecated && ' '}
         {localPackageLinter.linter.package.deprecated && (
           <Chip label="Deprecated" color="error" />
+        )}
+        {localPackageLinter.linter.package.deprecatedReplacements.length > 0 &&
+          ' '}
+        {localPackageLinter.linter.package.deprecatedReplacements.map(
+          (replacementPackage) => (
+            <Link
+              key={replacementPackage.id}
+              href={packageToLinkUs(replacementPackage)}
+            >
+              <Chip color="success" label={replacementPackage.name} />
+            </Link>
+          )
         )}
       </TableCell>
       <TableCell scope="row" align="right">
