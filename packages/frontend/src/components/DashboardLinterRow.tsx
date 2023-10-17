@@ -63,20 +63,21 @@ export default function DashboardLinterRow({
         {localPackageLinter.linter.package.versions.at(-1)?.version}
       </TableCell>
       <TableCell scope="row" align="right">
-        {localPackageLinter.linter.configs
-          .filter((config) =>
-            config.localPackageConfigs.some(
-              (localPackageConfig) =>
-                localPackageConfig.localPackageId ===
-                localPackageLinter.localPackageId
+        {localPackageLinter.isPresent &&
+          localPackageLinter.linter.configs
+            .filter((config) =>
+              config.localPackageConfigs.some(
+                (localPackageConfig) =>
+                  localPackageConfig.localPackageId ===
+                  localPackageLinter.localPackageId
+              )
             )
-          )
-          .map((config) => (
-            <Chip
-              key={config.id}
-              label={`${configToEmoji[config.name] || ''} ${config.name}`}
-            />
-          ))}
+            .map((config) => (
+              <Chip
+                key={config.id}
+                label={`${configToEmoji[config.name] || ''} ${config.name}`}
+              />
+            ))}
       </TableCell>
       {!localPackageLinter.isPresent && (
         <TableCell scope="row" align="right"></TableCell>

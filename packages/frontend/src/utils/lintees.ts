@@ -9,7 +9,7 @@ const LINTER_TO_LINTEES = {
   'eslint-plugin-ember': ['ember-cli', 'ember-source'],
   'eslint-plugin-jest': ['jest'],
   'eslint-plugin-jest-dom': ['jest-dom'],
-  'eslint-plugin-jest-formatting': ['jest'], // TODO: don't recommend this one.
+  'eslint-plugin-jest-formatting': ['jest'],
   'eslint-plugin-jsx-a11y': ['react', 'react-dom'],
   'eslint-plugin-lodash': ['lodash'],
   'eslint-plugin-mocha': ['mocha'],
@@ -19,8 +19,18 @@ const LINTER_TO_LINTEES = {
   'eslint-plugin-react-hooks': ['react', 'react-dom'],
   'eslint-plugin-react-native': ['react-native'],
   'eslint-plugin-storybook': ['storybook'],
+  'eslint-plugin-tailwindcss': ['tailwindcss'],
   'eslint-plugin-vue': ['vue'],
 };
+
+export const LINTERS_RECOMMENDED_ALWAYS = [
+  'eslint-plugin-n',
+  'eslint-plugin-unicorn',
+];
+
+export const LINTERS_RECOMMENDED_NEVER = ['eslint-plugin-jest-formatting'];
+
+export const LINTERS_DEPRECATED = { 'eslint-plugin-node': 'eslint-plugin-n' };
 
 export function getLinteesForLinter(linterName: string) {
   // @ts-expect-error TODO: figure out how to index object by string without error.

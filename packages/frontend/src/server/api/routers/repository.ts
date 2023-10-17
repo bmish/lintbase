@@ -6,7 +6,12 @@ import { dirname } from 'node:path';
 import { PackageJson } from 'type-fest';
 import type { TSESLint } from '@typescript-eslint/utils';
 import { uniqueItems } from '@/utils/javascript';
-import { getLintersForPackage } from '@/utils/lintees';
+import {
+  LINTERS_RECOMMENDED_ALWAYS,
+  LINTERS_RECOMMENDED_NEVER,
+  LINTERS_DEPRECATED,
+  getLintersForPackage,
+} from '@/utils/lintees';
 
 function extendsToInfo(
   extendsList: string[] | undefined
@@ -267,9 +272,18 @@ export const repositoryRouter = createTRPCRouter({
       const localPackageLinters = Object.keys(
         localPackageAllDependencies
       ).filter((dependency) => dependency.startsWith('eslint-plugin-'));
-      const suggestedLinters = Object.keys(localPackageAllDependencies).flatMap(
-        (dep) => getLintersForPackage(dep)
+
+      const suggestedLinters = [
+        ...Object.keys(localPackageAllDependencies).flatMap((dep) =>
+          getLintersForPackage(dep)
+        ),
+        ...LINTERS_RECOMMENDED_ALWAYS,
+      ].filter(
+        (linterName) =>
+          !LINTERS_RECOMMENDED_NEVER.includes(linterName) ||
+          linterName in LINTERS_DEPRECATED
       );
+
       const linterPackageIds = await ctx.prisma.package.findMany({
         where: {
           name: {
