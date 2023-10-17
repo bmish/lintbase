@@ -44,7 +44,7 @@ export const env = createEnv({
 
     VERCEL_URL: z.string().optional(),
 
-    ADMIN_EMAIL: z.string().optional(),
+    ADMIN_GITHUB_ID: z.string().optional(),
   },
 
   /**
@@ -84,6 +84,8 @@ export const env = createEnv({
     PORT: process.env.PORT,
 
     VERCEL_URL: process.env.VERCEL_URL,
+
+    ADMIN_GITHUB_ID: process.env.ADMIN_GITHUB_ID,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
