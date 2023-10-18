@@ -11,12 +11,13 @@ export default function DashboardNavigation() {
       ? 'home'
       : pathParts.length > 2 &&
         pathParts[1] === 'dashboard' &&
-        ['home', 'repos'].includes(pathParts[2])
+        ['home', 'repos', 'starred'].includes(pathParts[2])
       ? pathParts[2]
       : undefined;
 
   // TODO: temporarily hidden behind query parameter until we have a need for multiple Dashboard sections.
-  return router.query.showDashboardNavigation ? (
+
+  return (
     <nav className="pt-8 w-full px-6">
       <ToggleButtonGroup
         color="primary"
@@ -26,15 +27,16 @@ export default function DashboardNavigation() {
         className="mx-auto bg-white"
         fullWidth={true}
       >
-        <ToggleButton value="home" href="/dashboard">
+        {/* <ToggleButton value="home" href="/dashboard">
           Home
-        </ToggleButton>
+        </ToggleButton> */}
         <ToggleButton value="repos" href="/dashboard/repos">
           Repositories
         </ToggleButton>
+        <ToggleButton value="starred" href="/dashboard/starred">
+          Starred
+        </ToggleButton>
       </ToggleButtonGroup>
     </nav>
-  ) : (
-    <></>
   );
 }
