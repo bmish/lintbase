@@ -127,15 +127,15 @@ CREATE TABLE "Package" (
     "name" TEXT NOT NULL,
     "description" TEXT,
     "descriptionAI" TEXT,
-    "packageCreatedAt" TIMESTAMP(3) NOT NULL,
-    "packageUpdatedAt" TIMESTAMP(3) NOT NULL,
-    "countContributors" INTEGER NOT NULL,
-    "countForks" INTEGER NOT NULL,
-    "countIssues" INTEGER NOT NULL,
-    "countPrs" INTEGER NOT NULL,
-    "countStars" INTEGER NOT NULL,
-    "countWatching" INTEGER NOT NULL,
-    "countWeeklyDownloads" INTEGER NOT NULL,
+    "packageCreatedAt" TIMESTAMP(3),
+    "packageUpdatedAt" TIMESTAMP(3),
+    "countContributors" INTEGER,
+    "countForks" INTEGER,
+    "countIssues" INTEGER,
+    "countPrs" INTEGER,
+    "countStars" INTEGER,
+    "countWatching" INTEGER,
+    "countWeeklyDownloads" INTEGER,
     "repositoryDirectory" TEXT,
     "linkRepository" TEXT,
     "linkHomepage" TEXT,
@@ -143,6 +143,7 @@ CREATE TABLE "Package" (
     "emailBugs" TEXT,
     "ecosystemId" INTEGER NOT NULL,
     "linterId" INTEGER,
+    "repositoryId" INTEGER,
     "deprecated" BOOLEAN NOT NULL DEFAULT false,
     "deprecatedReason" TEXT,
 
@@ -207,6 +208,7 @@ CREATE TABLE "User" (
     "name" TEXT,
     "locale" TEXT,
     "accountProvider" TEXT,
+    "checkedStarsAt" TIMESTAMP(3),
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -216,7 +218,7 @@ CREATE TABLE "Repository" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "ownerId" TEXT NOT NULL,
+    "ownerId" TEXT,
     "fullName" TEXT NOT NULL,
     "description" TEXT,
     "descriptionAI" TEXT,
@@ -226,8 +228,37 @@ CREATE TABLE "Repository" (
     "scannedAt" TIMESTAMP(3),
     "language" TEXT,
     "size" INTEGER,
+    "githubId" INTEGER,
+    "githubCreatedAt" TIMESTAMP(3),
+    "githubUpdatedAt" TIMESTAMP(3),
+    "githubPushedAt" TIMESTAMP(3),
+    "archived" BOOLEAN,
+    "disabled" BOOLEAN,
+    "visibility" TEXT,
+    "defaultBranch" TEXT,
+    "private" BOOLEAN,
+    "fork" BOOLEAN,
+    "countForks" INTEGER,
+    "countWatchers" INTEGER,
+    "countStargazers" INTEGER,
+    "urlHtml" TEXT,
+    "urlGit" TEXT,
+    "urlSsh" TEXT,
+    "urlClone" TEXT,
+    "urlHomepage" TEXT,
 
     CONSTRAINT "Repository_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "StarredRepositories" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "userId" TEXT NOT NULL,
+    "repositoryId" INTEGER NOT NULL,
+
+    CONSTRAINT "StarredRepositories_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -369,6 +400,9 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 CREATE UNIQUE INDEX "Repository_fullName_key" ON "Repository"("fullName");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "StarredRepositories_userId_repositoryId_key" ON "StarredRepositories"("userId", "repositoryId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "LocalPackage_repositoryId_path_key" ON "LocalPackage"("repositoryId", "path");
 
 -- CreateIndex
@@ -432,6 +466,9 @@ ALTER TABLE "PackageVersionTag" ADD CONSTRAINT "PackageVersionTag_packageVersion
 ALTER TABLE "Package" ADD CONSTRAINT "Package_ecosystemId_fkey" FOREIGN KEY ("ecosystemId") REFERENCES "Ecosystem"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Package" ADD CONSTRAINT "Package_repositoryId_fkey" FOREIGN KEY ("repositoryId") REFERENCES "Repository"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Linter" ADD CONSTRAINT "Linter_lintFrameworkId_fkey" FOREIGN KEY ("lintFrameworkId") REFERENCES "LintFramework"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -444,7 +481,13 @@ ALTER TABLE "LintFramework" ADD CONSTRAINT "LintFramework_ecosystemId_fkey" FORE
 ALTER TABLE "LintFramework" ADD CONSTRAINT "LintFramework_linterId_fkey" FOREIGN KEY ("linterId") REFERENCES "Linter"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Repository" ADD CONSTRAINT "Repository_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Repository" ADD CONSTRAINT "Repository_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "StarredRepositories" ADD CONSTRAINT "StarredRepositories_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "StarredRepositories" ADD CONSTRAINT "StarredRepositories_repositoryId_fkey" FOREIGN KEY ("repositoryId") REFERENCES "Repository"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "LocalPackage" ADD CONSTRAINT "LocalPackage_repositoryId_fkey" FOREIGN KEY ("repositoryId") REFERENCES "Repository"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

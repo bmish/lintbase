@@ -60,6 +60,7 @@ const include = {
           tags: true,
         },
       },
+      repository: { include: { stars: true } },
       deprecatedReplacements: true,
     },
   },
@@ -225,6 +226,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           ...obj,
           rules: obj.rules.map((rule) => fixAnyDatesInObject(rule)),
         })),
+        userId: session?.user.id,
       },
     },
   };
@@ -253,7 +255,7 @@ function embeddingsToLists(
   return listsOfRules;
 }
 export default function Linter({
-  data: { linter, lintersRelated, listsOfRules },
+  data: { linter, lintersRelated, listsOfRules, userId },
 }: {
   data: {
     linter: Prisma.LinterGetPayload<{ include: typeof include }>;
@@ -262,6 +264,7 @@ export default function Linter({
       title: string;
       rules: Prisma.RuleGetPayload<{ include: typeof include.rules.include }>[];
     }[];
+    userId?: string;
   };
 }) {
   const configToEmoji = getConfigEmojis(linter.configs);
@@ -280,7 +283,13 @@ export default function Linter({
       <DatabaseNavigation />
 
       <main className="flex-grow overflow-y-auto bg-gray-100 pt-8 px-6 mx-auto min-h-screen">
-        {linter && <LinterCard linter={linter} detailed={true}></LinterCard>}
+        {linter && (
+          <LinterCard
+            linter={linter}
+            detailed={true}
+            userId={userId}
+          ></LinterCard>
+        )}
 
         {lintersRelated && lintersRelated.length > 0 && (
           <div className="mt-8">

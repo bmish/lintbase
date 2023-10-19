@@ -24,6 +24,9 @@ import Footer from '@/components/Footer';
 import DashboardNavigation from '@/components/DashboardNavigation';
 import { Octokit } from 'octokit';
 import { env } from '@/env.mjs';
+import { getServerAuthSession } from '@/server/auth';
+import { type GetServerSideProps } from 'next';
+import { getNodeEcosystem } from '@/utils/normalize';
 
 const include = {
   rules: true,
@@ -31,28 +34,118 @@ const include = {
   package: true,
 };
 
-export async function getServerSideProps({
-  query,
-}: {
-  query: { p: string; c: string };
-}) {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { query } = context;
+  const p = query?.p as string | undefined;
+  const c = query?.c as string | undefined;
+
   const octokit = new Octokit({
     auth: env.GITHUB_PERSONAL_ACCESS_TOKEN,
   });
 
-  // TODO: need to cache the results to avoid too many github requests.
-  const contents = await octokit.paginate(
-    octokit.rest.activity.listReposStarredByAuthenticatedUser,
-    {
-      headers: {
-        'X-GitHub-Api-Version': '2022-11-28',
+  const session = await getServerAuthSession(context);
+  if (!session) {
+    return { props: {} };
+  }
+
+  const user = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: session.user.id,
+    },
+  });
+
+  if (
+    !user.checkedStarsAt ||
+    Date.now() - user.checkedStarsAt.getTime() > 86_400_000 // Cache for 24 hours.
+  ) {
+    const reposStarred = await octokit.paginate(
+      octokit.rest.activity.listReposStarredByAuthenticatedUser,
+      {
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+        per_page: 100,
+      }
+    );
+
+    const nodeEcosystem = await getNodeEcosystem();
+
+    await prisma.user.update({
+      where: {
+        id: user.id,
       },
-      per_page: 100,
-    }
-  );
+      data: {
+        checkedStarsAt: new Date(),
+        stars: {
+          create: reposStarred
+            .filter((repo) => !repo.fork)
+            .map((repo) => ({
+              repository: {
+                connectOrCreate: {
+                  where: {
+                    fullName: repo.full_name,
+                  },
+                  create: {
+                    archived: repo.archived,
+                    countForks: repo.forks,
+                    countStargazers: repo.stargazers_count,
+                    countWatchers: repo.watchers,
+                    defaultBranch: repo.default_branch,
+                    description: repo.description,
+                    disabled: repo.disabled,
+                    fork: repo.fork,
+                    fullName: repo.full_name,
+                    githubCreatedAt: repo.created_at,
+                    githubId: repo.id,
+                    githubPushedAt: repo.pushed_at,
+                    githubUpdatedAt: repo.updated_at,
+                    language: repo.language,
+                    private: repo.private,
+                    size: repo.size,
+                    urlClone: repo.clone_url,
+                    urlGit: repo.git_url,
+                    urlHomepage: repo.homepage,
+                    urlHtml: repo.html_url,
+                    urlSsh: repo.ssh_url,
+                    visibility: repo.visibility,
+
+                    package: {
+                      connectOrCreate: {
+                        where: {
+                          name_ecosystemId: {
+                            name: repo.name,
+                            ecosystemId: nodeEcosystem.id,
+                          },
+                        },
+                        create: {
+                          name: repo.name,
+                          ecosystemId: nodeEcosystem.id,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            })),
+        },
+      },
+    });
+  }
+
+  const userWithStars = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: session.user.id,
+    },
+    include: {
+      stars: {
+        include: {
+          repository: true,
+        },
+      },
+    },
+  });
 
   // Access individual query parameters
-  const { p, c } = query;
   const currentPage = p ? Number(p) - 1 : 0;
   const pageSize = c ? Number(c) : 25;
 
@@ -61,9 +154,9 @@ export async function getServerSideProps({
     OR: [{ rules: { some: {} } }, { configs: { some: {} } }],
   };
   const starred = {
-    OR: contents.map((content) => ({
+    OR: userWithStars.stars.map((stars) => ({
       package: {
-        name: content.name, // TODO: need to use full_name
+        name: stars.repository.fullName.split('/')[1], // TODO: need to get actual package name from repository.
       },
     })),
   };
@@ -93,7 +186,7 @@ export async function getServerSideProps({
       data: { linters: lintersFixed, linterCount, currentPage, pageSize },
     },
   };
-}
+};
 
 export default function Starred({
   data: { linters, linterCount, currentPage, pageSize },
@@ -190,19 +283,22 @@ export default function Starred({
                   <TableCell align="right">{linter.rules.length}</TableCell>
                   <TableCell align="right">{linter.configs.length}</TableCell>
                   <TableCell align="right">
-                    {millify(linter.package.countWeeklyDownloads)}
+                    {linter.package.countWeeklyDownloads &&
+                      millify(linter.package.countWeeklyDownloads)}
                   </TableCell>
                   <TableCell align="right">
-                    <time
-                      dateTime={new Date(
-                        linter.package.packageUpdatedAt
-                      ).toISOString()}
-                      title={new Date(
-                        linter.package.packageUpdatedAt
-                      ).toUTCString()}
-                    >
-                      {format(new Date(linter.package.packageUpdatedAt))}
-                    </time>
+                    {linter.package.packageUpdatedAt && (
+                      <time
+                        dateTime={new Date(
+                          linter.package.packageUpdatedAt
+                        ).toISOString()}
+                        title={new Date(
+                          linter.package.packageUpdatedAt
+                        ).toUTCString()}
+                      >
+                        {format(new Date(linter.package.packageUpdatedAt))}
+                      </time>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

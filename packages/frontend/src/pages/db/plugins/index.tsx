@@ -224,19 +224,22 @@ export default function Plugins({
                   <TableCell align="right">{linter.rules.length}</TableCell>
                   <TableCell align="right">{linter.configs.length}</TableCell>
                   <TableCell align="right">
-                    {millify(linter.package.countWeeklyDownloads)}
+                    {linter.package.countWeeklyDownloads &&
+                      millify(linter.package.countWeeklyDownloads)}
                   </TableCell>
                   <TableCell align="right">
-                    <time
-                      dateTime={new Date(
-                        linter.package.packageUpdatedAt
-                      ).toISOString()}
-                      title={new Date(
-                        linter.package.packageUpdatedAt
-                      ).toUTCString()}
-                    >
-                      {format(new Date(linter.package.packageUpdatedAt))}
-                    </time>
+                    {linter.package.packageUpdatedAt && (
+                      <time
+                        dateTime={new Date(
+                          linter.package.packageUpdatedAt
+                        ).toISOString()}
+                        title={new Date(
+                          linter.package.packageUpdatedAt
+                        ).toUTCString()}
+                      >
+                        {format(new Date(linter.package.packageUpdatedAt))}
+                      </time>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

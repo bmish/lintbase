@@ -106,23 +106,25 @@ export default function LintFrameworkTable({
               )}
               <TableCell scope="row" align="right">
                 {lintFramework.linter &&
+                  lintFramework.linter.package.countWeeklyDownloads &&
                   millify(lintFramework.linter.package.countWeeklyDownloads)}
               </TableCell>
               <TableCell align="right">
-                {lintFramework.linter && (
-                  <time
-                    dateTime={new Date(
-                      lintFramework.linter.package.packageUpdatedAt
-                    ).toISOString()}
-                    title={new Date(
-                      lintFramework.linter.package.packageUpdatedAt
-                    ).toUTCString()}
-                  >
-                    {format(
-                      new Date(lintFramework.linter.package.packageUpdatedAt)
-                    )}
-                  </time>
-                )}
+                {lintFramework.linter &&
+                  lintFramework.linter.package.packageUpdatedAt && (
+                    <time
+                      dateTime={new Date(
+                        lintFramework.linter.package.packageUpdatedAt
+                      ).toISOString()}
+                      title={new Date(
+                        lintFramework.linter.package.packageUpdatedAt
+                      ).toUTCString()}
+                    >
+                      {format(
+                        new Date(lintFramework.linter.package.packageUpdatedAt)
+                      )}
+                    </time>
+                  )}
               </TableCell>
             </TableRow>
           ))}

@@ -20,6 +20,7 @@ import GetAppIcon from '@mui/icons-material/GetApp';
 import { Prisma } from '@prisma/client';
 import { format } from 'timeago.js';
 import EmojiAi from './EmojiAi';
+import StarIcon from '@mui/icons-material/Star';
 
 function getRepositoryLink(linkRepository: string | null): string | undefined {
   if (!linkRepository) {
@@ -44,6 +45,7 @@ function getRepositoryLink(linkRepository: string | null): string | undefined {
 export default function LinterCard({
   linter,
   detailed = false,
+  userId,
 }: {
   linter: Prisma.LinterGetPayload<{
     include: {
@@ -57,6 +59,7 @@ export default function LinterCard({
             };
           };
           deprecatedReplacements: true;
+          repository: { include: { stars: true } };
         };
       };
       configs: true;
@@ -66,6 +69,7 @@ export default function LinterCard({
     };
   }>;
   detailed?: boolean;
+  userId?: string | undefined;
 }) {
   const repositoryLink = getRepositoryLink(linter.package.linkRepository);
   const versionToDisplay =
@@ -102,16 +106,14 @@ export default function LinterCard({
         </Breadcrumbs>
 
         <Typography variant="h5" component="div">
-          {detailed && linter.package.name}
-          {detailed && linter.package.deprecated && ' '}
+          {detailed && linter.package.name}{' '}
           {detailed && linter.package.deprecated && (
             <Chip
               color="error"
               label="Deprecated"
               title={linter.package.deprecatedReason || ''}
             />
-          )}
-          {detailed && linter.package.deprecatedReplacements.length > 0 && ' '}
+          )}{' '}
           {detailed &&
             linter.package.deprecatedReplacements.map((replacementPackage) => (
               <Link
@@ -120,7 +122,11 @@ export default function LinterCard({
               >
                 <Chip color="success" label={replacementPackage.name} />
               </Link>
-            ))}
+            ))}{' '}
+          {detailed &&
+            linter.package.repository?.stars.find(
+              (star) => star.userId === userId
+            ) && <StarIcon titleAccess="Starred by you on GitHub" />}
           {!detailed && (
             <Link href={packageToLinkUs(linter.package)} underline="none">
               {linter.package.name}
@@ -138,7 +144,9 @@ export default function LinterCard({
               `${linter.rules.length} Rule${
                 linter.rules.length > 1 ? 's' : ''
               } • `}
-            {millify(linter.package.countWeeklyDownloads)} Wkly{' '}
+            {linter.package.countWeeklyDownloads && (
+              <>{millify(linter.package.countWeeklyDownloads)} Wkly </>
+            )}
             <GetAppIcon fontSize="inherit" titleAccess="Downloads" />
             {versionToDisplay && ' • '}
             {versionToDisplay && (

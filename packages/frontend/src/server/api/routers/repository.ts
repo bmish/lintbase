@@ -97,6 +97,7 @@ export const repositoryRouter = createTRPCRouter({
           size: input.size,
           importedAt: new Date(),
           owner: { connect: { id: ctx.session.user.id } },
+          // TODO: add more repository fields
         },
       });
     }),

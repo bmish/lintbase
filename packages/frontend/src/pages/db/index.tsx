@@ -16,6 +16,8 @@ import { Prisma } from '@prisma/client';
 import Link from 'next/link';
 import Head from 'next/head';
 import Footer from '@/components/Footer';
+import { getServerAuthSession } from '@/server/auth';
+import { type GetServerSideProps } from 'next';
 
 const includeLinters = {
   rules: true,
@@ -29,6 +31,7 @@ const includeLinters = {
           tags: true,
         },
       },
+      repository: { include: { stars: true } },
       deprecatedReplacements: true,
     },
   },
@@ -40,7 +43,9 @@ const actualLinter = {
   OR: [{ rules: { some: {} } }, { configs: { some: {} } }], // Actual linter with rules or configs.
 };
 
-export async function getServerSideProps() {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getServerAuthSession(context);
+
   const [
     lintersPopular,
     packageVersionTagsLatest,
@@ -136,10 +141,11 @@ export async function getServerSideProps() {
         packageVersionTagsLatest: packageVersionTagsLatestFixed,
         commonLinterKeywords,
         commonRuleCategories,
+        userId: session?.user.id,
       },
     },
   };
-}
+};
 
 export default function index({
   data: {
@@ -147,6 +153,7 @@ export default function index({
     packageVersionTagsLatest,
     commonLinterKeywords,
     commonRuleCategories,
+    userId,
   },
 }: {
   data: {
@@ -182,6 +189,7 @@ export default function index({
         };
       }>
     >;
+    userId?: string;
   };
 }) {
   return (
@@ -215,6 +223,7 @@ export default function index({
                   {pvt.packageVersion.package.linter && (
                     <LinterCard
                       linter={pvt.packageVersion.package.linter}
+                      userId={userId}
                     ></LinterCard>
                   )}
                 </li>

@@ -172,16 +172,17 @@ model Package {
   name             String
   description      String?
   descriptionAI    String?
-  packageCreatedAt DateTime
-  packageUpdatedAt DateTime
+  packageCreatedAt DateTime?
+  packageUpdatedAt DateTime?
 
-  countContributors    Int
-  countForks           Int
-  countIssues          Int
-  countPrs             Int
-  countStars           Int
-  countWatching        Int
-  countWeeklyDownloads Int
+  // TODO: move some of this to Repository
+  countContributors    Int?
+  countForks           Int?
+  countIssues          Int?
+  countPrs             Int?
+  countStars           Int?
+  countWatching        Int?
+  countWeeklyDownloads Int?
 
   repositoryDirectory String?
   linkRepository      String?
@@ -202,10 +203,14 @@ model Package {
   // A package might be linted by various linters.
   linters Linter[] @relation("LinterPackagesFor")
 
-  deprecated Boolean @default(false)
-  deprecatedReason String?
+  // We might know the repository a package lives in.
+  repositoryId Int?
+  repository   Repository? @relation(fields: [repositoryId], references: [id])
+
+  deprecated             Boolean   @default(false)
+  deprecatedReason       String?
   deprecatedReplacements Package[] @relation("PackageReplacements") // Packages replacing this package.
-  deprecatedReplaced Package[] @relation("PackageReplacements") // Packages replaced by this package.
+  deprecatedReplaced     Package[] @relation("PackageReplacements") // Packages replaced by this package.
 
   @@unique([name, ecosystemId])
 }
@@ -300,6 +305,9 @@ model User {
   accountProvider String?
 
   repositories Repository[]
+
+  stars          StarredRepositories[]
+  checkedStarsAt DateTime?
 }
 
 model Repository {
@@ -307,8 +315,8 @@ model Repository {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  owner   User   @relation(fields: [ownerId], references: [id])
-  ownerId String
+  owner   User?   @relation(fields: [ownerId], references: [id])
+  ownerId String?
 
   fullName      String  @unique
   description   String?
@@ -323,7 +331,49 @@ model Repository {
   language String?
   size     Int?
 
+  githubId        Int?
+  githubCreatedAt DateTime?
+  githubUpdatedAt DateTime?
+  githubPushedAt  DateTime?
+
+  archived      Boolean?
+  disabled      Boolean?
+  visibility    String?
+  defaultBranch String?
+
+  private Boolean?
+  fork    Boolean?
+
+  countForks      Int?
+  countWatchers   Int?
+  countStargazers Int?
+
+  urlHtml     String?
+  urlGit      String?
+  urlSsh      String?
+  urlClone    String?
+  urlHomepage String?
+
+  // A repository can contain various packages.
+  package Package[]
+
+  stars StarredRepositories[]
+
   localPackages LocalPackage[]
+}
+
+model StarredRepositories {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  repository   Repository @relation(fields: [repositoryId], references: [id])
+  repositoryId Int
+
+  @@unique([userId, repositoryId])
 }
 
 model LocalPackage {
