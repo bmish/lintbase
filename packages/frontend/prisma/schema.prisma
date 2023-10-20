@@ -291,7 +291,7 @@ model UserWaitlist {
 }
 
 model User {
-  id        String   @id
+  id        String   @id // TODO: Switch to a separate field for idGithub
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   visitedAt DateTime
@@ -319,6 +319,7 @@ model Repository {
   ownerId String?
 
   fullName      String  @unique
+  name          String
   description   String?
   descriptionAI String?
 
@@ -331,7 +332,7 @@ model Repository {
   language String?
   size     Int?
 
-  githubId        Int?
+  githubId        Int?      @unique
   githubCreatedAt DateTime?
   githubUpdatedAt DateTime?
   githubPushedAt  DateTime?

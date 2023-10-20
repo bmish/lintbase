@@ -100,6 +100,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                     githubPushedAt: repo.pushed_at,
                     githubUpdatedAt: repo.updated_at,
                     language: repo.language,
+                    name: repo.name,
                     private: repo.private,
                     size: repo.size,
                     urlClone: repo.clone_url,
@@ -156,7 +157,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const starred = {
     OR: userWithStars.stars.map((stars) => ({
       package: {
-        name: stars.repository.fullName.split('/')[1], // TODO: need to get actual package name from repository.
+        name: stars.repository.name, // TODO: need to get actual package name from repository.
       },
     })),
   };

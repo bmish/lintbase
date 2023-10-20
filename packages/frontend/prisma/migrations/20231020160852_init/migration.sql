@@ -220,6 +220,7 @@ CREATE TABLE "Repository" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "ownerId" TEXT,
     "fullName" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "description" TEXT,
     "descriptionAI" TEXT,
     "commitSha" TEXT,
@@ -398,6 +399,9 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Repository_fullName_key" ON "Repository"("fullName");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Repository_githubId_key" ON "Repository"("githubId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "StarredRepositories_userId_repositoryId_key" ON "StarredRepositories"("userId", "repositoryId");

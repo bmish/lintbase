@@ -73,7 +73,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
     commits = await octokit.request('GET /repos/{owner}/{repo}/commits', {
       owner: repo.fullName.split('/')[0],
-      repo: repo.fullName.split('/')[1],
+      repo: repo.name,
       headers: {
         'X-GitHub-Api-Version': '2022-11-28',
       },
