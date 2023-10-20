@@ -227,7 +227,7 @@ export default function index({
         <Grid container spacing={4} columns={{ xs: 2, sm: 4, md: 5 }}>
           <Grid item xs={2}>
             <Typography variant="h6" className="text-center" marginBottom={2}>
-              Popular Linters
+              Popular Linters 🔥
             </Typography>
             <ul className="space-y-8">
               {lintersPopular.map((p) => (
@@ -239,7 +239,7 @@ export default function index({
           </Grid>
           <Grid item xs={2}>
             <Typography variant="h6" className="text-center" marginBottom={2}>
-              Recently Updated
+              Recently Updated 🔄
             </Typography>
             <ul className="space-y-8">
               {packageVersionTagsLatest.map((pvt) => (
@@ -256,7 +256,7 @@ export default function index({
           </Grid>
           <Grid item xs={2} md={1}>
             <Typography variant="h6" className="text-center" marginBottom={2}>
-              Trending Linters
+              Trending Linters 📈
             </Typography>
             <TableContainer component={Paper}>
               <Table aria-label="linter list">
