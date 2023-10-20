@@ -75,7 +75,7 @@ const PLUGINS_SUPPORTED = [
 function createPackageObject(
   linterName: string,
   ecosystemId: number,
-  npmDownloadsInfo: { downloads: number },
+  npmDownloadsInfo: { lastWeek: number; thisWeek: number },
   npmRegistryInfo: NpmRegistryInfo,
   keywordsToIgnore: Set<string>,
   packageJsonLocal?: PackageJson // Only used when we actually downloaded the package locally.
@@ -95,7 +95,8 @@ function createPackageObject(
     countWatching: Math.round(Math.random() * 100),
     countForks: Math.round(Math.random() * 100),
     countContributors: Math.round(Math.random() * 100),
-    countWeeklyDownloads: npmDownloadsInfo.downloads,
+    countDownloadsThisWeek: npmDownloadsInfo.thisWeek,
+    countDownloadsLastWeek: npmDownloadsInfo.lastWeek,
 
     packageCreatedAt: new Date(npmRegistryInfo.time.created),
     packageUpdatedAt: new Date(npmRegistryInfo.time.modified),
@@ -199,7 +200,7 @@ async function baseToNormalizedLinter(
   lintFrameworkId: number,
   ecosystemId: number,
   packageJson: PackageJson,
-  npmDownloadsInfo: { downloads: number },
+  npmDownloadsInfo: { lastWeek: number; thisWeek: number },
   npmRegistryInfo: NpmRegistryInfo,
   rules: Prisma.RuleCreateWithoutLinterInput[],
   configs: Prisma.ConfigCreateWithoutLinterInput[],
@@ -285,7 +286,7 @@ async function eslintLinterToNormalizedLinter(
   linterName: string,
   linter: TSESLint.Linter.Plugin,
   packageJson: PackageJson,
-  npmDownloadsInfo: { downloads: number },
+  npmDownloadsInfo: { lastWeek: number; thisWeek: number },
   npmRegistryInfo: NpmRegistryInfo,
   lintFrameworkId: number,
   ecosystemId: number
@@ -472,7 +473,7 @@ async function emberTemplateLintLinterToNormalizedLinter(
   linterName: string,
   linter: EmberTemplateLint,
   packageJson: PackageJson,
-  npmDownloadsInfo: { downloads: number },
+  npmDownloadsInfo: { lastWeek: number; thisWeek: number },
   npmRegistryInfo: NpmRegistryInfo,
   lintFrameworkId: number,
   ecosystemId: number
@@ -526,7 +527,7 @@ async function stylelintToNormalizedLinter(
   linterName: string,
   linter: Stylelint,
   packageJson: PackageJson,
-  npmDownloadsInfo: { downloads: number },
+  npmDownloadsInfo: { lastWeek: number; thisWeek: number },
   npmRegistryInfo: NpmRegistryInfo,
   lintFrameworkId: number,
   ecosystemId: number
@@ -570,7 +571,7 @@ async function stylelintPluginToNormalizedLinter(
   linterName: string,
   linter: StylelintPlugin,
   packageJson: PackageJson,
-  npmDownloadsInfo: { downloads: number },
+  npmDownloadsInfo: { lastWeek: number; thisWeek: number },
   npmRegistryInfo: NpmRegistryInfo,
   lintFrameworkId: number,
   ecosystemId: number

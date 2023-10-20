@@ -18,7 +18,7 @@ export async function getServerSideProps() {
     include: { package: true },
     orderBy: {
       package: {
-        countWeeklyDownloads: Prisma.SortOrder.desc,
+        countDownloadsThisWeek: Prisma.SortOrder.desc,
       },
     },
     where: {

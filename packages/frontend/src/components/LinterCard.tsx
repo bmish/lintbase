@@ -144,8 +144,8 @@ export default function LinterCard({
               `${linter.rules.length} Rule${
                 linter.rules.length > 1 ? 's' : ''
               } • `}
-            {linter.package.countWeeklyDownloads && (
-              <>{millify(linter.package.countWeeklyDownloads)} Wkly </>
+            {linter.package.countDownloadsThisWeek && (
+              <>{millify(linter.package.countDownloadsThisWeek)} Wkly </>
             )}
             <GetAppIcon fontSize="inherit" titleAccess="Downloads" />
             {versionToDisplay && ' • '}

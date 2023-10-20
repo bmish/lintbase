@@ -20,7 +20,7 @@ export default async function summarizeLinters(
     take: LIMIT,
     orderBy: {
       package: {
-        countWeeklyDownloads: Prisma.SortOrder.desc,
+        countDownloadsThisWeek: Prisma.SortOrder.desc,
       },
     },
   });

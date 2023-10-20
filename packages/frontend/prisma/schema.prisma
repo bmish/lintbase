@@ -163,6 +163,22 @@ model PackageVersionTag {
   @@unique([name, packageVersionId])
 }
 
+// model NpmDownloads {
+//   id        Int      @id @default(autoincrement())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   count Int
+
+//   dateStart DateTime
+//   dateEnd   DateTime
+
+//   packageId Int
+//   package   Package @relation(fields: [packageId], references: [id])
+
+//   @@unique([packageId, dateStart, dateEnd])
+// }
+
 // Package. Corresponds to an npm package or package from another ecosystem.
 model Package {
   id        Int      @id @default(autoincrement())
@@ -176,13 +192,14 @@ model Package {
   packageUpdatedAt DateTime?
 
   // TODO: move some of this to Repository
-  countContributors    Int?
-  countForks           Int?
-  countIssues          Int?
-  countPrs             Int?
-  countStars           Int?
-  countWatching        Int?
-  countWeeklyDownloads Int?
+  countContributors      Int?
+  countForks             Int?
+  countIssues            Int?
+  countPrs               Int?
+  countStars             Int?
+  countWatching          Int?
+  countDownloadsThisWeek Int?
+  countDownloadsLastWeek Int?
 
   repositoryDirectory String?
   linkRepository      String?

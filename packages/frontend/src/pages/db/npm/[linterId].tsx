@@ -120,7 +120,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
         orderBy: {
           package: {
-            countWeeklyDownloads: Prisma.SortOrder.desc,
+            countDownloadsThisWeek: Prisma.SortOrder.desc,
           },
         },
         take: COUNT_RELATED_LINTERS,

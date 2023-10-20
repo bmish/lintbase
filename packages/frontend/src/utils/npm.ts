@@ -20,12 +20,74 @@ export function getDeprecationMessage(
   return undefined;
 }
 
+function getDates() {
+  const now = new Date();
+
+  const yesterday = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() - 1
+  );
+
+  const daysAgo7 = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() - 7
+  );
+
+  const daysAgo8 = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() - 8
+  );
+
+  const daysAgo14 = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() - 14
+  );
+
+  return {
+    thisWeek: {
+      begin: daysAgo7,
+      end: yesterday,
+    },
+    lastWeek: {
+      begin: daysAgo14,
+      end: daysAgo8,
+    },
+  };
+}
+
+// return format like 2014-01-01
+function formatDate(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+async function fetchNpmDownloadCount(
+  packageName: string,
+  from: Date,
+  to: Date
+) {
+  // Get info from npm registry.
+  // https://github.com/npm/registry/blob/master/docs/download-counts.md
+  // TODO: consider using bulk queries to reduce number of requests.
+  const url = `https://api.npmjs.org/downloads/point/${formatDate(
+    from
+  )}:${formatDate(to)}/${packageName}`;
+  const result = (await fetch(url).then((res) => res.json())) as
+    | { downloads: number }
+    | { error: string };
+  return result;
+}
+
 export async function getNpmInfo(packageNames: readonly string[]): Promise<
   Record<
     string,
     | {
         npmDownloadsInfo?: {
-          downloads: number;
+          thisWeek: number;
+          lastWeek: number;
         };
         npmRegistryInfo?: NpmRegistryInfo;
       }
@@ -38,19 +100,25 @@ export async function getNpmInfo(packageNames: readonly string[]): Promise<
   const info = await Promise.all(
     packageNames.map((packageName) =>
       limitNpm(async () => {
-        let npmDownloadsInfo;
+        let npmDownloadsInfoThisWeek;
+        let npmDownloadsInfoLastWeek;
         let npmRegistryInfo;
+
+        const dates = getDates();
 
         console.log('Fetching npm info for', packageName); // eslint-disable-line no-console
         try {
-          // Get info from npm registry.
-          // https://github.com/npm/registry/blob/master/docs/download-counts.md
-          // TODO: consider using bulk queries to reduce number of requests.
-          npmDownloadsInfo = (await fetch(
-            `https://api.npmjs.org/downloads/point/last-week/${packageName}`
-          ).then((res) => res.json())) as
-            | { downloads: number }
-            | { error: string };
+          npmDownloadsInfoThisWeek = await fetchNpmDownloadCount(
+            packageName,
+            dates.thisWeek.begin,
+            dates.thisWeek.end
+          );
+
+          npmDownloadsInfoLastWeek = await fetchNpmDownloadCount(
+            packageName,
+            dates.lastWeek.begin,
+            dates.lastWeek.end
+          );
 
           // https://github.com/npm/registry/blob/master/docs/responses/package-metadata.md
           npmRegistryInfo = await fetch(
@@ -62,8 +130,14 @@ export async function getNpmInfo(packageNames: readonly string[]): Promise<
         }
         return {
           npmDownloadsInfo: {
-            downloads:
-              'downloads' in npmDownloadsInfo ? npmDownloadsInfo.downloads : 0,
+            thisWeek:
+              'downloads' in npmDownloadsInfoThisWeek
+                ? npmDownloadsInfoThisWeek.downloads
+                : 0,
+            lastWeek:
+              'downloads' in npmDownloadsInfoLastWeek
+                ? npmDownloadsInfoLastWeek.downloads
+                : 0,
           },
           npmRegistryInfo,
         };

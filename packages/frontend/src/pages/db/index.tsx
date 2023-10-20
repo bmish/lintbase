@@ -57,7 +57,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       take: 5,
       orderBy: {
         package: {
-          countWeeklyDownloads: Prisma.SortOrder.desc,
+          countDownloadsThisWeek: Prisma.SortOrder.desc,
         },
       },
       where: actualLinter,

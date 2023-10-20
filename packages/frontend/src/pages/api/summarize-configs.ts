@@ -24,7 +24,7 @@ export default async function summarizeConfigs(
     orderBy: {
       linter: {
         package: {
-          countWeeklyDownloads: Prisma.SortOrder.desc,
+          countDownloadsThisWeek: Prisma.SortOrder.desc,
         },
       },
     },

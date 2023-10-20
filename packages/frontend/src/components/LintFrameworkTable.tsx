@@ -106,8 +106,8 @@ export default function LintFrameworkTable({
               )}
               <TableCell scope="row" align="right">
                 {lintFramework.linter &&
-                  lintFramework.linter.package.countWeeklyDownloads &&
-                  millify(lintFramework.linter.package.countWeeklyDownloads)}
+                  lintFramework.linter.package.countDownloadsThisWeek &&
+                  millify(lintFramework.linter.package.countDownloadsThisWeek)}
               </TableCell>
               <TableCell align="right">
                 {lintFramework.linter &&

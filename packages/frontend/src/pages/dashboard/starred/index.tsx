@@ -174,7 +174,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       where,
       orderBy: {
         package: {
-          countWeeklyDownloads: Prisma.SortOrder.desc,
+          countDownloadsThisWeek: Prisma.SortOrder.desc,
         },
       },
     }),
@@ -284,8 +284,8 @@ export default function Starred({
                   <TableCell align="right">{linter.rules.length}</TableCell>
                   <TableCell align="right">{linter.configs.length}</TableCell>
                   <TableCell align="right">
-                    {linter.package.countWeeklyDownloads &&
-                      millify(linter.package.countWeeklyDownloads)}
+                    {linter.package.countDownloadsThisWeek &&
+                      millify(linter.package.countDownloadsThisWeek)}
                   </TableCell>
                   <TableCell align="right">
                     {linter.package.packageUpdatedAt && (
