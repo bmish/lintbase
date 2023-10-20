@@ -97,6 +97,13 @@ function createPackageObject(
     countContributors: Math.round(Math.random() * 100),
     countDownloadsThisWeek: npmDownloadsInfo.thisWeek,
     countDownloadsLastWeek: npmDownloadsInfo.lastWeek,
+    countDownloadsWeekOverWeek:
+      npmDownloadsInfo.thisWeek - npmDownloadsInfo.lastWeek,
+    percentDownloadsWeekOverWeek: Math.round(
+      ((npmDownloadsInfo.thisWeek - npmDownloadsInfo.lastWeek) /
+        npmDownloadsInfo.lastWeek) *
+        100
+    ),
 
     packageCreatedAt: new Date(npmRegistryInfo.time.created),
     packageUpdatedAt: new Date(npmRegistryInfo.time.modified),

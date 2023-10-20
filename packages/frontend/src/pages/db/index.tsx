@@ -18,6 +18,7 @@ import Head from 'next/head';
 import Footer from '@/components/Footer';
 import { getServerAuthSession } from '@/server/auth';
 import { type GetServerSideProps } from 'next';
+import { packageToLinkUs } from '@/utils/dynamic-fields';
 
 const includeLinters = {
   rules: true,
@@ -48,6 +49,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const [
     lintersPopular,
+    lintersTrending,
     packageVersionTagsLatest,
     commonLinterKeywords,
     commonRuleCategories,
@@ -61,6 +63,25 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
       },
       where: actualLinter,
+    }),
+    prisma.linter.findMany({
+      include: includeLinters,
+      take: 5,
+      orderBy: {
+        package: {
+          percentDownloadsWeekOverWeek: Prisma.SortOrder.desc,
+        },
+      },
+      where: {
+        package: {
+          percentDownloadsWeekOverWeek: {
+            not: null,
+          },
+          countDownloadsThisWeek: {
+            gt: 1000, // Ignore linters with low download counts.
+          },
+        },
+      },
     }),
     prisma.packageVersionTag.findMany({
       include: {
@@ -126,19 +147,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }),
   ]);
 
-  const lintersPopularFixed = lintersPopular.map((linter) =>
-    fixAnyDatesInObject(linter)
-  );
-
-  const packageVersionTagsLatestFixed = packageVersionTagsLatest.map((obj) =>
-    fixAnyDatesInObject(obj)
-  );
-
   return {
     props: {
       data: {
-        lintersPopular: lintersPopularFixed,
-        packageVersionTagsLatest: packageVersionTagsLatestFixed,
+        lintersPopular: lintersPopular.map((linter) =>
+          fixAnyDatesInObject(linter)
+        ),
+        lintersTrending: lintersTrending.map((linter) =>
+          fixAnyDatesInObject(linter)
+        ),
+        packageVersionTagsLatest: packageVersionTagsLatest.map((obj) =>
+          fixAnyDatesInObject(obj)
+        ),
         commonLinterKeywords,
         commonRuleCategories,
         userId: session?.user.id,
@@ -150,6 +170,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 export default function index({
   data: {
     lintersPopular,
+    lintersTrending,
     packageVersionTagsLatest,
     commonLinterKeywords,
     commonRuleCategories,
@@ -158,6 +179,9 @@ export default function index({
 }: {
   data: {
     lintersPopular: Prisma.LinterGetPayload<{
+      include: typeof includeLinters;
+    }>[];
+    lintersTrending: Prisma.LinterGetPayload<{
       include: typeof includeLinters;
     }>[];
     packageVersionTagsLatest: Prisma.PackageVersionTagGetPayload<{
@@ -232,6 +256,33 @@ export default function index({
           </Grid>
           <Grid item xs={2} md={1}>
             <Typography variant="h6" className="text-center" marginBottom={2}>
+              Trending Linters
+            </Typography>
+            <TableContainer component={Paper}>
+              <Table aria-label="linter list">
+                <TableBody>
+                  {lintersTrending.map((obj) => (
+                    <TableRow key={obj.package.name}>
+                      <TableCell scope="row">
+                        <Link href={packageToLinkUs(obj.package)}>
+                          {obj.package.name}
+                        </Link>
+                      </TableCell>
+                      <TableCell scope="row" align="right">
+                        +{obj.package.percentDownloadsWeekOverWeek}%
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            <Typography
+              variant="h6"
+              className="text-center"
+              marginTop={4}
+              marginBottom={2}
+            >
               Top Linter Keywords
             </Typography>
             <TableContainer component={Paper}>

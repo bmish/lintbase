@@ -137,6 +137,8 @@ CREATE TABLE "Package" (
     "countWatching" INTEGER,
     "countDownloadsThisWeek" INTEGER,
     "countDownloadsLastWeek" INTEGER,
+    "countDownloadsWeekOverWeek" INTEGER,
+    "percentDownloadsWeekOverWeek" INTEGER,
     "repositoryDirectory" TEXT,
     "linkRepository" TEXT,
     "linkHomepage" TEXT,
