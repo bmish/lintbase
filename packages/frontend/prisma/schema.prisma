@@ -191,14 +191,6 @@ model Package {
   packageCreatedAt DateTime?
   packageUpdatedAt DateTime?
 
-  // TODO: move some of this to Repository
-  countContributors Int?
-  countForks        Int?
-  countIssues       Int?
-  countPrs          Int?
-  countStars        Int?
-  countWatching     Int?
-
   countDownloadsThisWeek       Int?
   countDownloadsLastWeek       Int?
   countDownloadsWeekOverWeek   Int?

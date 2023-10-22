@@ -80,6 +80,8 @@ function createPackageObject(
   keywordsToIgnore: Set<string>,
   packageJsonLocal?: PackageJson // Only used when we actually downloaded the package locally.
 ): Prisma.PackageCreateInput {
+  // TODO: fill in repository model with data from GitHub.
+
   return {
     ecosystem: {
       connect: { id: ecosystemId },
@@ -88,13 +90,6 @@ function createPackageObject(
     name: linterName,
     description: npmRegistryInfo.description || null,
 
-    // TODO: get real data from npm/github
-    countPrs: Math.round(Math.random() * 100),
-    countIssues: Math.round(Math.random() * 100),
-    countStars: Math.round(Math.random() * 100),
-    countWatching: Math.round(Math.random() * 100),
-    countForks: Math.round(Math.random() * 100),
-    countContributors: Math.round(Math.random() * 100),
     countDownloadsThisWeek: npmDownloadsInfo.thisWeek,
     countDownloadsLastWeek: npmDownloadsInfo.lastWeek,
     countDownloadsWeekOverWeek:
