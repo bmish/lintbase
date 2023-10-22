@@ -70,7 +70,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     const nodeEcosystem = await getNodeEcosystem();
 
-    await prisma.user.update({
+    const deleteStars = prisma.starredRepositories.deleteMany({
+      where: {
+        userId: user.id,
+      },
+    });
+    const createStars = prisma.user.update({
       where: {
         id: user.id,
       },
@@ -131,6 +136,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
       },
     });
+
+    // Transaction so that we only delete stars if we can create them.
+    await prisma.$transaction([deleteStars, createStars]);
   }
 
   const userWithStars = await prisma.user.findUniqueOrThrow({
