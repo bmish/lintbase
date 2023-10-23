@@ -194,7 +194,7 @@ export default function LinterCard({
             <CardActions>
               {linter.package.linkHomepage && (
                 <Button size="small" href={linter.package.linkHomepage}>
-                  {['readme', 'github.com'].some(
+                  {['readme'].some(
                     (str) =>
                       linter.package.linkHomepage &&
                       linter.package.linkHomepage.toLowerCase().includes(str)
