@@ -19,6 +19,7 @@ import Footer from '@/components/Footer';
 import { getServerAuthSession } from '@/server/auth';
 import { type GetServerSideProps } from 'next';
 import { packageToLinkUs } from '@/utils/dynamic-fields';
+import millify from 'millify';
 
 const includeLinters = {
   rules: true,
@@ -50,6 +51,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const [
     lintersPopular,
     lintersTrending,
+    lintersMostStarred,
     packageVersionTagsLatest,
     commonLinterKeywords,
     commonRuleCategories,
@@ -79,6 +81,26 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           },
           countDownloadsThisWeek: {
             gt: 1000, // Ignore linters with low download counts.
+          },
+        },
+      },
+    }),
+    prisma.linter.findMany({
+      include: includeLinters,
+      take: 5,
+      orderBy: {
+        package: {
+          repository: {
+            countStargazers: Prisma.SortOrder.desc,
+          },
+        },
+      },
+      where: {
+        package: {
+          repository: {
+            countStargazers: {
+              not: null,
+            },
           },
         },
       },
@@ -156,6 +178,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         lintersTrending: lintersTrending.map((linter) =>
           fixAnyDatesInObject(linter)
         ),
+        lintersMostStarred: lintersMostStarred.map((linter) =>
+          fixAnyDatesInObject(linter)
+        ),
         packageVersionTagsLatest: packageVersionTagsLatest.map((obj) =>
           fixAnyDatesInObject(obj)
         ),
@@ -171,6 +196,7 @@ export default function index({
   data: {
     lintersPopular,
     lintersTrending,
+    lintersMostStarred,
     packageVersionTagsLatest,
     commonLinterKeywords,
     commonRuleCategories,
@@ -182,6 +208,9 @@ export default function index({
       include: typeof includeLinters;
     }>[];
     lintersTrending: Prisma.LinterGetPayload<{
+      include: typeof includeLinters;
+    }>[];
+    lintersMostStarred: Prisma.LinterGetPayload<{
       include: typeof includeLinters;
     }>[];
     packageVersionTagsLatest: Prisma.PackageVersionTagGetPayload<{
@@ -259,7 +288,7 @@ export default function index({
               Trending Linters 📈
             </Typography>
             <TableContainer component={Paper}>
-              <Table aria-label="linter list">
+              <Table aria-label="linter list trending">
                 <TableBody>
                   {lintersTrending.map((obj) => (
                     <TableRow key={obj.package.name}>
@@ -270,6 +299,34 @@ export default function index({
                       </TableCell>
                       <TableCell scope="row" align="right">
                         +{obj.package.percentDownloadsWeekOverWeek}%
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            <Typography
+              variant="h6"
+              className="text-center"
+              marginBottom={2}
+              marginTop={4}
+            >
+              Most Starred ⭐
+            </Typography>
+            <TableContainer component={Paper}>
+              <Table aria-label="linter list most starred">
+                <TableBody>
+                  {lintersMostStarred.map((obj) => (
+                    <TableRow key={obj.package.name}>
+                      <TableCell scope="row">
+                        <Link href={packageToLinkUs(obj.package)}>
+                          {obj.package.name}
+                        </Link>
+                      </TableCell>
+                      <TableCell scope="row" align="right">
+                        {obj.package.repository?.countStargazers &&
+                          millify(obj.package.repository.countStargazers)}
                       </TableCell>
                     </TableRow>
                   ))}
