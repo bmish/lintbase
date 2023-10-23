@@ -13,7 +13,13 @@ import {
 } from './eslint';
 import { Prisma } from '@prisma/client';
 import { asArray, createObjectAsync, uniqueItems } from './javascript';
-import { NpmRegistryInfo, getDeprecationMessage, getNpmInfo } from './npm';
+import {
+  NpmRegistryInfo,
+  getDeprecationMessage,
+  getFileCount,
+  getNpmInfo,
+  getUnpackedSize,
+} from './npm';
 import { LINTERS_DEPRECATED, getLinteesForLinter } from './lintees';
 import { getRepositories, packagesToGitHubInfo, Repository } from './github';
 
@@ -102,6 +108,10 @@ function createPackageObject(
 
     packageCreatedAt: new Date(npmRegistryInfo.time.created),
     packageUpdatedAt: new Date(npmRegistryInfo.time.modified),
+
+    license: npmRegistryInfo.license || null,
+    sizeUnpacked: getUnpackedSize(npmRegistryInfo) ?? null,
+    countFiles: getFileCount(npmRegistryInfo) ?? null,
 
     // Handle deprecations.
     // Note: deprecatedReplacements are filled in later after all the packages are already created.

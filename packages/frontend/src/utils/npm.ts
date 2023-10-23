@@ -4,8 +4,41 @@ import { PackageJson } from 'type-fest';
 export type NpmRegistryInfo = {
   time: Record<string | 'created' | 'modified', string>;
   'dist-tags'?: Record<string, string> & { latest?: string; next?: string };
-  versions: Record<string, { deprecated?: string } | undefined>;
+  versions: Record<
+    string,
+    | {
+        deprecated?: string;
+        dist?: { unpackedSize?: number; fileCount?: number };
+      }
+    | undefined
+  >;
 } & PackageJson;
+
+export function getUnpackedSize(
+  registryInfo: NpmRegistryInfo
+): number | undefined {
+  const { 'dist-tags': distTags, versions } = registryInfo;
+  if (distTags?.latest) {
+    const latestVersion = versions[distTags.latest];
+    if (latestVersion?.dist?.unpackedSize) {
+      return latestVersion.dist.unpackedSize;
+    }
+  }
+  return undefined;
+}
+
+export function getFileCount(
+  registryInfo: NpmRegistryInfo
+): number | undefined {
+  const { 'dist-tags': distTags, versions } = registryInfo;
+  if (distTags?.latest) {
+    const latestVersion = versions[distTags.latest];
+    if (latestVersion?.dist?.fileCount) {
+      return latestVersion.dist.fileCount;
+    }
+  }
+  return undefined;
+}
 
 export function getDeprecationMessage(
   registryInfo: NpmRegistryInfo

@@ -202,6 +202,10 @@ model Package {
   linkBugs            String?
   emailBugs           String?
 
+  license      String?
+  sizeUnpacked Int?
+  countFiles   Int?
+
   keywords PackageKeyword[]
   versions PackageVersion[]
 

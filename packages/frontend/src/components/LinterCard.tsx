@@ -294,13 +294,7 @@ export default function LinterCard({
                       Watchers
                     </li>
                   )}
-                  {/* TODO: Show npm size instead of github repo size. */}
-                  {/* eslint-disable-next-line unicorn/explicit-length-check */}
-                  {linter.package.repository.size && (
-                    <li>{prettyBytes(linter.package.repository.size)}</li>
-                  )}
                   {linter.package.repository.archived && <li>Archived</li>}
-
                   {linter.package.repository.fork && <li>Fork</li>}
                   {linter.package.repository.disabled && <li>Disabled</li>}
                 </ul>
@@ -339,6 +333,9 @@ export default function LinterCard({
                         .join('\n')}
                     >
                       {versionToDisplay.version}
+                      {linter.package.sizeUnpacked && (
+                        <> • {prettyBytes(linter.package.sizeUnpacked)}</>
+                      )}
                     </span>
                   )}
                 </li>
