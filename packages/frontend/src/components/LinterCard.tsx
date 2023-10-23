@@ -142,12 +142,17 @@ export default function LinterCard({
 
             <div className="mb-4 ">
               <Typography sx={{ fontSize: 14 }} color="text.secondary">
-                {linter.configs.length > 0 &&
+                {!detailed &&
+                  linter.configs.length > 0 &&
                   `${linter.configs.length} Config${
                     linter.configs.length > 1 ? 's' : ''
                   }`}
-                {linter.configs.length > 0 && linter.rules.length > 0 && ' • '}
-                {linter.rules.length > 0 &&
+                {!detailed &&
+                  linter.configs.length > 0 &&
+                  linter.rules.length > 0 &&
+                  ' • '}
+                {!detailed &&
+                  linter.rules.length > 0 &&
                   `${linter.rules.length} Rule${
                     linter.rules.length > 1 ? 's' : ''
                   }`}
@@ -239,14 +244,34 @@ export default function LinterCard({
 
         {detailed && (
           <div className="flex flex-row space-x-4 m-4">
+            {linter &&
+              (linter.configs.length > 0 || linter.rules.length > 0) && (
+                <Paper className="p-4 shadow-none border">
+                  <Typography variant="button">ESLint</Typography>
+                  <ul>
+                    {linter.configs.length > 0 && (
+                      <li>
+                        {linter.configs.length} Config
+                        {linter.configs.length > 1 ? 's' : ''}
+                      </li>
+                    )}
+                    {linter.rules.length > 0 && (
+                      <li>
+                        {linter.rules.length} Rule
+                        {linter.rules.length > 1 ? 's' : ''}
+                      </li>
+                    )}
+                  </ul>
+                </Paper>
+              )}
             {linter.package.keywords &&
               linter.package.keywords.length > 0 &&
               !linter.package.keywords.every((obj) =>
                 linter.package.name.includes(obj.name)
               ) && (
                 <Paper className="p-4 shadow-none border">
+                  <Typography variant="button">Keywords</Typography>
                   <ul>
-                    <Typography variant="button">Keywords</Typography>
                     {linter.package.keywords
                       .map((obj) => obj.name)
                       .map((keyword) => (
@@ -258,10 +283,8 @@ export default function LinterCard({
 
             {linter.package.repository && (
               <Paper className="p-4 shadow-none border">
+                <Typography variant="button">GitHub</Typography>
                 <ul>
-                  <li>
-                    <Typography variant="button">GitHub</Typography>
-                  </li>
                   {linter.package.repository.language && (
                     <li>{linter.package.repository.language}</li>
                   )}
@@ -284,10 +307,8 @@ export default function LinterCard({
             )}
 
             <Paper className="p-4 shadow-none border">
+              <Typography variant="button">npm</Typography>
               <ul>
-                <li>
-                  <Typography variant="button">npm</Typography>
-                </li>
                 {linter.package.countDownloadsThisWeek && (
                   <li>
                     {millify(linter.package.countDownloadsThisWeek)} Wkly{' '}
