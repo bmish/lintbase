@@ -94,7 +94,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                     archived: repo.archived,
                     countForks: repo.forks,
                     countStargazers: repo.stargazers_count,
-                    countWatchers: repo.watchers,
+                    countWatchers: repo.subscribers_count,
                     defaultBranch: repo.default_branch,
                     description: repo.description,
                     disabled: repo.disabled,

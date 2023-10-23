@@ -288,6 +288,12 @@ export default function LinterCard({
                       {millify(linter.package.repository.countStargazers)} Stars
                     </li>
                   )}
+                  {linter.package.repository.countWatchers && (
+                    <li>
+                      {millify(linter.package.repository.countWatchers)}{' '}
+                      Watchers
+                    </li>
+                  )}
                   {/* TODO: Show npm size instead of github repo size. */}
                   {/* eslint-disable-next-line unicorn/explicit-length-check */}
                   {linter.package.repository.size && (

@@ -192,7 +192,7 @@ function createPackageObject(
           archived: githubInfo.archived,
           countForks: githubInfo.forks,
           countStargazers: githubInfo.stargazers_count,
-          countWatchers: githubInfo.watchers,
+          countWatchers: githubInfo.subscribers_count,
           defaultBranch: githubInfo.default_branch,
           description: githubInfo.description,
           disabled: githubInfo.disabled,
