@@ -13,6 +13,7 @@ import {
   CardContent,
   Chip,
   Link,
+  Paper,
   Typography,
 } from '@mui/material';
 import millify from 'millify';
@@ -188,89 +189,97 @@ export default function LinterCard({
             !linter.package.keywords.every((obj) =>
               linter.package.name.includes(obj.name)
             ) && (
-              <ul className="pt-4 sm:pl-12 sm:pt-0">
-                <Typography variant="button">Keywords</Typography>
-                {linter.package.keywords
-                  .map((obj) => obj.name)
-                  .map((keyword) => (
-                    <li key={keyword}>{keyword}</li>
-                  ))}
-              </ul>
+              <Paper className="p-4 mt-4 sm:ml-4">
+                <ul>
+                  <Typography variant="button">Keywords</Typography>
+                  {linter.package.keywords
+                    .map((obj) => obj.name)
+                    .map((keyword) => (
+                      <li key={keyword}>{keyword}</li>
+                    ))}
+                </ul>
+              </Paper>
             )}
           {detailed && linter.package.repository && (
-            <ul className="pt-4 sm:pl-12 sm:pt-0">
-              <li>
-                <Typography variant="button">GitHub</Typography>
-              </li>
-              {linter.package.repository.language && (
-                <li>{linter.package.repository.language}</li>
-              )}
-              {linter.package.repository.countStargazers && (
+            <Paper className="p-4 mt-4 sm:ml-4">
+              <ul>
                 <li>
-                  {millify(linter.package.repository.countStargazers)} Stars
+                  <Typography variant="button">GitHub</Typography>
                 </li>
-              )}
-              {/* TODO: Show npm size instead of github repo size. */}
-              {/* eslint-disable-next-line unicorn/explicit-length-check */}
-              {linter.package.repository.size && (
-                <li>{prettyBytes(linter.package.repository.size)}</li>
-              )}
-              {linter.package.repository.archived && <li>Archived</li>}
+                {linter.package.repository.language && (
+                  <li>{linter.package.repository.language}</li>
+                )}
+                {linter.package.repository.countStargazers && (
+                  <li>
+                    {millify(linter.package.repository.countStargazers)} Stars
+                  </li>
+                )}
+                {/* TODO: Show npm size instead of github repo size. */}
+                {/* eslint-disable-next-line unicorn/explicit-length-check */}
+                {linter.package.repository.size && (
+                  <li>{prettyBytes(linter.package.repository.size)}</li>
+                )}
+                {linter.package.repository.archived && <li>Archived</li>}
 
-              {linter.package.repository.fork && <li>Fork</li>}
-              {linter.package.repository.disabled && <li>Disabled</li>}
-            </ul>
+                {linter.package.repository.fork && <li>Fork</li>}
+                {linter.package.repository.disabled && <li>Disabled</li>}
+              </ul>
+            </Paper>
           )}
           {detailed && (
-            <ul className="pt-4 sm:pl-12 sm:pt-0">
-              <li>
-                <Typography variant="button">npm</Typography>
-              </li>
-              {linter.package.countDownloadsThisWeek && (
+            <Paper className="p-4 mt-4 sm:ml-4">
+              <ul>
                 <li>
-                  {millify(linter.package.countDownloadsThisWeek)} Wkly{' '}
-                  <GetAppIcon fontSize="inherit" titleAccess="Downloads" />
+                  <Typography variant="button">npm</Typography>
                 </li>
-              )}
-              {linter.package.percentDownloadsWeekOverWeek && (
+                {linter.package.countDownloadsThisWeek && (
+                  <li>
+                    {millify(linter.package.countDownloadsThisWeek)} Wkly{' '}
+                    <GetAppIcon fontSize="inherit" titleAccess="Downloads" />
+                  </li>
+                )}
+                {linter.package.percentDownloadsWeekOverWeek && (
+                  <li>
+                    {linter.package.percentDownloadsWeekOverWeek > 0 ? '+' : ''}
+                    {linter.package.percentDownloadsWeekOverWeek}% WoW
+                  </li>
+                )}
                 <li>
-                  {linter.package.percentDownloadsWeekOverWeek > 0 ? '+' : ''}
-                  {linter.package.percentDownloadsWeekOverWeek}% WoW
+                  {versionToDisplay && (
+                    <span
+                      title={[
+                        versionToDisplay.tags.length > 0
+                          ? `Tags for this version: ${versionToDisplay.tags
+                              .map((tag) => tag.name)
+                              .join(', ')}`
+                          : '',
+                        versionLoadedToDisplay
+                          ? `Some data from ${versionLoadedToDisplay.version}`
+                          : undefined,
+                      ]
+                        .filter((line) => line !== undefined)
+                        .join('\n')}
+                    >
+                      {versionToDisplay.version}
+                    </span>
+                  )}
                 </li>
-              )}
-              <li>
-                {versionToDisplay && (
-                  <span
-                    title={[
-                      versionToDisplay.tags.length > 0
-                        ? `Tags for this version: ${versionToDisplay.tags
-                            .map((tag) => tag.name)
-                            .join(', ')}`
-                        : '',
-                      versionLoadedToDisplay
-                        ? `Some data from ${versionLoadedToDisplay.version}`
-                        : undefined,
-                    ]
-                      .filter((line) => line !== undefined)
-                      .join('\n')}
-                  >
-                    {versionToDisplay.version}
-                  </span>
-                )}
-              </li>
-              <li>
-                {versionToDisplay && (
-                  <time
-                    dateTime={new Date(
-                      versionToDisplay.publishedAt
-                    ).toISOString()}
-                    title={new Date(versionToDisplay.publishedAt).toUTCString()}
-                  >
-                    {format(new Date(versionToDisplay.publishedAt))}
-                  </time>
-                )}
-              </li>
-            </ul>
+                <li>
+                  {versionToDisplay && (
+                    <time
+                      dateTime={new Date(
+                        versionToDisplay.publishedAt
+                      ).toISOString()}
+                      title={new Date(
+                        versionToDisplay.publishedAt
+                      ).toUTCString()}
+                    >
+                      {format(new Date(versionToDisplay.publishedAt))}
+                    </time>
+                  )}
+                </li>
+              </ul>
+            </Paper>
           )}
         </div>
       </CardContent>
