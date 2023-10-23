@@ -145,7 +145,8 @@ export default function LinterCard({
                 {linter.configs.length > 0 &&
                   `${linter.configs.length} Config${
                     linter.configs.length > 1 ? 's' : ''
-                  } • `}
+                  }`}
+                {linter.configs.length > 0 && linter.rules.length > 0 && ' • '}
                 {linter.rules.length > 0 &&
                   `${linter.rules.length} Rule${
                     linter.rules.length > 1 ? 's' : ''
