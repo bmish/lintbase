@@ -53,8 +53,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     lintersTrending,
     lintersMostStarred,
     packageVersionTagsLatest,
-    commonLinterKeywords,
-    commonRuleCategories,
   ] = await Promise.all([
     prisma.linter.findMany({
       include: includeLinters,
@@ -132,41 +130,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         name: 'latest',
       },
     }),
-    prisma.packageKeyword.groupBy({
-      where: {
-        name: {
-          notIn: ['ESLint', 'lint', 'javascript', 'node'],
-        },
-      },
-      take: 5,
-      by: ['name'],
-      _count: {
-        name: true,
-      },
-      orderBy: {
-        _count: {
-          name: Prisma.SortOrder.desc,
-        },
-      },
-    }),
-    prisma.rule.groupBy({
-      where: {
-        deprecated: false, // Ignore deprecated rules.
-        category: {
-          notIn: ['Fill me in', 'base', 'recommended'],
-        },
-      },
-      take: 5,
-      by: ['category'],
-      _count: {
-        category: true,
-      },
-      orderBy: {
-        _count: {
-          category: Prisma.SortOrder.desc,
-        },
-      },
-    }),
   ]);
 
   return {
@@ -184,8 +147,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         packageVersionTagsLatest: packageVersionTagsLatest.map((obj) =>
           fixAnyDatesInObject(obj)
         ),
-        commonLinterKeywords,
-        commonRuleCategories,
         userId: session?.user.id,
       },
     },
@@ -198,8 +159,6 @@ export default function index({
     lintersTrending,
     lintersMostStarred,
     packageVersionTagsLatest,
-    commonLinterKeywords,
-    commonRuleCategories,
     userId,
   },
 }: {
@@ -226,22 +185,6 @@ export default function index({
         };
       };
     }>[];
-    commonLinterKeywords: Awaited<
-      Prisma.GetPackageKeywordGroupByPayload<{
-        by: ['name'];
-        _count: {
-          name: true;
-        };
-      }>
-    >;
-    commonRuleCategories: Awaited<
-      Prisma.GetRuleGroupByPayload<{
-        by: ['category'];
-        _count: {
-          category: true;
-        };
-      }>
-    >;
     userId?: string;
   };
 }) {
@@ -330,65 +273,6 @@ export default function index({
                       </TableCell>
                     </TableRow>
                   ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-
-            <Typography
-              variant="h6"
-              className="text-center"
-              marginTop={4}
-              marginBottom={2}
-            >
-              Top Linter Keywords
-            </Typography>
-            <TableContainer component={Paper}>
-              <Table aria-label="linter list">
-                <TableBody>
-                  {commonLinterKeywords.map((obj) => (
-                    <TableRow key={obj.name}>
-                      <TableCell scope="col">
-                        <Link
-                          href={`/db/plugins/?keyword=${encodeURIComponent(
-                            obj.name
-                          )}`}
-                        >
-                          {obj.name}
-                        </Link>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-
-            <Typography
-              variant="h6"
-              className="text-center"
-              marginBottom={2}
-              marginTop={4}
-            >
-              Top Rule Categories
-            </Typography>
-            <TableContainer component={Paper}>
-              <Table aria-label="linter list">
-                <TableBody>
-                  {commonRuleCategories.map(
-                    (obj) =>
-                      obj.category && (
-                        <TableRow key={obj.category}>
-                          <TableCell scope="col">
-                            <Link
-                              href={`/db/rules/?category=${encodeURIComponent(
-                                obj.category
-                              )}`}
-                            >
-                              {obj.category}
-                            </Link>
-                          </TableCell>
-                        </TableRow>
-                      )
-                  )}
                 </TableBody>
               </Table>
             </TableContainer>
