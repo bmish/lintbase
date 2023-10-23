@@ -15,6 +15,7 @@ import { Prisma } from '@prisma/client';
 import { asArray, createObjectAsync, uniqueItems } from './javascript';
 import { NpmRegistryInfo, getDeprecationMessage, getNpmInfo } from './npm';
 import { LINTERS_DEPRECATED, getLinteesForLinter } from './lintees';
+import { getRepositories, packagesToGitHubInfo, Repository } from './github';
 
 const LIMIT_LINTERS_PER_FRAMEWORK = Number.MAX_SAFE_INTEGER; // Useful for partial loading during testing.
 const LIMIT_TO_SPECIFIC_LINTERS: readonly string[] = []; // Useful for partial loading during testing.
@@ -77,12 +78,11 @@ function createPackageObject(
   ecosystemId: number,
   npmDownloadsInfo: { lastWeek: number; thisWeek: number },
   npmRegistryInfo: NpmRegistryInfo,
+  githubInfo: Repository | undefined,
   keywordsToIgnore: Set<string>,
   packageJsonLocal?: PackageJson // Only used when we actually downloaded the package locally.
 ): Prisma.PackageCreateInput {
-  // TODO: fill in repository model with data from GitHub.
-
-  return {
+  const result: Prisma.PackageCreateInput = {
     ecosystem: {
       connect: { id: ecosystemId },
     },
@@ -181,6 +181,43 @@ function createPackageObject(
         })),
     },
   };
+
+  if (githubInfo) {
+    result.repository = {
+      connectOrCreate: {
+        where: {
+          fullName: githubInfo.full_name,
+        },
+        create: {
+          archived: githubInfo.archived,
+          countForks: githubInfo.forks,
+          countStargazers: githubInfo.stargazers_count,
+          countWatchers: githubInfo.watchers,
+          defaultBranch: githubInfo.default_branch,
+          description: githubInfo.description,
+          disabled: githubInfo.disabled,
+          fork: githubInfo.fork,
+          fullName: githubInfo.full_name,
+          githubCreatedAt: githubInfo.created_at,
+          githubId: githubInfo.id,
+          githubPushedAt: githubInfo.pushed_at,
+          githubUpdatedAt: githubInfo.updated_at,
+          language: githubInfo.language,
+          name: githubInfo.name,
+          private: githubInfo.private,
+          size: githubInfo.size,
+          urlClone: githubInfo.clone_url,
+          urlGit: githubInfo.git_url,
+          urlHomepage: githubInfo.homepage,
+          urlHtml: githubInfo.html_url,
+          urlSsh: githubInfo.ssh_url,
+          visibility: githubInfo.visibility,
+        },
+      },
+    };
+  }
+
+  return result;
 }
 
 const linterInclude = {
@@ -204,6 +241,7 @@ async function baseToNormalizedLinter(
   packageJson: PackageJson,
   npmDownloadsInfo: { lastWeek: number; thisWeek: number },
   npmRegistryInfo: NpmRegistryInfo,
+  githubInfo: Repository | undefined,
   rules: Prisma.RuleCreateWithoutLinterInput[],
   configs: Prisma.ConfigCreateWithoutLinterInput[],
   keywordsToIgnore: Set<string>
@@ -246,6 +284,7 @@ async function baseToNormalizedLinter(
           ecosystemId,
           npmDownloadsInfo,
           npmRegistryInfo,
+          githubInfo,
           keywordsToIgnore,
           packageJson
         ),
@@ -274,6 +313,7 @@ async function baseToNormalizedLinter(
             ecosystemId,
             npmDownloadsInfo,
             npmRegistryInfo,
+            githubInfo,
             keywordsToIgnore
           ),
         })),
@@ -290,6 +330,7 @@ async function eslintLinterToNormalizedLinter(
   packageJson: PackageJson,
   npmDownloadsInfo: { lastWeek: number; thisWeek: number },
   npmRegistryInfo: NpmRegistryInfo,
+  githubInfo: Repository | undefined,
   lintFrameworkId: number,
   ecosystemId: number
 ): Promise<
@@ -403,6 +444,7 @@ async function eslintLinterToNormalizedLinter(
     packageJson,
     npmDownloadsInfo,
     npmRegistryInfo,
+    githubInfo,
     rules,
     configs,
     ESLINT_IGNORED_KEYWORDS
@@ -477,6 +519,7 @@ async function emberTemplateLintLinterToNormalizedLinter(
   packageJson: PackageJson,
   npmDownloadsInfo: { lastWeek: number; thisWeek: number },
   npmRegistryInfo: NpmRegistryInfo,
+  githubInfo: Repository | undefined,
   lintFrameworkId: number,
   ecosystemId: number
 ): Promise<
@@ -515,6 +558,7 @@ async function emberTemplateLintLinterToNormalizedLinter(
     packageJson,
     npmDownloadsInfo,
     npmRegistryInfo,
+    githubInfo,
     rules,
     configs,
     EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS
@@ -531,6 +575,7 @@ async function stylelintToNormalizedLinter(
   packageJson: PackageJson,
   npmDownloadsInfo: { lastWeek: number; thisWeek: number },
   npmRegistryInfo: NpmRegistryInfo,
+  githubInfo: Repository | undefined,
   lintFrameworkId: number,
   ecosystemId: number
 ): Promise<
@@ -559,6 +604,7 @@ async function stylelintToNormalizedLinter(
     packageJson,
     npmDownloadsInfo,
     npmRegistryInfo,
+    githubInfo,
     rules,
     [],
     IGNORED_KEYWORDS
@@ -575,6 +621,7 @@ async function stylelintPluginToNormalizedLinter(
   packageJson: PackageJson,
   npmDownloadsInfo: { lastWeek: number; thisWeek: number },
   npmRegistryInfo: NpmRegistryInfo,
+  githubInfo: Repository | undefined,
   lintFrameworkId: number,
   ecosystemId: number
 ): Promise<
@@ -603,6 +650,7 @@ async function stylelintPluginToNormalizedLinter(
     packageJson,
     npmDownloadsInfo,
     npmRegistryInfo,
+    githubInfo,
     rules,
     [],
     IGNORED_KEYWORDS
@@ -750,6 +798,16 @@ export async function loadLintersToDb(
       ...linterNames,
       ...linterNames.flatMap((linterName) => getLinteesForLinter(linterName)),
     ]);
+    const packageToPackageJson = Object.fromEntries(
+      Object.entries(npmInfo).flatMap(([packageName, npmInfo]) => {
+        if (!npmInfo?.npmRegistryInfo) {
+          return [];
+        }
+        return [[packageName, npmInfo.npmRegistryInfo]];
+      })
+    );
+    const githubRepoNames = packagesToGitHubInfo(packageToPackageJson);
+    const githubInfo = await getRepositories(Object.values(githubRepoNames));
 
     const lintersCreatedForThisType = await Promise.all(
       Object.entries(linterRecord).flatMap(async ([linterName, linter]) => {
@@ -769,6 +827,12 @@ export async function loadLintersToDb(
           return [];
         }
 
+        const gitHubInfoForThisLinter = githubRepoNames[linterName]
+          ? githubInfo[
+              `${githubRepoNames[linterName].owner}/${githubRepoNames[linterName].repo}`
+            ]
+          : undefined;
+
         let linterNormalized;
         switch (linterType) {
           case 'eslint':
@@ -780,6 +844,7 @@ export async function loadLintersToDb(
               packageJson,
               npmDownloadsInfo,
               npmRegistryInfo,
+              gitHubInfoForThisLinter,
               lintFrameworks.eslint.id,
               ecosystemNode.id
             );
@@ -795,6 +860,7 @@ export async function loadLintersToDb(
               packageJson,
               npmDownloadsInfo,
               npmRegistryInfo,
+              gitHubInfoForThisLinter,
               lintFrameworks['ember-template-lint'].id,
               ecosystemNode.id
             );
@@ -809,6 +875,7 @@ export async function loadLintersToDb(
               packageJson,
               npmDownloadsInfo,
               npmRegistryInfo,
+              gitHubInfoForThisLinter,
               lintFrameworks.stylelint.id,
               ecosystemNode.id
             );
@@ -822,6 +889,7 @@ export async function loadLintersToDb(
               packageJson,
               npmDownloadsInfo,
               npmRegistryInfo,
+              gitHubInfoForThisLinter,
               lintFrameworks.stylelint.id,
               ecosystemNode.id
             );
@@ -836,6 +904,7 @@ export async function loadLintersToDb(
               packageJson,
               npmDownloadsInfo,
               npmRegistryInfo,
+              gitHubInfoForThisLinter,
               [],
               [],
               EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS

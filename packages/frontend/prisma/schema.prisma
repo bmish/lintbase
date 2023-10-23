@@ -338,6 +338,7 @@ model Repository {
   commitSha   String?
   committedAt DateTime?
 
+  // TODO: move per-user data to a separate model.
   importedAt DateTime?
   scannedAt  DateTime?
 
