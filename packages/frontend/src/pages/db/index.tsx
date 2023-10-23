@@ -228,7 +228,7 @@ export default function index({
           </Grid>
           <Grid item xs={2} md={1}>
             <Typography variant="h6" className="text-center" marginBottom={2}>
-              Trending Linters 📈
+              Trending 📈
             </Typography>
             <TableContainer component={Paper}>
               <Table aria-label="linter list trending">
