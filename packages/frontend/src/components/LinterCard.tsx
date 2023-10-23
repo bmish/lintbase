@@ -246,7 +246,7 @@ export default function LinterCard({
           <div className="flex flex-row space-x-4 m-4">
             {linter &&
               (linter.configs.length > 0 || linter.rules.length > 0) && (
-                <Paper className="p-4 shadow-none border">
+                <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
                   <Typography variant="button">ESLint</Typography>
                   <ul>
                     {linter.configs.length > 0 && (
@@ -269,7 +269,7 @@ export default function LinterCard({
               !linter.package.keywords.every((obj) =>
                 linter.package.name.includes(obj.name)
               ) && (
-                <Paper className="p-4 shadow-none border">
+                <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
                   <Typography variant="button">Keywords</Typography>
                   <ul>
                     {linter.package.keywords
@@ -282,7 +282,7 @@ export default function LinterCard({
               )}
 
             {linter.package.repository && (
-              <Paper className="p-4 shadow-none border">
+              <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
                 <Typography variant="button">GitHub</Typography>
                 <ul>
                   {linter.package.repository.language && (
@@ -306,7 +306,7 @@ export default function LinterCard({
               </Paper>
             )}
 
-            <Paper className="p-4 shadow-none border">
+            <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
               <Typography variant="button">npm</Typography>
               <ul>
                 {linter.package.countDownloadsThisWeek && (
