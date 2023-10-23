@@ -21,6 +21,7 @@ import { Prisma } from '@prisma/client';
 import { format } from 'timeago.js';
 import EmojiAi from './EmojiAi';
 import StarIcon from '@mui/icons-material/Star';
+import prettyBytes from 'pretty-bytes';
 
 function getRepositoryLink(linkRepository: string | null): string | undefined {
   if (!linkRepository) {
@@ -91,114 +92,189 @@ export default function LinterCard({
   return (
     <Card>
       <CardContent>
-        <Breadcrumbs aria-label="breadcrumb" className="mb-1">
-          <Typography sx={{ fontSize: 14 }} color="text.secondary">
-            {ecosystemToDisplayName(linter.package.ecosystem)}
-          </Typography>
-          <Link
-            underline="hover"
-            sx={{ fontSize: 14 }}
-            color="text.secondary"
-            href={lintFrameworkToLinkUs(linter.lintFramework)}
-          >
-            {lintFrameworkToDisplayName(linter.lintFramework)}
-          </Link>
-        </Breadcrumbs>
-
-        <Typography variant="h5" component="div">
-          {detailed && linter.package.name}{' '}
-          {detailed && linter.package.deprecated && (
-            <Chip
-              color="error"
-              label="Deprecated"
-              title={linter.package.deprecatedReason || ''}
-            />
-          )}{' '}
-          {detailed &&
-            linter.package.deprecatedReplacements.map((replacementPackage) => (
+        <div className="flex flex-row">
+          <div className="flex-1">
+            <Breadcrumbs aria-label="breadcrumb" className="mb-1">
+              <Typography sx={{ fontSize: 14 }} color="text.secondary">
+                {ecosystemToDisplayName(linter.package.ecosystem)}
+              </Typography>
               <Link
-                key={replacementPackage.id}
-                href={packageToLinkUs(replacementPackage)}
+                underline="hover"
+                sx={{ fontSize: 14 }}
+                color="text.secondary"
+                href={lintFrameworkToLinkUs(linter.lintFramework)}
               >
-                <Chip color="success" label={replacementPackage.name} />
+                {lintFrameworkToDisplayName(linter.lintFramework)}
               </Link>
-            ))}{' '}
-          {detailed &&
-            linter.package.repository?.stars.find(
-              (star) => star.userId === userId
-            ) && <StarIcon titleAccess="Starred by you on GitHub" />}
-          {!detailed && (
-            <Link href={packageToLinkUs(linter.package)} underline="none">
-              {linter.package.name}
-            </Link>
-          )}
-        </Typography>
+            </Breadcrumbs>
 
-        <div className="mb-4">
-          <Typography sx={{ fontSize: 14 }} color="text.secondary">
-            {linter.configs.length > 0 &&
-              `${linter.configs.length} Config${
-                linter.configs.length > 1 ? 's' : ''
-              } • `}
-            {linter.rules.length > 0 &&
-              `${linter.rules.length} Rule${
-                linter.rules.length > 1 ? 's' : ''
-              } • `}
-            {linter.package.countDownloadsThisWeek && (
-              <>{millify(linter.package.countDownloadsThisWeek)} Wkly </>
+            <Typography variant="h5" component="div">
+              {detailed && linter.package.name}{' '}
+              {detailed && linter.package.deprecated && (
+                <Chip
+                  color="error"
+                  label="Deprecated"
+                  title={linter.package.deprecatedReason || ''}
+                />
+              )}{' '}
+              {detailed &&
+                linter.package.deprecatedReplacements.map(
+                  (replacementPackage) => (
+                    <Link
+                      key={replacementPackage.id}
+                      href={packageToLinkUs(replacementPackage)}
+                    >
+                      <Chip color="success" label={replacementPackage.name} />
+                    </Link>
+                  )
+                )}{' '}
+              {detailed &&
+                linter.package.repository?.stars.find(
+                  (star) => star.userId === userId
+                ) && <StarIcon titleAccess="Starred by you on GitHub" />}
+              {!detailed && (
+                <Link href={packageToLinkUs(linter.package)} underline="none">
+                  {linter.package.name}
+                </Link>
+              )}
+            </Typography>
+
+            <div className="mb-4 ">
+              <Typography sx={{ fontSize: 14 }} color="text.secondary">
+                {linter.configs.length > 0 &&
+                  `${linter.configs.length} Config${
+                    linter.configs.length > 1 ? 's' : ''
+                  } • `}
+                {linter.rules.length > 0 &&
+                  `${linter.rules.length} Rule${
+                    linter.rules.length > 1 ? 's' : ''
+                  }`}
+                {!detailed && linter.package.countDownloadsThisWeek && ' • '}
+                {!detailed && linter.package.countDownloadsThisWeek && (
+                  <>
+                    {millify(linter.package.countDownloadsThisWeek)} Wkly{' '}
+                    <GetAppIcon fontSize="inherit" titleAccess="Downloads" />
+                  </>
+                )}
+                {!detailed && versionToDisplay && ' • '}
+                {!detailed && versionToDisplay && (
+                  <time
+                    dateTime={new Date(
+                      versionToDisplay.publishedAt
+                    ).toISOString()}
+                    title={new Date(versionToDisplay.publishedAt).toUTCString()}
+                  >
+                    {format(new Date(versionToDisplay.publishedAt))}
+                  </time>
+                )}
+              </Typography>
+            </div>
+
+            <Typography variant="body2">
+              {linter.package.description}
+            </Typography>
+
+            {detailed && linter.descriptionAI && (
+              <div className="flex flex-row mt-4">
+                <Typography variant="body2" component={'p'}>
+                  <EmojiAi /> {linter.descriptionAI}
+                </Typography>
+              </div>
             )}
-            <GetAppIcon fontSize="inherit" titleAccess="Downloads" />
-            {versionToDisplay && ' • '}
-            {versionToDisplay && (
-              <time
-                dateTime={new Date(versionToDisplay.publishedAt).toISOString()}
-                title={new Date(versionToDisplay.publishedAt).toUTCString()}
-              >
-                {format(new Date(versionToDisplay.publishedAt))}
-              </time>
-            )}
-            {detailed && versionToDisplay && ' • '}
-            {detailed && versionToDisplay && (
-              <span
-                title={[
-                  versionToDisplay.tags.length > 0
-                    ? `Tags for this version: ${versionToDisplay.tags
-                        .map((tag) => tag.name)
-                        .join(', ')}`
-                    : '',
-                  versionLoadedToDisplay
-                    ? `Some data from ${versionLoadedToDisplay.version}`
-                    : undefined,
-                ]
-                  .filter((line) => line !== undefined)
-                  .join('\n')}
-              >
-                {versionToDisplay.version}
-              </span>
-            )}
-          </Typography>
+          </div>
           {detailed &&
             linter.package.keywords &&
             linter.package.keywords.length > 0 &&
             !linter.package.keywords.every((obj) =>
               linter.package.name.includes(obj.name)
             ) && (
-              <Typography sx={{ fontSize: 14 }} color="text.secondary">
-                {linter.package.keywords.map((obj) => obj.name).join(' • ')}
-              </Typography>
+              <ul className="pl-12">
+                <Typography variant="button">Keywords</Typography>
+                {linter.package.keywords
+                  .map((obj) => obj.name)
+                  .map((keyword) => (
+                    <li key={keyword}>{keyword}</li>
+                  ))}
+              </ul>
             )}
+          {detailed && linter.package.repository && (
+            <ul className="pl-12">
+              <li>
+                <Typography variant="button">GitHub</Typography>
+              </li>
+              {linter.package.repository.language && (
+                <li>{linter.package.repository.language}</li>
+              )}
+              {linter.package.repository.countStargazers && (
+                <li>
+                  {millify(linter.package.repository.countStargazers)} Stars
+                </li>
+              )}
+              {/* TODO: Show npm size instead of github repo size. */}
+              {/* eslint-disable-next-line unicorn/explicit-length-check */}
+              {linter.package.repository.size && (
+                <li>{prettyBytes(linter.package.repository.size)}</li>
+              )}
+              {linter.package.repository.archived && <li>Archived</li>}
+
+              {linter.package.repository.fork && <li>Fork</li>}
+              {linter.package.repository.disabled && <li>Disabled</li>}
+            </ul>
+          )}
+          {detailed && (
+            <ul className="pl-12">
+              <li>
+                <Typography variant="button">npm</Typography>
+              </li>
+              {linter.package.countDownloadsThisWeek && (
+                <li>
+                  {millify(linter.package.countDownloadsThisWeek)} Wkly{' '}
+                  <GetAppIcon fontSize="inherit" titleAccess="Downloads" />
+                </li>
+              )}
+              {linter.package.percentDownloadsWeekOverWeek && (
+                <li>
+                  {linter.package.percentDownloadsWeekOverWeek > 0 ? '+' : ''}
+                  {linter.package.percentDownloadsWeekOverWeek}% WoW
+                </li>
+              )}
+              <li>
+                {versionToDisplay && (
+                  <span
+                    title={[
+                      versionToDisplay.tags.length > 0
+                        ? `Tags for this version: ${versionToDisplay.tags
+                            .map((tag) => tag.name)
+                            .join(', ')}`
+                        : '',
+                      versionLoadedToDisplay
+                        ? `Some data from ${versionLoadedToDisplay.version}`
+                        : undefined,
+                    ]
+                      .filter((line) => line !== undefined)
+                      .join('\n')}
+                  >
+                    {versionToDisplay.version}
+                  </span>
+                )}
+              </li>
+              <li>
+                {versionToDisplay && (
+                  <time
+                    dateTime={new Date(
+                      versionToDisplay.publishedAt
+                    ).toISOString()}
+                    title={new Date(versionToDisplay.publishedAt).toUTCString()}
+                  >
+                    {format(new Date(versionToDisplay.publishedAt))}
+                  </time>
+                )}
+              </li>
+            </ul>
+          )}
         </div>
-
-        <Typography variant="body2">{linter.package.description}</Typography>
-
-        {detailed && linter.descriptionAI && (
-          <div className="flex flex-row mt-4">
-            <Typography variant="body2" component={'p'}>
-              <EmojiAi /> {linter.descriptionAI}
-            </Typography>
-          </div>
-        )}
       </CardContent>
+
       {detailed && (
         <CardActions>
           {linter.package.linkHomepage && (
