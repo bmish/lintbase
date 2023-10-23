@@ -218,6 +218,17 @@ export default function LinterCard({
                   </Button>
                 )}
 
+              {linter.package.repository && (
+                <Button
+                  size="small"
+                  href={`https://github.com/${
+                    linter.package.repository.fullName.split('/')[0]
+                  }/${linter.package.repository.name}`}
+                >
+                  GitHub
+                </Button>
+              )}
+
               <Button
                 size="small"
                 href={linterToLinkPackageRegistry(linter.package)}
