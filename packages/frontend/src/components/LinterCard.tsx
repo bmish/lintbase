@@ -247,7 +247,7 @@ export default function LinterCard({
             {linter &&
               (linter.configs.length > 0 || linter.rules.length > 0) && (
                 <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
-                  <Typography variant="button">ESLint</Typography>
+                  <Typography variant="button">Linter</Typography>
                   <ul>
                     {linter.configs.length > 0 && (
                       <li>
