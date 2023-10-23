@@ -92,7 +92,7 @@ export default function LinterCard({
   return (
     <Card>
       <CardContent>
-        <div className="flex flex-row">
+        <div className="flex flex-col sm:flex-row">
           <div className="flex-1">
             <Breadcrumbs aria-label="breadcrumb" className="mb-1">
               <Typography sx={{ fontSize: 14 }} color="text.secondary">
@@ -188,7 +188,7 @@ export default function LinterCard({
             !linter.package.keywords.every((obj) =>
               linter.package.name.includes(obj.name)
             ) && (
-              <ul className="pl-12">
+              <ul className="pt-4 sm:pl-12 sm:pt-0">
                 <Typography variant="button">Keywords</Typography>
                 {linter.package.keywords
                   .map((obj) => obj.name)
@@ -198,7 +198,7 @@ export default function LinterCard({
               </ul>
             )}
           {detailed && linter.package.repository && (
-            <ul className="pl-12">
+            <ul className="pt-4 sm:pl-12 sm:pt-0">
               <li>
                 <Typography variant="button">GitHub</Typography>
               </li>
@@ -222,7 +222,7 @@ export default function LinterCard({
             </ul>
           )}
           {detailed && (
-            <ul className="pl-12">
+            <ul className="pt-4 sm:pl-12 sm:pt-0">
               <li>
                 <Typography variant="button">npm</Typography>
               </li>
