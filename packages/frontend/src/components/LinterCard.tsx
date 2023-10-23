@@ -264,22 +264,6 @@ export default function LinterCard({
                   </ul>
                 </Paper>
               )}
-            {linter.package.keywords &&
-              linter.package.keywords.length > 0 &&
-              !linter.package.keywords.every((obj) =>
-                linter.package.name.includes(obj.name)
-              ) && (
-                <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
-                  <Typography variant="button">Keywords</Typography>
-                  <ul>
-                    {linter.package.keywords
-                      .map((obj) => obj.name)
-                      .map((keyword) => (
-                        <li key={keyword}>{keyword}</li>
-                      ))}
-                  </ul>
-                </Paper>
-              )}
 
             {linter.package.repository && (
               <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
@@ -357,6 +341,23 @@ export default function LinterCard({
                 </li>
               </ul>
             </Paper>
+
+            {linter.package.keywords &&
+              linter.package.keywords.length > 0 &&
+              !linter.package.keywords.every((obj) =>
+                linter.package.name.includes(obj.name)
+              ) && (
+                <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
+                  <Typography variant="button">Keywords</Typography>
+                  <ul>
+                    {linter.package.keywords
+                      .map((obj) => obj.name)
+                      .map((keyword) => (
+                        <li key={keyword}>{keyword}</li>
+                      ))}
+                  </ul>
+                </Paper>
+              )}
           </div>
         )}
       </div>
