@@ -92,9 +92,9 @@ export default function LinterCard({
 
   return (
     <Card>
-      <CardContent>
-        <div className="flex flex-col sm:flex-row">
-          <div className="flex-1">
+      <div className="flex flex-col sm:flex-row">
+        <div className="flex-1">
+          <CardContent>
             <Breadcrumbs aria-label="breadcrumb" className="mb-1">
               <Typography sx={{ fontSize: 14 }} color="text.secondary">
                 {ecosystemToDisplayName(linter.package.ecosystem)}
@@ -182,52 +182,107 @@ export default function LinterCard({
                 </Typography>
               </div>
             )}
-          </div>
-          {detailed &&
-            linter.package.keywords &&
-            linter.package.keywords.length > 0 &&
-            !linter.package.keywords.every((obj) =>
-              linter.package.name.includes(obj.name)
-            ) && (
-              <Paper className="p-4 mt-4 sm:ml-4">
+          </CardContent>
+
+          {detailed && (
+            <CardActions>
+              {linter.package.linkHomepage && (
+                <Button size="small" href={linter.package.linkHomepage}>
+                  {['readme', 'github.com'].some(
+                    (str) =>
+                      linter.package.linkHomepage &&
+                      linter.package.linkHomepage.toLowerCase().includes(str)
+                  )
+                    ? 'README'
+                    : 'Homepage'}
+                </Button>
+              )}
+
+              {!linter.package.linkHomepage?.includes('github.com') &&
+                repositoryLink && (
+                  <Button size="small" href={repositoryLink}>
+                    Repository
+                  </Button>
+                )}
+
+              {linter.package.linkBugs &&
+                linter.package.linkBugs !== linter.package.linkHomepage && (
+                  <Button size="small" href={linter.package.linkBugs}>
+                    Bugs
+                  </Button>
+                )}
+
+              <Button
+                size="small"
+                href={linterToLinkPackageRegistry(linter.package)}
+              >
+                {linterToLinkPackageRegistry(linter.package).startsWith(
+                  'https://www.npmjs.com/'
+                )
+                  ? 'npm'
+                  : 'Package Registry'}
+              </Button>
+
+              {linter.lintees.map((lintee) => (
+                <Button
+                  key={lintee.id}
+                  size="small"
+                  href={linterToLinkPackageRegistry(lintee)}
+                >
+                  {lintee.name}
+                </Button>
+              ))}
+            </CardActions>
+          )}
+        </div>
+
+        {detailed && (
+          <div className="flex flex-row space-x-4 m-4">
+            {linter.package.keywords &&
+              linter.package.keywords.length > 0 &&
+              !linter.package.keywords.every((obj) =>
+                linter.package.name.includes(obj.name)
+              ) && (
+                <Paper className="p-4 shadow-none border">
+                  <ul>
+                    <Typography variant="button">Keywords</Typography>
+                    {linter.package.keywords
+                      .map((obj) => obj.name)
+                      .map((keyword) => (
+                        <li key={keyword}>{keyword}</li>
+                      ))}
+                  </ul>
+                </Paper>
+              )}
+
+            {linter.package.repository && (
+              <Paper className="p-4 shadow-none border">
                 <ul>
-                  <Typography variant="button">Keywords</Typography>
-                  {linter.package.keywords
-                    .map((obj) => obj.name)
-                    .map((keyword) => (
-                      <li key={keyword}>{keyword}</li>
-                    ))}
+                  <li>
+                    <Typography variant="button">GitHub</Typography>
+                  </li>
+                  {linter.package.repository.language && (
+                    <li>{linter.package.repository.language}</li>
+                  )}
+                  {linter.package.repository.countStargazers && (
+                    <li>
+                      {millify(linter.package.repository.countStargazers)} Stars
+                    </li>
+                  )}
+                  {/* TODO: Show npm size instead of github repo size. */}
+                  {/* eslint-disable-next-line unicorn/explicit-length-check */}
+                  {linter.package.repository.size && (
+                    <li>{prettyBytes(linter.package.repository.size)}</li>
+                  )}
+                  {linter.package.repository.archived && <li>Archived</li>}
+
+                  {linter.package.repository.fork && <li>Fork</li>}
+                  {linter.package.repository.disabled && <li>Disabled</li>}
                 </ul>
               </Paper>
             )}
-          {detailed && linter.package.repository && (
-            <Paper className="p-4 mt-4 sm:ml-4">
-              <ul>
-                <li>
-                  <Typography variant="button">GitHub</Typography>
-                </li>
-                {linter.package.repository.language && (
-                  <li>{linter.package.repository.language}</li>
-                )}
-                {linter.package.repository.countStargazers && (
-                  <li>
-                    {millify(linter.package.repository.countStargazers)} Stars
-                  </li>
-                )}
-                {/* TODO: Show npm size instead of github repo size. */}
-                {/* eslint-disable-next-line unicorn/explicit-length-check */}
-                {linter.package.repository.size && (
-                  <li>{prettyBytes(linter.package.repository.size)}</li>
-                )}
-                {linter.package.repository.archived && <li>Archived</li>}
 
-                {linter.package.repository.fork && <li>Fork</li>}
-                {linter.package.repository.disabled && <li>Disabled</li>}
-              </ul>
-            </Paper>
-          )}
-          {detailed && (
-            <Paper className="p-4 mt-4 sm:ml-4">
+            <Paper className="p-4 shadow-none border">
               <ul>
                 <li>
                   <Typography variant="button">npm</Typography>
@@ -280,60 +335,9 @@ export default function LinterCard({
                 </li>
               </ul>
             </Paper>
-          )}
-        </div>
-      </CardContent>
-
-      {detailed && (
-        <CardActions>
-          {linter.package.linkHomepage && (
-            <Button size="small" href={linter.package.linkHomepage}>
-              {['readme', 'github.com'].some(
-                (str) =>
-                  linter.package.linkHomepage &&
-                  linter.package.linkHomepage.toLowerCase().includes(str)
-              )
-                ? 'README'
-                : 'Homepage'}
-            </Button>
-          )}
-
-          {!linter.package.linkHomepage?.includes('github.com') &&
-            repositoryLink && (
-              <Button size="small" href={repositoryLink}>
-                Repository
-              </Button>
-            )}
-
-          {linter.package.linkBugs &&
-            linter.package.linkBugs !== linter.package.linkHomepage && (
-              <Button size="small" href={linter.package.linkBugs}>
-                Bugs
-              </Button>
-            )}
-
-          <Button
-            size="small"
-            href={linterToLinkPackageRegistry(linter.package)}
-          >
-            {linterToLinkPackageRegistry(linter.package).startsWith(
-              'https://www.npmjs.com/'
-            )
-              ? 'npm'
-              : 'Package Registry'}
-          </Button>
-
-          {linter.lintees.map((lintee) => (
-            <Button
-              key={lintee.id}
-              size="small"
-              href={linterToLinkPackageRegistry(lintee)}
-            >
-              {lintee.name}
-            </Button>
-          ))}
-        </CardActions>
-      )}
+          </div>
+        )}
+      </div>
     </Card>
   );
 }
