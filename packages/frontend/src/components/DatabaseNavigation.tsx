@@ -7,7 +7,7 @@ export default function DatabaseNavigation() {
   const pathParts = router.pathname.split('/');
 
   const value =
-    pathParts.length === 2 && pathParts[1] === 'db'
+    (pathParts.length === 2 && pathParts[1] === 'db') || router.pathname === '/'
       ? 'home'
       : pathParts.length > 2 &&
         pathParts[1] === 'db' &&
