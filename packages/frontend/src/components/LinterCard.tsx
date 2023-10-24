@@ -285,7 +285,9 @@ export default function LinterCard({
                 <Typography variant="button">GitHub</Typography>
                 <ul>
                   {linter.package.repository.language && (
-                    <li>{linter.package.repository.language}</li>
+                    <li title="Primary language used in repository">
+                      {linter.package.repository.language}
+                    </li>
                   )}
                   {linter.package.repository.countStargazers && (
                     <li>
@@ -315,32 +317,37 @@ export default function LinterCard({
                   </li>
                 )}
                 {linter.package.percentDownloadsWeekOverWeek && (
-                  <li>
+                  <li title="Change in week-over-week downloads">
                     {linter.package.percentDownloadsWeekOverWeek > 0 ? '+' : ''}
                     {linter.package.percentDownloadsWeekOverWeek}% WoW
                   </li>
                 )}
                 <li>
                   {versionToDisplay && (
-                    <span
-                      title={[
-                        versionToDisplay.tags.length > 0
-                          ? `Tags for this version: ${versionToDisplay.tags
-                              .map((tag) => tag.name)
-                              .join(', ')}`
-                          : '',
-                        versionLoadedToDisplay
-                          ? `Some data from ${versionLoadedToDisplay.version}`
-                          : undefined,
-                      ]
-                        .filter((line) => line !== undefined)
-                        .join('\n')}
-                    >
-                      {versionToDisplay.version}
+                    <>
+                      <span
+                        title={[
+                          versionToDisplay.tags.length > 0
+                            ? `Tags for this version: ${versionToDisplay.tags
+                                .map((tag) => tag.name)
+                                .join(', ')}`
+                            : '',
+                          versionLoadedToDisplay
+                            ? `Some data from ${versionLoadedToDisplay.version}`
+                            : undefined,
+                        ]
+                          .filter((line) => line !== undefined)
+                          .join('\n')}
+                      >
+                        {versionToDisplay.version}
+                      </span>
                       {linter.package.sizeUnpacked && (
-                        <> • {prettyBytes(linter.package.sizeUnpacked)}</>
+                        <span title="Unpacked size">
+                          {' '}
+                          • {prettyBytes(linter.package.sizeUnpacked)}
+                        </span>
                       )}
-                    </span>
+                    </>
                   )}
                 </li>
                 <li>
