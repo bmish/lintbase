@@ -17,8 +17,8 @@ export default function Dashboard() {
   return (
     <div className="bg-gray-100 h-full">
       <Head>
-        <title>LintBase Dashboard</title>
-        <meta property="og:title" content="LintBase Dashboard" key="title" />
+        <title>Lintbase Dashboard</title>
+        <meta property="og:title" content="Lintbase Dashboard" key="title" />
       </Head>
       <DatabaseNavigation />
       <main className="py-8 px-6 mx-auto min-h-screen">

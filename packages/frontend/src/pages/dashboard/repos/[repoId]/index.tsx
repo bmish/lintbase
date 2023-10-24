@@ -131,10 +131,10 @@ export default function Repo({
   return (
     <div className="bg-gray-100 h-full">
       <Head>
-        <title>LintBase Dashboard - {repo.fullName}</title>
+        <title>Lintbase Dashboard - {repo.fullName}</title>
         <meta
           property="og:title"
-          content={`LintBase Dashboard - ${repo.fullName}`}
+          content={`Lintbase Dashboard - ${repo.fullName}`}
           key="title"
         />
       </Head>

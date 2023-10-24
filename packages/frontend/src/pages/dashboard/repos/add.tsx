@@ -121,10 +121,10 @@ export default function Add({
   return (
     <div className="bg-gray-100 h-full">
       <Head>
-        <title>LintBase Dashboard - Add Repository</title>
+        <title>Lintbase Dashboard - Add Repository</title>
         <meta
           property="og:title"
-          content="LintBase Dashboard - Add Repository"
+          content="Lintbase Dashboard - Add Repository"
           key="title"
         />
       </Head>

@@ -141,11 +141,11 @@ export default function Rule({
     <div className="bg-gray-100 h-full">
       <Head>
         <title>
-          LintBase: {rule.linter.package.name}: {rule.name}
+          Lintbase: {rule.linter.package.name}: {rule.name}
         </title>
         <meta
           property="og:title"
-          content={`LintBase: ${rule.linter.package.name}: ${rule.name}`}
+          content={`Lintbase: ${rule.linter.package.name}: ${rule.name}`}
           key="title"
         />
       </Head>

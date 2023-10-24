@@ -1,3 +1,3 @@
-# LINTBASE
+# Lintbase
 
 TODO

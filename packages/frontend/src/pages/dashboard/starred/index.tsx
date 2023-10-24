@@ -240,10 +240,10 @@ export default function Starred({
   return (
     <div className="bg-gray-100 h-full">
       <Head>
-        <title>LintBase Dashboard - Starred</title>
+        <title>Lintbase Dashboard - Starred</title>
         <meta
           property="og:title"
-          content="LintBase Dashboard - Starred"
+          content="Lintbase Dashboard - Starred"
           key="title"
         />
       </Head>

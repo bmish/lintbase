@@ -28,8 +28,8 @@ export default function Waitlist() {
   return (
     <div className="bg-gray-100 h-full">
       <Head>
-        <title>LintBase Waitlist</title>
-        <meta property="og:title" content="LintBase Waitlist" key="title" />
+        <title>Lintbase Waitlist</title>
+        <meta property="og:title" content="Lintbase Waitlist" key="title" />
       </Head>
       <main className="py-8 px-6 max-w-4xl mx-auto min-h-screen">
         <form onSubmit={handleSubmit}>

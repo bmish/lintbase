@@ -132,7 +132,7 @@ export default function Repo({
     <div className="bg-gray-100 h-full">
       <Head>
         <title>
-          LintBase Dashboard -{' '}
+          Lintbase Dashboard -{' '}
           {localPackageLinter.localPackage.repository.fullName} -{' '}
           {localPackageLinter.localPackage.path === '.'
             ? 'Root'
@@ -142,7 +142,7 @@ export default function Repo({
         </title>
         <meta
           property="og:title"
-          content={`LintBase Dashboard - ${
+          content={`Lintbase Dashboard - ${
             localPackageLinter.localPackage.repository.fullName
           } - ${
             localPackageLinter.localPackage.path === '.'

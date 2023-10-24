@@ -13,8 +13,8 @@ export default function About() {
   return (
     <div className="bg-gray-100 h-full">
       <Head>
-        <title>LintBase About</title>
-        <meta property="og:title" content="LintBase About" key="title" />
+        <title>Lintbase About</title>
+        <meta property="og:title" content="Lintbase About" key="title" />
       </Head>
       <main className="py-8 px-6 max-w-4xl mx-auto min-h-screen">
         <Grid container spacing={4}>

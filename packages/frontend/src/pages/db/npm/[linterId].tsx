@@ -272,10 +272,10 @@ export default function Linter({
   return (
     <div className="bg-gray-100 h-full">
       <Head>
-        <title>LintBase: {linter.package.name}</title>
+        <title>Lintbase: {linter.package.name}</title>
         <meta
           property="og:title"
-          content={`LintBase: ${linter.package.name}`}
+          content={`Lintbase: ${linter.package.name}`}
           key="title"
         />
       </Head>
