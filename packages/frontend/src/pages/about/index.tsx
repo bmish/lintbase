@@ -43,7 +43,7 @@ export default function About() {
             </Typography>
             <div className="  flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8">
               <div className="md:w-1/3">
-                <Typography variant="h6" marginBottom={2}>
+                <Typography variant="button" marginBottom={2}>
                   Improve app quality
                 </Typography>
                 <p className="mt-4 ">
@@ -52,7 +52,7 @@ export default function About() {
                 </p>
               </div>
               <div className="md:w-1/3">
-                <Typography variant="h6" marginBottom={2}>
+                <Typography variant="button" marginBottom={2}>
                   Boost developer productivity
                 </Typography>
 
@@ -63,8 +63,8 @@ export default function About() {
               </div>
 
               <div className="md:w-1/3 ">
-                <Typography variant="h6" marginBottom={2}>
-                  Keep your app modern and up-to-date
+                <Typography variant="button" marginBottom={2}>
+                  Stay modern and up-to-date
                 </Typography>
 
                 <p className="mt-4">
