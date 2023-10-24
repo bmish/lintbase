@@ -27,6 +27,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <link rel="manifest" href="/site.webmanifest" />
         <title>Lintbase</title>
         <meta property="og:title" content="Lintbase" key="title" />
+        <meta
+          name="description"
+          property="og:description"
+          content="npm for linters. Discover thousands of lint plugins and rules."
+        />
       </Head>
       <Header />
       <main>{children}</main>
