@@ -8,7 +8,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
 } from '@mui/material';
 import { prisma } from '@/server/db';
 import { fixAnyDatesInObject } from '@/utils/prisma';
@@ -288,23 +287,8 @@ export default function Linter({
             linter={linter}
             detailed={true}
             userId={userId}
+            lintersRelated={lintersRelated}
           ></LinterCard>
-        )}
-
-        {lintersRelated && lintersRelated.length > 0 && (
-          <div className="mt-8">
-            <Typography className="mb-2">Related Plugins</Typography>
-            <div className="flex md:flex-row flex-col justify-between">
-              {lintersRelated.map((linterRelated) => (
-                <div
-                  className="flex-grow md:mr-8 last:md:mr-0 md:mb-0 mb-8 last:mb-0"
-                  key={linterRelated.id}
-                >
-                  <LinterCard linter={linterRelated} />
-                </div>
-              ))}
-            </div>
-          </div>
         )}
 
         {linter && linter.configs.length > 0 && (

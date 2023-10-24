@@ -46,8 +46,9 @@ function getRepositoryLink(linkRepository: string | null): string | undefined {
 // eslint-disable-next-line complexity
 export default function LinterCard({
   linter,
+  userId = undefined, // eslint-disable-line unicorn/no-useless-undefined
   detailed = false,
-  userId,
+  lintersRelated = undefined, // eslint-disable-line unicorn/no-useless-undefined
 }: {
   linter: Prisma.LinterGetPayload<{
     include: {
@@ -72,6 +73,9 @@ export default function LinterCard({
   }>;
   detailed?: boolean;
   userId?: string | undefined;
+  lintersRelated?:
+    | Prisma.LinterGetPayload<{ include: { package: true } }>[]
+    | undefined;
 }) {
   const repositoryLink = getRepositoryLink(linter.package.linkRepository);
   const versionToDisplay =
@@ -355,6 +359,24 @@ export default function LinterCard({
                 </li>
               </ul>
             </Paper>
+
+            {lintersRelated && lintersRelated.length > 0 && (
+              <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
+                <Typography variant="button">Related</Typography>
+                <ul>
+                  {lintersRelated.map((linterRelated) => (
+                    <li key={linterRelated.id}>
+                      <Link
+                        href={packageToLinkUs(linterRelated.package)}
+                        underline="none"
+                      >
+                        {linterRelated.package.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </Paper>
+            )}
 
             {linter.package.keywords &&
               linter.package.keywords.length > 0 &&
