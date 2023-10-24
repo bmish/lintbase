@@ -17,24 +17,39 @@ export default function About() {
         <meta property="og:title" content="Lintbase About" key="title" />
       </Head>
       <main className="py-8 px-6 max-w-4xl mx-auto min-h-screen">
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={12}>
-            <Card>
-              <CardContent>
-                <Typography variant="h5" marginBottom={2}>
-                  Message us
-                </Typography>
-                <p>
-                  Feedback, bug reports, suggestions for additional linters to
-                  support, etc...
-                </p>
-              </CardContent>
-              <CardActions>
-                <Button href="mailto:info@lintbase.com">Email</Button>
-              </CardActions>
-            </Card>
-          </Grid>
-        </Grid>
+        <Card>
+          <CardContent>
+            <Typography variant="h5" marginBottom={2}>
+              About
+            </Typography>
+            <p>
+              Lintbase is <i>npm for linters</i>.
+            </p>
+            <p className="mt-4">
+              Instead of searching disparate GitHub repositories and package
+              READMEs for relevant linting to apply to your codebases, we
+              aggregate thousands of linters in one place, exposing information
+              about lint rules and configurations in a standard format.
+            </p>
+            <p className="mt-4">
+              We are currently focusing on ESLint for
+              JavaScript/TypeScript/Node, but will later expand to other linters
+              and languages.
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className=" mt-8">
+          <CardContent>
+            <Typography variant="h5" marginBottom={2}>
+              Message us
+            </Typography>
+            <p>Feedback, bug reports, suggestions, etc...</p>
+          </CardContent>
+          <CardActions>
+            <Button href="mailto:info@lintbase.com">Email</Button>
+          </CardActions>
+        </Card>
 
         <Card className=" mt-8">
           <CardContent>
