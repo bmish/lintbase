@@ -225,7 +225,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           ...obj,
           rules: obj.rules.map((rule) => fixAnyDatesInObject(rule)),
         })),
-        userId: session?.user.id,
+        userId: session?.user.id || null,
       },
     },
   };

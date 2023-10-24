@@ -147,7 +147,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         packageVersionTagsLatest: packageVersionTagsLatest.map((obj) =>
           fixAnyDatesInObject(obj)
         ),
-        userId: session?.user.id,
+        userId: session?.user.id || null,
       },
     },
   };
