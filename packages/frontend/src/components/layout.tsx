@@ -32,6 +32,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           property="og:description"
           content="npm for linters. Discover thousands of lint plugins and rules."
         />
+        <meta property="og:image" content="/logo.png" />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:width" content="754" />
+        <meta property="og:image:height" content="212" />
       </Head>
       <Header />
       <main>{children}</main>
