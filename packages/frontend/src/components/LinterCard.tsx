@@ -379,6 +379,22 @@ export default function LinterCard({
                     </time>
                   )}
                 </li>
+                <li>
+                  {linter.package.packageCreatedAt && (
+                    <time
+                      dateTime={new Date(
+                        linter.package.packageCreatedAt
+                      ).toISOString()}
+                      title={new Date(
+                        linter.package.packageCreatedAt
+                      ).toUTCString()}
+                    >
+                      {format(
+                        new Date(linter.package.packageCreatedAt)
+                      ).replace('ago', 'old')}
+                    </time>
+                  )}
+                </li>
               </ul>
             </Paper>
 
