@@ -32,6 +32,7 @@ const IGNORED_KEYWORDS = new Set([
   'configs',
   'configuration',
   'configurations',
+  'hacktoberfest',
   'lint',
   'linter',
   'linter',
@@ -243,6 +244,9 @@ function createPackageObject(
           name: githubInfo.name,
           private: githubInfo.private,
           size: githubInfo.size,
+          topics: {
+            create: (githubInfo.topics || []).map((topic) => ({ name: topic })),
+          },
           urlClone: githubInfo.clone_url,
           urlGit: githubInfo.git_url,
           urlHomepage: githubInfo.homepage,

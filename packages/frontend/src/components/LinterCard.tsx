@@ -64,7 +64,7 @@ export default function LinterCard({
             };
           };
           deprecatedReplacements: true;
-          repository: { include: { stars: true } };
+          repository: { include: { stars: true; topics: true } };
         };
       };
       configs: true;
@@ -96,6 +96,18 @@ export default function LinterCard({
     versionToDisplay &&
     versionToDisplay.version !== versionLoaded.version &&
     versionLoaded;
+
+  const keywordsToDisplay = [
+    ...new Set(
+      [
+        ...linter.package.keywords.map((keyword) => keyword.name),
+        ...(linter.package.repository?.topics?.map((topic) => topic.name) ||
+          []),
+      ]
+        .sort((a, b) => a.localeCompare(b))
+        .filter((keyword) => !linter.package.name.includes(keyword))
+    ),
+  ];
 
   return (
     <Card>
@@ -438,22 +450,16 @@ export default function LinterCard({
               </Paper>
             )}
 
-            {linter.package.keywords &&
-              linter.package.keywords.length > 0 &&
-              !linter.package.keywords.every((obj) =>
-                linter.package.name.includes(obj.name)
-              ) && (
-                <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
-                  <Typography variant="button">Keywords</Typography>
-                  <ul>
-                    {linter.package.keywords
-                      .map((obj) => obj.name)
-                      .map((keyword) => (
-                        <li key={keyword}>{keyword}</li>
-                      ))}
-                  </ul>
-                </Paper>
-              )}
+            {keywordsToDisplay.length > 0 && (
+              <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
+                <Typography variant="button">Keywords</Typography>
+                <ul>
+                  {keywordsToDisplay.map((keyword) => (
+                    <li key={keyword}>{keyword}</li>
+                  ))}
+                </ul>
+              </Paper>
+            )}
           </div>
         )}
       </div>

@@ -252,6 +252,17 @@ CREATE TABLE "User" (
 );
 
 -- CreateTable
+CREATE TABLE "RepositoryTopic" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "name" TEXT NOT NULL,
+    "repositoryId" INTEGER NOT NULL,
+
+    CONSTRAINT "RepositoryTopic_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Repository" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -445,6 +456,9 @@ CREATE UNIQUE INDEX "UserWaitlist_email_key" ON "UserWaitlist"("email");
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "RepositoryTopic_name_repositoryId_key" ON "RepositoryTopic"("name", "repositoryId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Repository_fullName_key" ON "Repository"("fullName");
 
 -- CreateIndex
@@ -539,6 +553,9 @@ ALTER TABLE "LintFramework" ADD CONSTRAINT "LintFramework_ecosystemId_fkey" FORE
 
 -- AddForeignKey
 ALTER TABLE "LintFramework" ADD CONSTRAINT "LintFramework_linterId_fkey" FOREIGN KEY ("linterId") REFERENCES "Linter"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RepositoryTopic" ADD CONSTRAINT "RepositoryTopic_repositoryId_fkey" FOREIGN KEY ("repositoryId") REFERENCES "Repository"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Repository" ADD CONSTRAINT "Repository_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
