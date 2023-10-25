@@ -56,6 +56,7 @@ export default function LinterCard({
         include: {
           keywords: true;
           ecosystem: true;
+          engines: true;
           versions: {
             include: {
               tags: true;
@@ -379,6 +380,20 @@ export default function LinterCard({
                 </li>
               </ul>
             </Paper>
+
+            {linter.package.engines.length > 0 && (
+              <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
+                <Typography variant="button">Requirements</Typography>
+                <ul>
+                  {linter.package.engines.map((engine) => (
+                    <li key={engine.id}>
+                      {engine.name === 'node' ? 'Node' : engine.name}:{' '}
+                      {engine.value}
+                    </li>
+                  ))}
+                </ul>
+              </Paper>
+            )}
 
             {lintersRelated && lintersRelated.length > 0 && (
               <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>

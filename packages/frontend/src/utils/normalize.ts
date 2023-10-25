@@ -16,6 +16,7 @@ import { asArray, createObjectAsync, uniqueItems } from './javascript';
 import {
   NpmRegistryInfo,
   getDeprecationMessage,
+  getEngines,
   getFileCount,
   getNpmInfo,
   getUnpackedSize,
@@ -147,6 +148,18 @@ function createPackageObject(
       create: uniqueItems(npmRegistryInfo.keywords || [])
         .filter((keyword) => !keywordsToIgnore.has(keyword))
         .map((keyword) => ({ name: keyword })),
+    },
+
+    engines: {
+      create: Object.entries(getEngines(npmRegistryInfo) || {}).flatMap(
+        ([name, value]) => {
+          if (!value) {
+            // Shouldn't happen.
+            return [];
+          }
+          return [{ name, value }];
+        }
+      ),
     },
 
     versions: {
@@ -452,7 +465,8 @@ async function eslintLinterToNormalizedLinter(
     ([processorName, processor]) => ({
       name: processorName,
       // @ts-expect-error -- This is an unofficial processor property.
-      description: processor.meta.description,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      description: processor.description || processor.meta?.description,
     })
   );
 

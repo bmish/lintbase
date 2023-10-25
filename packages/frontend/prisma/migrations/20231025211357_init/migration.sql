@@ -133,6 +133,18 @@ CREATE TABLE "PackageVersionTag" (
 );
 
 -- CreateTable
+CREATE TABLE "PackageEngine" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "name" TEXT NOT NULL,
+    "value" TEXT NOT NULL,
+    "packageId" INTEGER NOT NULL,
+
+    CONSTRAINT "PackageEngine_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Package" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -390,6 +402,9 @@ CREATE UNIQUE INDEX "PackageVersion_version_packageId_key" ON "PackageVersion"("
 CREATE UNIQUE INDEX "PackageVersionTag_name_packageVersionId_key" ON "PackageVersionTag"("name", "packageVersionId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "PackageEngine_name_packageId_key" ON "PackageEngine"("name", "packageId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Package_linterId_key" ON "Package"("linterId");
 
 -- CreateIndex
@@ -484,6 +499,9 @@ ALTER TABLE "PackageVersion" ADD CONSTRAINT "PackageVersion_packageId_fkey" FORE
 
 -- AddForeignKey
 ALTER TABLE "PackageVersionTag" ADD CONSTRAINT "PackageVersionTag_packageVersionId_fkey" FOREIGN KEY ("packageVersionId") REFERENCES "PackageVersion"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "PackageEngine" ADD CONSTRAINT "PackageEngine_packageId_fkey" FOREIGN KEY ("packageId") REFERENCES "Package"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Package" ADD CONSTRAINT "Package_ecosystemId_fkey" FOREIGN KEY ("ecosystemId") REFERENCES "Ecosystem"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
