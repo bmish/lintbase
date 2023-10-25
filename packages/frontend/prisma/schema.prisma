@@ -245,9 +245,10 @@ model Package {
   linkBugs            String?
   emailBugs           String?
 
-  license      String?
-  sizeUnpacked Int?
-  countFiles   Int?
+  license          String?
+  sizeUnpacked     Int?
+  countFiles       Int?
+  countMaintainers Int?
 
   keywords         PackageKeyword[]
   versions         PackageVersion[]

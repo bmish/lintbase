@@ -178,6 +178,7 @@ CREATE TABLE "Package" (
     "license" TEXT,
     "sizeUnpacked" INTEGER,
     "countFiles" INTEGER,
+    "countMaintainers" INTEGER,
     "ecosystemId" INTEGER NOT NULL,
     "linterId" INTEGER,
     "repositoryId" INTEGER,

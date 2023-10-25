@@ -114,6 +114,7 @@ function createPackageObject(
     license: npmRegistryInfo.license || null,
     sizeUnpacked: getUnpackedSize(npmRegistryInfo) ?? null,
     countFiles: getFileCount(npmRegistryInfo) ?? null,
+    countMaintainers: npmRegistryInfo.maintainers?.length ?? null,
 
     // Handle deprecations.
     // Note: deprecatedReplacements are filled in later after all the packages are already created.
