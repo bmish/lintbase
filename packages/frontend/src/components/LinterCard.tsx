@@ -411,7 +411,10 @@ export default function LinterCard({
             </Paper>
 
             {linter.package.engines.length > 0 && (
-              <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
+              <Paper
+                className="p-4 border"
+                sx={{ boxShadow: 'none', maxWidth: '150px' }}
+              >
                 <Typography variant="button">Requirements</Typography>
                 <ul>
                   {linter.package.engines.map((engine) => (
@@ -433,7 +436,10 @@ export default function LinterCard({
             )}
 
             {lintersRelated && lintersRelated.length > 0 && (
-              <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
+              <Paper
+                className="p-4 border"
+                sx={{ boxShadow: 'none', maxWidth: '150px' }}
+              >
                 <Typography variant="button">Related</Typography>
                 <ul>
                   {lintersRelated.map((linterRelated) => (
