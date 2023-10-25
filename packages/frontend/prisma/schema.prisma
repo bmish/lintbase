@@ -119,6 +119,21 @@ model RuleConfig {
   @@unique([ruleId, configId])
 }
 
+model Processor {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name          String
+  description   String?
+  descriptionAI String?
+
+  linterId Int
+  linter   Linter @relation(fields: [linterId], references: [id])
+
+  @@unique([name, linterId])
+}
+
 model PackageKeyword {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -240,6 +255,7 @@ model Linter {
   rules       Rule[]
   ruleConfigs RuleConfig[]
   configs     Config[]
+  processors  Processor[]
 
   descriptionAI String?
 

@@ -24,6 +24,7 @@ import millify from 'millify';
 const includeLinters = {
   rules: true,
   configs: true,
+  processors: true,
   package: {
     include: {
       ecosystem: true,

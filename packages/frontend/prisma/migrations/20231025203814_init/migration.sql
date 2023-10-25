@@ -85,6 +85,19 @@ CREATE TABLE "RuleConfig" (
 );
 
 -- CreateTable
+CREATE TABLE "Processor" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "descriptionAI" TEXT,
+    "linterId" INTEGER NOT NULL,
+
+    CONSTRAINT "Processor_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "PackageKeyword" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -365,6 +378,9 @@ CREATE UNIQUE INDEX "Config_name_linterId_key" ON "Config"("name", "linterId");
 CREATE UNIQUE INDEX "RuleConfig_ruleId_configId_key" ON "RuleConfig"("ruleId", "configId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Processor_name_linterId_key" ON "Processor"("name", "linterId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "PackageKeyword_name_packageId_key" ON "PackageKeyword"("name", "packageId");
 
 -- CreateIndex
@@ -456,6 +472,9 @@ ALTER TABLE "RuleConfig" ADD CONSTRAINT "RuleConfig_configId_fkey" FOREIGN KEY (
 
 -- AddForeignKey
 ALTER TABLE "RuleConfig" ADD CONSTRAINT "RuleConfig_ruleId_fkey" FOREIGN KEY ("ruleId") REFERENCES "Rule"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Processor" ADD CONSTRAINT "Processor_linterId_fkey" FOREIGN KEY ("linterId") REFERENCES "Linter"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "PackageKeyword" ADD CONSTRAINT "PackageKeyword_packageId_fkey" FOREIGN KEY ("packageId") REFERENCES "Package"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -67,6 +67,7 @@ export default function LinterCard({
       };
       configs: true;
       rules: true;
+      processors: true;
       lintFramework: true;
       lintees: true;
     };
@@ -159,6 +160,12 @@ export default function LinterCard({
                   linter.rules.length > 0 &&
                   `${linter.rules.length} Rule${
                     linter.rules.length > 1 ? 's' : ''
+                  }`}
+                {!detailed && linter.processors.length > 0 && ' • '}
+                {!detailed &&
+                  linter.processors.length > 0 &&
+                  `${linter.processors.length} Processor${
+                    linter.processors.length > 1 ? 's' : ''
                   }`}
                 {!detailed && linter.package.countDownloadsThisWeek && ' • '}
                 {!detailed && linter.package.countDownloadsThisWeek && (
@@ -274,6 +281,12 @@ export default function LinterCard({
                       <li>
                         {linter.rules.length} Rule
                         {linter.rules.length > 1 ? 's' : ''}
+                      </li>
+                    )}
+                    {linter.processors.length > 0 && (
+                      <li>
+                        {linter.processors.length} Processor
+                        {linter.processors.length > 1 ? 's' : ''}
                       </li>
                     )}
                   </ul>

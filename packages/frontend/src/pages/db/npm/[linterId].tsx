@@ -50,6 +50,7 @@ const include = {
       name: Prisma.SortOrder.asc,
     },
   },
+  processors: true,
   package: {
     include: {
       keywords: true,

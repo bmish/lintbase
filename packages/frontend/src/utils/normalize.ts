@@ -254,6 +254,7 @@ async function baseToNormalizedLinter(
   githubInfo: Repository | undefined,
   rules: Prisma.RuleCreateWithoutLinterInput[],
   configs: Prisma.ConfigCreateWithoutLinterInput[],
+  processors: Prisma.ProcessorCreateWithoutLinterInput[],
   keywordsToIgnore: Set<string>
 ): Promise<
   Prisma.LinterGetPayload<{ include: typeof linterInclude }> | undefined
@@ -301,8 +302,8 @@ async function baseToNormalizedLinter(
       },
 
       rules: { create: rules },
-
       configs: { create: configs },
+      processors: { create: processors },
 
       lintFramework: {
         connect: { id: lintFrameworkId },
@@ -447,6 +448,14 @@ async function eslintLinterToNormalizedLinter(
     })
   );
 
+  const processors = Object.entries(linter?.processors || {}).map(
+    ([processorName, processor]) => ({
+      name: processorName,
+      // @ts-expect-error -- This is an unofficial processor property.
+      description: processor.meta.description,
+    })
+  );
+
   const linterCreated = await baseToNormalizedLinter(
     linterName,
     lintFrameworkId,
@@ -457,6 +466,7 @@ async function eslintLinterToNormalizedLinter(
     githubInfo,
     rules,
     configs,
+    processors,
     ESLINT_IGNORED_KEYWORDS
   );
 
@@ -571,6 +581,7 @@ async function emberTemplateLintLinterToNormalizedLinter(
     githubInfo,
     rules,
     configs,
+    [],
     EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS
   );
 
@@ -617,6 +628,7 @@ async function stylelintToNormalizedLinter(
     githubInfo,
     rules,
     [],
+    [],
     IGNORED_KEYWORDS
   );
 
@@ -662,6 +674,7 @@ async function stylelintPluginToNormalizedLinter(
     npmRegistryInfo,
     githubInfo,
     rules,
+    [],
     [],
     IGNORED_KEYWORDS
   );
@@ -915,6 +928,7 @@ export async function loadLintersToDb(
               npmDownloadsInfo,
               npmRegistryInfo,
               gitHubInfoForThisLinter,
+              [],
               [],
               [],
               EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS
