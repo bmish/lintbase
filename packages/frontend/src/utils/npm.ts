@@ -9,7 +9,8 @@ export type NpmRegistryInfo = {
     | {
         deprecated?: string;
         dist?: { unpackedSize?: number; fileCount?: number };
-        engines: Record<string, string>;
+        engines: Record<string, string | undefined>;
+        peerDependencies: Record<string, string | undefined>;
       }
     | undefined
   >;
@@ -36,6 +37,19 @@ export function getEngines(
     const latestVersion = versions[distTags.latest];
     if (latestVersion?.engines) {
       return latestVersion.engines;
+    }
+  }
+  return undefined;
+}
+
+export function getPeerDependencies(
+  registryInfo: NpmRegistryInfo
+): Record<string, string | undefined> | undefined {
+  const { 'dist-tags': distTags, versions } = registryInfo;
+  if (distTags?.latest) {
+    const latestVersion = versions[distTags.latest];
+    if (latestVersion?.peerDependencies) {
+      return latestVersion.peerDependencies;
     }
   }
   return undefined;

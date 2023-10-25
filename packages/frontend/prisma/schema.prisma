@@ -192,6 +192,20 @@ model PackageEngine {
   @@unique([name, packageId])
 }
 
+model PackagePeerDependency {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name  String
+  value String
+
+  packageId Int
+  package   Package @relation(fields: [packageId], references: [id])
+
+  @@unique([name, packageId])
+}
+
 // model NpmDownloads {
 //   id        Int      @id @default(autoincrement())
 //   createdAt DateTime @default(now())
@@ -235,9 +249,10 @@ model Package {
   sizeUnpacked Int?
   countFiles   Int?
 
-  keywords PackageKeyword[]
-  versions PackageVersion[]
-  engines  PackageEngine[]
+  keywords         PackageKeyword[]
+  versions         PackageVersion[]
+  engines          PackageEngine[]
+  peerDependencies PackagePeerDependency[]
 
   ecosystemId Int
   ecosystem   Ecosystem @relation(fields: [ecosystemId], references: [id])

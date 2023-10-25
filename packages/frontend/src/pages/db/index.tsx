@@ -37,6 +37,7 @@ const includeLinters = {
       repository: { include: { stars: true } },
       deprecatedReplacements: true,
       engines: true,
+      peerDependencies: true,
     },
   },
   lintees: true,

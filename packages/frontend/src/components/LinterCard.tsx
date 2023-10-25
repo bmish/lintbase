@@ -57,6 +57,7 @@ export default function LinterCard({
           keywords: true;
           ecosystem: true;
           engines: true;
+          peerDependencies: true;
           versions: {
             include: {
               tags: true;
@@ -386,9 +387,17 @@ export default function LinterCard({
                 <Typography variant="button">Requirements</Typography>
                 <ul>
                   {linter.package.engines.map((engine) => (
-                    <li key={engine.id}>
+                    <li key={engine.id} title="Engine">
                       {engine.name === 'node' ? 'Node' : engine.name}:{' '}
                       {engine.value}
+                    </li>
+                  ))}
+                  {linter.package.peerDependencies.map((peerDependency) => (
+                    <li key={peerDependency.id} title="Peer dependency">
+                      {peerDependency.name === 'eslint'
+                        ? 'ESLint'
+                        : peerDependency.name}
+                      : {peerDependency.value}
                     </li>
                   ))}
                 </ul>

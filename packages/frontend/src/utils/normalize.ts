@@ -19,6 +19,7 @@ import {
   getEngines,
   getFileCount,
   getNpmInfo,
+  getPeerDependencies,
   getUnpackedSize,
 } from './npm';
 import { LINTERS_DEPRECATED, getLinteesForLinter } from './lintees';
@@ -160,6 +161,18 @@ function createPackageObject(
           return [{ name, value }];
         }
       ),
+    },
+
+    peerDependencies: {
+      create: Object.entries(
+        getPeerDependencies(npmRegistryInfo) || {}
+      ).flatMap(([name, value]) => {
+        if (!value) {
+          // Shouldn't happen.
+          return [];
+        }
+        return [{ name, value }];
+      }),
     },
 
     versions: {
