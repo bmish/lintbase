@@ -436,14 +436,19 @@ export default function LinterCard({
                       {engine.value}
                     </li>
                   ))}
-                  {linter.package.peerDependencies.map((peerDependency) => (
-                    <li key={peerDependency.id} title="Peer dependency">
-                      {peerDependency.name === 'eslint'
-                        ? 'ESLint'
-                        : peerDependency.name}
-                      : {peerDependency.value}
-                    </li>
-                  ))}
+                  {linter.package.peerDependencies
+                    .slice(0, 4)
+                    .map((peerDependency) => (
+                      <li key={peerDependency.id} title="Peer dependency">
+                        {peerDependency.name === 'eslint'
+                          ? 'ESLint'
+                          : peerDependency.name}
+                        : {peerDependency.value}
+                      </li>
+                    ))}
+                  {linter.package.peerDependencies.length > 4 && (
+                    <li title="Some peer dependencies not shown">...</li>
+                  )}
                 </ul>
               </Paper>
             )}
