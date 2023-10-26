@@ -1,6 +1,8 @@
 import { loadLintersToDb } from '@/utils/normalize';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { env } from '@/env.mjs';
+// import etlRules from '../../../../downloader/tmp/npm/ember-template-lint/node_modules/ember-template-lint/lib/rules/index.js';
+// import etlConfigurations from '../../../../downloader/tmp/npm/ember-template-lint/node_modules/ember-template-lint/lib/config/index.js';
 
 export default async function load(req: NextApiRequest, res: NextApiResponse) {
   if (env.NODE_ENV !== 'development') {
@@ -18,9 +20,12 @@ export default async function load(req: NextApiRequest, res: NextApiResponse) {
   //   // @ts-expect-error -- ESLint doesn't have types.
   //   '../../../../downloader/tmp/npm/eslint/node_modules/eslint/lib/rules/index.js'
   // );
+  const etlRules = {};
+  const etlConfigurations = {};
 
   const lintersCreated = await loadLintersToDb(
-    Object.fromEntries(eslintRules.entries()) // Convert from LazyLoadingRuleMap to standard object.
+    Object.fromEntries(eslintRules.entries()), // Convert from LazyLoadingRuleMap to standard object.
+    { rules: etlRules, configurations: etlConfigurations }
   );
   res.status(200).json({ linterCreatedCount: lintersCreated.length });
 }

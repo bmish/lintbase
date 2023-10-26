@@ -761,7 +761,8 @@ export async function loadLintersToDb(
     string,
     | TSESLint.RuleCreateFunction
     | TSESLint.RuleModule<string, unknown[], TSESLint.RuleListener>
-  >
+  >,
+  etl: EmberTemplateLint
 ) {
   const linterTypes = [...CORE_LINTING_FRAMEWORKS, ...PLUGINS_SUPPORTED];
 
@@ -795,6 +796,8 @@ export async function loadLintersToDb(
       }
       case 'ember-template-lint': {
         linterRecord = load<EmberTemplateLint>(downloadPath);
+        // Manually load this since it's ESM.
+        linterRecord['ember-template-lint'] = etl;
         break;
       }
       case 'eslint': {
