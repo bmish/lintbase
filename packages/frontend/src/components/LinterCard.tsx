@@ -23,6 +23,7 @@ import { format } from 'timeago.js';
 import EmojiAi from './EmojiAi';
 import StarIcon from '@mui/icons-material/Star';
 import prettyBytes from 'pretty-bytes';
+import { ContentCopy } from '@mui/icons-material';
 
 function getRepositoryLink(linkRepository: string | null): string | undefined {
   if (!linkRepository) {
@@ -211,6 +212,21 @@ export default function LinterCard({
                 <Typography variant="body2" component={'p'}>
                   <EmojiAi /> {linter.descriptionAI}
                 </Typography>
+              </div>
+            )}
+
+            {detailed && (
+              <div
+                className="cursor-pointer text-xs p-2 mt-4 border w-fit"
+                onClick={() => {
+                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                  navigator.clipboard.writeText(
+                    `npm i --save-dev ${linter.package.name}`
+                  );
+                }}
+              >
+                <code>npm i --save-dev {linter.package.name}</code>{' '}
+                <ContentCopy fontSize="small" />
               </div>
             )}
           </CardContent>
