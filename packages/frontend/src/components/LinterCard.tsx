@@ -457,7 +457,10 @@ export default function LinterCard({
             )}
 
             {keywordsToDisplay.length > 0 && (
-              <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
+              <Paper
+                className="p-4 border"
+                sx={{ boxShadow: 'none', maxWidth: '150px' }}
+              >
                 <Typography variant="button">Keywords</Typography>
                 <ul>
                   {keywordsToDisplay.map((keyword) => (
