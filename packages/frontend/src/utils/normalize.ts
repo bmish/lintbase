@@ -245,7 +245,9 @@ function createPackageObject(
           private: githubInfo.private,
           size: githubInfo.size,
           topics: {
-            create: (githubInfo.topics || []).map((topic) => ({ name: topic })),
+            create: (githubInfo.topics || [])
+              .filter((topic) => !keywordsToIgnore.has(topic))
+              .map((topic) => ({ name: topic })),
           },
           urlClone: githubInfo.clone_url,
           urlGit: githubInfo.git_url,
