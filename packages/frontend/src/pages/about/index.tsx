@@ -4,7 +4,6 @@ import {
   Card,
   CardActions,
   CardContent,
-  Grid,
   Typography,
 } from '@mui/material';
 import Head from 'next/head';
