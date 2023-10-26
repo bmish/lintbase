@@ -128,7 +128,7 @@ export default function LinterCard({
               </Link>
             </Breadcrumbs>
 
-            <Typography variant="h5" component="div">
+            <Typography variant={detailed ? 'h5' : 'h6'} component="div">
               {detailed && linter.package.name}{' '}
               {detailed && linter.package.deprecated && (
                 <Chip
