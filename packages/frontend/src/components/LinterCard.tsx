@@ -428,10 +428,15 @@ export default function LinterCard({
 
             {linter.package.engines.length > 0 && (
               <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
-                <Typography variant="button">Requirements</Typography>
+                <Typography
+                  variant="button"
+                  title="Engines and peer dependencies"
+                >
+                  Requirements
+                </Typography>
                 <ul>
                   {linter.package.engines.map((engine) => (
-                    <li key={engine.id} title="Engine">
+                    <li key={engine.id}>
                       {engine.name === 'node' ? 'Node' : engine.name}:{' '}
                       {engine.value}
                     </li>
@@ -439,11 +444,20 @@ export default function LinterCard({
                   {linter.package.peerDependencies
                     .slice(0, 4)
                     .map((peerDependency) => (
-                      <li key={peerDependency.id} title="Peer dependency">
-                        {peerDependency.name === 'eslint'
-                          ? 'ESLint'
-                          : peerDependency.name}
-                        : {peerDependency.value}
+                      <li key={peerDependency.id}>
+                        <span title={peerDependency.name}>
+                          {peerDependency.name === 'eslint'
+                            ? 'ESLint'
+                            : peerDependency.name.length > 20
+                            ? `${peerDependency.name.slice(0, 18)}...`
+                            : peerDependency.name}
+                        </span>
+                        :{' '}
+                        <span title={peerDependency.value}>
+                          {peerDependency.value.length > 20
+                            ? `${peerDependency.value.slice(0, 18)}...`
+                            : peerDependency.value}
+                        </span>
                       </li>
                     ))}
                   {linter.package.peerDependencies.length > 4 && (
