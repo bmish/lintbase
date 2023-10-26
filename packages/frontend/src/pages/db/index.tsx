@@ -194,8 +194,8 @@ export default function index({
   return (
     <div className="bg-gray-100 h-full">
       <Head>
-        <title>Lintbase Database</title>
-        <meta property="og:title" content="Lintbase Database" key="title" />
+        <title>Lintbase</title>
+        <meta property="og:title" content="Lintbase" key="title" />
       </Head>
       <DatabaseNavigation />
       <main className="flex-grow overflow-y-auto bg-gray-100 pt-8 px-6 mx-auto min-h-screen">
