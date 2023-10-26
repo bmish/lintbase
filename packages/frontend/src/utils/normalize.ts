@@ -619,7 +619,60 @@ async function emberTemplateLintLinterToNormalizedLinter(
     EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS
   );
 
-  // TODO: create RuleConfigs
+  if (!linterCreated) {
+    return undefined;
+  }
+
+  const existingRuleConfig = await prisma.ruleConfig.findFirst({
+    where: {
+      linterId: linterCreated.id,
+    },
+  });
+
+  if (existingRuleConfig) {
+    // Likely already created this plugin previously.
+    return linterCreated;
+  }
+
+  await prisma.ruleConfig.createMany({
+    data: Object.entries(linter?.configurations || {}).flatMap(
+      ([configName, config]) => {
+        const configId = linterCreated.configs.find(
+          (configCreated) => configCreated.name === configName
+        )?.id;
+        if (configId === undefined) {
+          return [];
+        }
+        return Object.entries(config.rules || {}).flatMap(
+          ([ruleName, ruleEntry]) => {
+            const ruleId = linterCreated.rules.find(
+              (ruleCreated) => ruleCreated.name === ruleName
+            )?.id;
+            if (ruleId === undefined) {
+              return [];
+            }
+
+            if (ruleEntry === undefined) {
+              return [];
+            }
+            const severity = ruleEntryToStringSeverity(ruleEntry);
+            if (severity === undefined) {
+              // Should not happen.
+              return [];
+            }
+            return [
+              {
+                severity,
+                linterId: linterCreated.id,
+                configId,
+                ruleId,
+              },
+            ];
+          }
+        );
+      }
+    ),
+  });
 
   return linterCreated;
 }

@@ -1,5 +1,13 @@
 export type EmberTemplateLint = {
-  configurations?: Record<string, { rules: object }>;
+  configurations?: Record<
+    string,
+    {
+      rules: Record<
+        string,
+        'error' | 'warn' | 'off' | ['error' | 'warn' | 'off', config: unknown]
+      >;
+    }
+  >;
   rules?: Record<string, object>;
 };
 
