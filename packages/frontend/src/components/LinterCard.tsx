@@ -111,9 +111,9 @@ export default function LinterCard({
 
   return (
     <Card>
-      <div className="flex flex-col sm:flex-row">
-        <div className="flex-1">
-          <CardContent>
+      <div className="flex flex-col lg:flex-row">
+        <div className="flex-1 flex flex-col">
+          <CardContent className="flex-1">
             <Breadcrumbs aria-label="breadcrumb" className="mb-1">
               <Typography sx={{ fontSize: 14 }} color="text.secondary">
                 {ecosystemToDisplayName(linter.package.ecosystem)}
@@ -159,7 +159,7 @@ export default function LinterCard({
               )}
             </Typography>
 
-            <div className="mb-4 ">
+            <div className="mb-4">
               <Typography sx={{ fontSize: 14 }} color="text.secondary">
                 {!detailed &&
                   linter.configs.length > 0 &&
@@ -279,7 +279,7 @@ export default function LinterCard({
         </div>
 
         {detailed && (
-          <div className="flex flex-row space-x-4 m-4">
+          <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4 m-4">
             {linter &&
               (linter.configs.length > 0 || linter.rules.length > 0) && (
                 <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
@@ -411,10 +411,7 @@ export default function LinterCard({
             </Paper>
 
             {linter.package.engines.length > 0 && (
-              <Paper
-                className="p-4 border"
-                sx={{ boxShadow: 'none', maxWidth: '150px' }}
-              >
+              <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
                 <Typography variant="button">Requirements</Typography>
                 <ul>
                   {linter.package.engines.map((engine) => (
@@ -436,10 +433,7 @@ export default function LinterCard({
             )}
 
             {lintersRelated && lintersRelated.length > 0 && (
-              <Paper
-                className="p-4 border"
-                sx={{ boxShadow: 'none', maxWidth: '150px' }}
-              >
+              <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
                 <Typography variant="button">Related</Typography>
                 <ul>
                   {lintersRelated.map((linterRelated) => (
@@ -457,10 +451,7 @@ export default function LinterCard({
             )}
 
             {keywordsToDisplay.length > 0 && (
-              <Paper
-                className="p-4 border"
-                sx={{ boxShadow: 'none', maxWidth: '150px' }}
-              >
+              <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
                 <Typography variant="button">Keywords</Typography>
                 <ul>
                   {keywordsToDisplay.map((keyword) => (
