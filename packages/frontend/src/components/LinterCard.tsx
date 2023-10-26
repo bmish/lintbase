@@ -24,6 +24,7 @@ import EmojiAi from './EmojiAi';
 import StarIcon from '@mui/icons-material/Star';
 import prettyBytes from 'pretty-bytes';
 import { ContentCopy } from '@mui/icons-material';
+import { semverPretty } from '@/utils/npm';
 
 function getRepositoryLink(linkRepository: string | null): string | undefined {
   if (!linkRepository) {
@@ -440,7 +441,9 @@ export default function LinterCard({
                   {linter.package.engines.map((engine) => (
                     <li key={engine.id}>
                       {engine.name === 'node' ? 'Node' : engine.name}:{' '}
-                      {engine.value}
+                      <span title={engine.value}>
+                        {semverPretty(engine.value)}
+                      </span>
                     </li>
                   ))}
                   {linter.package.peerDependencies
@@ -456,9 +459,12 @@ export default function LinterCard({
                         </span>
                         :{' '}
                         <span title={peerDependency.value}>
-                          {peerDependency.value.length > 20
-                            ? `${peerDependency.value.slice(0, 18)}...`
-                            : peerDependency.value}
+                          {semverPretty(peerDependency.value).length > 20
+                            ? `${semverPretty(peerDependency.value).slice(
+                                0,
+                                18
+                              )}...`
+                            : semverPretty(peerDependency.value)}
                         </span>
                       </li>
                     ))}

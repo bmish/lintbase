@@ -210,3 +210,7 @@ export async function getNpmInfo(packageNames: readonly string[]): Promise<
     packageNames.map((packageName, i) => [packageName, info[i]])
   );
 }
+
+export function semverPretty(semver: string) {
+  return semver.replaceAll('.0.0', '').replaceAll('.0', '');
+}
