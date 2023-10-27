@@ -63,17 +63,15 @@ export default function LintFrameworkTable({
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
               <TableCell scope="row">
-                {ruleCounts[index] === 0 &&
-                  linterCounts[index] === 0 &&
-                  lintFramework.linter?.package && (
-                    <Link
-                      href={packageToLinkUs(lintFramework.linter?.package)}
-                      underline="none"
-                    >
-                      {lintFramework.name}
-                    </Link>
-                  )}
-                {(ruleCounts[index] > 0 || linterCounts[index] > 0) && (
+                {linterCounts[index] <= 1 && lintFramework.linter?.package && (
+                  <Link
+                    href={packageToLinkUs(lintFramework.linter?.package)}
+                    underline="none"
+                  >
+                    {lintFramework.name}
+                  </Link>
+                )}
+                {linterCounts[index] > 1 && (
                   <Link
                     href={lintFrameworkToLinkUs(lintFramework)}
                     underline="none"
