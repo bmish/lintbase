@@ -568,7 +568,7 @@ export default function LinterCard({
                   variant="button"
                   title={keywordsToDisplay.join(', ')}
                 >
-                  Keywords
+                  🗂️ Keywords
                 </Typography>
                 <ul>
                   {keywordsToDisplay.slice(0, 5).map((keyword) => (
