@@ -275,7 +275,7 @@ export default function LinterCard({
                     width="12"
                     height="12"
                     alt="GitHub Logo"
-                    className="mr-1 center"
+                    className="mr-1"
                   />
                   GitHub
                 </Button>
@@ -293,7 +293,7 @@ export default function LinterCard({
                     width="12"
                     height="12"
                     alt="npm Logo"
-                    className="mr-1 center"
+                    className="mr-1"
                   />
                 )}
                 {linterToLinkPackageRegistry(linter.package).startsWith(
@@ -347,7 +347,16 @@ export default function LinterCard({
 
             {linter.package.repository && (
               <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
-                <Typography variant="button">GitHub</Typography>
+                <div className="flex flex-row">
+                  <Image
+                    src="/icon-github.svg"
+                    width="16"
+                    height="16"
+                    alt="GitHub Logo"
+                    className="mr-1 mt-1 mb-1"
+                  />
+                  <Typography variant="button">GitHub</Typography>
+                </div>
                 <ul>
                   {linter.package.repository.language && (
                     <li title="Primary language used in repository">
@@ -376,7 +385,16 @@ export default function LinterCard({
             )}
 
             <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
-              <Typography variant="button">npm</Typography>
+              <div className="flex flex-row">
+                <Image
+                  src="/icon-npm.svg"
+                  width="14"
+                  height="14"
+                  alt="npm Logo"
+                  className="mr-1"
+                />
+                <Typography variant="button">npm</Typography>
+              </div>
               <ul>
                 {linter.package.countDownloadsThisWeek &&
                   linter.package.countDownloadsThisWeek > 0 && (
