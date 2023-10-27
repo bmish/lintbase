@@ -96,7 +96,9 @@ export default function LintFrameworkTable({
               )}
               {(ruleCounts[index] > 0 || linterCounts[index] > 0) && (
                 <TableCell scope="row" align="right">
-                  {millify(linterCounts[index])}
+                  {linterCounts[index] > 900 && linterCounts[index] < 1000
+                    ? '1K'
+                    : millify(linterCounts[index])}
                 </TableCell>
               )}
               {(ruleCounts[index] > 0 || linterCounts[index] > 0) && (
