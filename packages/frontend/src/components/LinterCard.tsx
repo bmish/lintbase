@@ -346,7 +346,7 @@ export default function LinterCard({
             {linter &&
               (linter.configs.length > 0 || linter.rules.length > 0) && (
                 <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
-                  <Typography variant="button">Linter</Typography>
+                  <Typography variant="button">🕵️‍♂️ Linter</Typography>
                   <ul>
                     {linter.configs.length > 0 && (
                       <li>
@@ -504,7 +504,7 @@ export default function LinterCard({
                   variant="button"
                   title="Engines and peer dependencies"
                 >
-                  Requirements
+                  📋 Requirements
                 </Typography>
                 <ul>
                   {linter.package.engines.map((engine) => (
@@ -546,7 +546,7 @@ export default function LinterCard({
 
             {lintersRelated && lintersRelated.length > 0 && (
               <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
-                <Typography variant="button">Related</Typography>
+                <Typography variant="button">🤝 Related</Typography>
                 <ul>
                   {lintersRelated.map((linterRelated) => (
                     <li key={linterRelated.id}>
