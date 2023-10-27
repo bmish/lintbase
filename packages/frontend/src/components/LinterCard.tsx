@@ -335,17 +335,20 @@ export default function LinterCard({
                       {linter.package.repository.language}
                     </li>
                   )}
-                  {linter.package.repository.countStargazers && (
-                    <li>
-                      {millify(linter.package.repository.countStargazers)} Stars
-                    </li>
-                  )}
-                  {linter.package.repository.countWatchers && (
-                    <li>
-                      {millify(linter.package.repository.countWatchers)}{' '}
-                      Watchers
-                    </li>
-                  )}
+                  {linter.package.repository.countStargazers &&
+                    linter.package.repository.countStargazers > 0 && (
+                      <li>
+                        {millify(linter.package.repository.countStargazers)}{' '}
+                        Stars
+                      </li>
+                    )}
+                  {linter.package.repository.countWatchers &&
+                    linter.package.repository.countWatchers > 0 && (
+                      <li>
+                        {millify(linter.package.repository.countWatchers)}{' '}
+                        Watchers
+                      </li>
+                    )}
                   {linter.package.repository.archived && <li>Archived</li>}
                   {linter.package.repository.fork && <li>Fork</li>}
                   {linter.package.repository.disabled && <li>Disabled</li>}
@@ -356,15 +359,19 @@ export default function LinterCard({
             <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
               <Typography variant="button">npm</Typography>
               <ul>
-                {linter.package.countDownloadsThisWeek && (
-                  <li>
-                    {millify(linter.package.countDownloadsThisWeek)} Wkly{' '}
-                    <GetAppIcon fontSize="inherit" titleAccess="Downloads" />
-                  </li>
-                )}
-                {linter.package.percentDownloadsWeekOverWeek && (
+                {linter.package.countDownloadsThisWeek &&
+                  linter.package.countDownloadsThisWeek > 0 && (
+                    <li>
+                      {millify(linter.package.countDownloadsThisWeek)} Wkly{' '}
+                      <GetAppIcon fontSize="inherit" titleAccess="Downloads" />
+                    </li>
+                  )}
+                {typeof linter.package.percentDownloadsWeekOverWeek ===
+                  'number' && (
                   <li title="Change in week-over-week downloads">
-                    {linter.package.percentDownloadsWeekOverWeek > 0 ? '+' : ''}
+                    {linter.package.percentDownloadsWeekOverWeek >= 0
+                      ? '+'
+                      : ''}
                     {linter.package.percentDownloadsWeekOverWeek}% WoW
                   </li>
                 )}
