@@ -253,7 +253,7 @@ export default function LinterCard({
                 }}
               >
                 <code className="mr-2">
-                  npm i --save-dev {linter.package.name}
+                  ❯ npm i --save-dev {linter.package.name}
                 </code>
                 <ContentCopy fontSize="small" />
               </div>
