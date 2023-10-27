@@ -126,9 +126,9 @@ export default function LinterCard({
                 {linter.package.ecosystem &&
                   linter.package.ecosystem.name === 'node' && (
                     <Image
-                      src="/logo-nodejs-square.png"
-                      width="12"
-                      height="12"
+                      src="/icon-nodejs-square.svg"
+                      width="14"
+                      height="14"
                       alt="Node.js Logo"
                       className="mr-1 mt-1 mb-1"
                     />
