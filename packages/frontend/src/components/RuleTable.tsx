@@ -33,15 +33,18 @@ export default function RuleTable({
   pkg: PrismaPackage;
   configToEmoji: Record<string, string | undefined>;
 }) {
+  const hasDescription = rules.some((rule) => rule.description);
   return (
     <TableContainer>
       <Table sx={{ minWidth: 650 }} aria-label="linter rule list">
         <TableHead>
           <TableRow>
             <TableCell scope="col">Rule</TableCell>
-            <TableCell scope="col" align="left">
-              Description
-            </TableCell>
+            {hasDescription && (
+              <TableCell scope="col" align="left">
+                Description
+              </TableCell>
+            )}
             <TableCell scope="col" align="right">
               <EmojiFixable />
             </TableCell>
@@ -78,12 +81,14 @@ export default function RuleTable({
                   {rule.name}
                 </Link>
               </TableCell>
-              <TableCell align="left">
-                {rule.description && (
-                  // eslint-disable-next-line react/no-children-prop -- false positive
-                  <ReactMarkdown children={rule.description} />
-                )}
-              </TableCell>
+              {hasDescription && (
+                <TableCell align="left">
+                  {rule.description && (
+                    // eslint-disable-next-line react/no-children-prop -- false positive
+                    <ReactMarkdown children={rule.description} />
+                  )}
+                </TableCell>
+              )}
               <TableCell align="right">
                 {rule.fixable ? <EmojiFixable /> : ''}
               </TableCell>
