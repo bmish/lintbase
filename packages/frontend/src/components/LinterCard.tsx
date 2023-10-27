@@ -118,7 +118,21 @@ export default function LinterCard({
         <div className="flex-1 flex flex-col">
           <CardContent className="flex-1">
             <Breadcrumbs aria-label="breadcrumb" className="mb-1">
-              <Typography sx={{ fontSize: 14 }} color="text.secondary">
+              <Typography
+                sx={{ fontSize: 14 }}
+                color="text.secondary"
+                className="flex flex-row"
+              >
+                {linter.package.ecosystem &&
+                  linter.package.ecosystem.name === 'node' && (
+                    <Image
+                      src="/logo-nodejs-square.png"
+                      width="12"
+                      height="12"
+                      alt="Node.js Logo"
+                      className="mr-1 mt-1 mb-1"
+                    />
+                  )}
                 {ecosystemToDisplayName(linter.package.ecosystem)}
               </Typography>
               <Link
@@ -131,7 +145,7 @@ export default function LinterCard({
                 {linter.lintFramework &&
                   linter.lintFramework.name === 'eslint' && (
                     <Image
-                      src="/logo-eslint-square.png"
+                      src="/icon-eslint-square.png"
                       width="14"
                       height="14"
                       alt="ESLint Logo"
