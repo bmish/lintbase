@@ -25,6 +25,7 @@ import StarIcon from '@mui/icons-material/Star';
 import prettyBytes from 'pretty-bytes';
 import { ContentCopy } from '@mui/icons-material';
 import { semverPretty } from '@/utils/npm';
+import Image from 'next/image';
 
 function getRepositoryLink(linkRepository: string | null): string | undefined {
   if (!linkRepository) {
@@ -269,6 +270,13 @@ export default function LinterCard({
                     linter.package.repository.fullName.split('/')[0]
                   }/${linter.package.repository.name}`}
                 >
+                  <Image
+                    src="/icon-github.svg"
+                    width="12"
+                    height="12"
+                    alt="GitHub Logo"
+                    className="mr-1 center"
+                  />
                   GitHub
                 </Button>
               )}
@@ -277,6 +285,17 @@ export default function LinterCard({
                 size="small"
                 href={linterToLinkPackageRegistry(linter.package)}
               >
+                {linterToLinkPackageRegistry(linter.package).startsWith(
+                  'https://www.npmjs.com/'
+                ) && (
+                  <Image
+                    src="/icon-npm.svg"
+                    width="12"
+                    height="12"
+                    alt="npm Logo"
+                    className="mr-1 center"
+                  />
+                )}
                 {linterToLinkPackageRegistry(linter.package).startsWith(
                   'https://www.npmjs.com/'
                 )
