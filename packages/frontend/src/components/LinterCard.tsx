@@ -126,7 +126,18 @@ export default function LinterCard({
                 sx={{ fontSize: 14 }}
                 color="text.secondary"
                 href={lintFrameworkToLinkUs(linter.lintFramework)}
+                className="flex flex-row"
               >
+                {linter.lintFramework &&
+                  linter.lintFramework.name === 'eslint' && (
+                    <Image
+                      src="/logo-eslint-square.png"
+                      width="14"
+                      height="14"
+                      alt="ESLint Logo"
+                      className="mr-1 mt-1 mb-1"
+                    />
+                  )}
                 {lintFrameworkToDisplayName(linter.lintFramework)}
               </Link>
             </Breadcrumbs>
