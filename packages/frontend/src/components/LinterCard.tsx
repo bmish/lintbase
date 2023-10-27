@@ -504,9 +504,12 @@ export default function LinterCard({
               <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
                 <Typography variant="button">Keywords</Typography>
                 <ul>
-                  {keywordsToDisplay.map((keyword) => (
+                  {keywordsToDisplay.slice(0, 5).map((keyword) => (
                     <li key={keyword}>{keyword}</li>
                   ))}
+                  {keywordsToDisplay.length > 5 && (
+                    <li title="Some keywords not shown">...</li>
+                  )}
                 </ul>
               </Paper>
             )}
