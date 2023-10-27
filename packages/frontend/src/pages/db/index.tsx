@@ -201,7 +201,12 @@ export default function index({
       <main className="flex-grow overflow-y-auto bg-gray-100 pt-8 px-6 mx-auto min-h-screen">
         <Grid container spacing={4} columns={{ xs: 2, sm: 4, md: 5 }}>
           <Grid item xs={2}>
-            <Typography variant="h6" className="text-center" marginBottom={2}>
+            <Typography
+              variant="h6"
+              className="text-center"
+              marginBottom={2}
+              title="Popular based on weekly download count from npm"
+            >
               Popular Linters 🔥
             </Typography>
             <ul className="space-y-8">
@@ -213,7 +218,12 @@ export default function index({
             </ul>
           </Grid>
           <Grid item xs={2}>
-            <Typography variant="h6" className="text-center" marginBottom={2}>
+            <Typography
+              variant="h6"
+              className="text-center"
+              marginBottom={2}
+              title="Recently published on npm"
+            >
               Recently Updated 🔄
             </Typography>
             <ul className="space-y-8">
@@ -230,7 +240,12 @@ export default function index({
             </ul>
           </Grid>
           <Grid item xs={2} md={1}>
-            <Typography variant="h6" className="text-center" marginBottom={2}>
+            <Typography
+              variant="h6"
+              className="text-center"
+              marginBottom={2}
+              title="Trending based on week-over-week downloads on npm"
+            >
               Trending 📈
             </Typography>
             <TableContainer component={Paper}>
@@ -257,6 +272,7 @@ export default function index({
               className="text-center"
               marginBottom={2}
               marginTop={4}
+              title="Most starred on GitHub"
             >
               Most Starred ⭐
             </Typography>
