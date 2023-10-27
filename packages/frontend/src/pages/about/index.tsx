@@ -7,6 +7,7 @@ import {
   Typography,
 } from '@mui/material';
 import Head from 'next/head';
+import Link from 'next/link';
 
 export default function About() {
   return (
@@ -34,6 +35,10 @@ export default function About() {
               We are currently focusing on ESLint for
               JavaScript/TypeScript/Node, but will later expand to other linters
               and languages.
+            </p>
+            <p className="mt-4">
+              Join the <Link href="/waitlist/">waitlist</Link> for access to
+              powerful new developer workflows for linting.
             </p>
           </CardContent>
         </Card>
