@@ -502,7 +502,12 @@ export default function LinterCard({
 
             {keywordsToDisplay.length > 0 && (
               <Paper className="p-4 border" sx={{ boxShadow: 'none' }}>
-                <Typography variant="button">Keywords</Typography>
+                <Typography
+                  variant="button"
+                  title={keywordsToDisplay.join(', ')}
+                >
+                  Keywords
+                </Typography>
                 <ul>
                   {keywordsToDisplay.slice(0, 5).map((keyword) => (
                     <li key={keyword}>{keyword}</li>
