@@ -247,7 +247,7 @@ export default function Plugins({
             <TableFooter>
               <TableRow>
                 <TablePagination
-                  rowsPerPageOptions={[10, 25, 50]}
+                  rowsPerPageOptions={[25]}
                   count={linterCount}
                   page={currentPage}
                   rowsPerPage={pageSize}
