@@ -65,7 +65,9 @@ export default function RuleTableTabbed({
                 label={obj.title}
                 id={`rule-list-tab-${i}`}
                 // Separate groups of tabs.
-                sx={{ 'margin-right': obj.title === 'Alphabetical' ? 24 : 0 }}
+                sx={{
+                  'margin-right': obj.title === '🔤 Alphabetical' ? 24 : 0,
+                }}
               />
             ))}
           </Tabs>

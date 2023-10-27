@@ -142,7 +142,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const listsOfRules =
     linter.rules.length > 0
       ? [
-          { rules: linter.rules, title: 'Alphabetical' },
+          { rules: linter.rules, title: '🔤 Alphabetical' },
           ...(propertyToGroupRulesBy
             ? Object.entries(groupBy(linter.rules, propertyToGroupRulesBy))
                 .sort((a, b) => a[0].localeCompare(b[0]))
