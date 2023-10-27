@@ -244,8 +244,8 @@ export default function LinterCard({
                       linter.package.linkHomepage &&
                       linter.package.linkHomepage.toLowerCase().includes(str)
                   )
-                    ? 'README'
-                    : 'Homepage'}
+                    ? '📖 README'
+                    : '🏠 Homepage'}
                 </Button>
               )}
 
@@ -259,7 +259,7 @@ export default function LinterCard({
               {linter.package.linkBugs &&
                 linter.package.linkBugs !== linter.package.linkHomepage && (
                   <Button size="small" href={linter.package.linkBugs}>
-                    Bugs
+                    🐛 Bugs
                   </Button>
                 )}
 
