@@ -79,6 +79,7 @@ export const repositoryRouter = createTRPCRouter({
   add: protectedProcedure
     .input(
       z.object({
+        name: z.string().min(1),
         fullName: z.string().min(1),
         // TODO: Query the GitHub API here to get this data.
         description: z.string().optional(),
@@ -90,7 +91,7 @@ export const repositoryRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.repository.create({
         data: {
-          name: input.fullName,
+          name: input.name,
           fullName: input.fullName,
           description: input.description,
           commitSha: input.commitSha,

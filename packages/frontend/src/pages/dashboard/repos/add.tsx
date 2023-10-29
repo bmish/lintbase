@@ -30,6 +30,7 @@ import { prisma } from '@/server/db';
 import { Info } from '@mui/icons-material';
 
 type Repo = {
+  name: string;
   full_name: string;
   language: string | null;
   size: number;
@@ -60,6 +61,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         continue;
       }
       reposToShow.push({
+        name: repository.name,
         full_name: repository.full_name,
         language: repository.language,
         size: repository.size,
@@ -107,6 +109,7 @@ export default function Add({
     }
 
     repositoryAddMutation.mutate({
+      name: repository.name,
       fullName: repository.full_name,
       language: repository.language || undefined,
       size: repository.size,

@@ -78,8 +78,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         'X-GitHub-Api-Version': '2022-11-28',
       },
     });
-  } catch {
-    console.log('Unable to fetch commits from GitHub.'); // eslint-disable-line no-console
+  } catch (error) {
+    console.log('Unable to fetch commits from GitHub:', error); // eslint-disable-line no-console
   }
   const lastCommit = commits ? commits.data[0] : null;
   const countCommitsBehind = commits
