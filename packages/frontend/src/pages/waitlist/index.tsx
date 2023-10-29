@@ -17,10 +17,10 @@ export default function Waitlist() {
 
   const waitlistJoinMutation = api.userWaitlist.join.useMutation();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    waitlistJoinMutation.mutate({ email });
+    await waitlistJoinMutation.mutateAsync({ email });
 
     setSubmitted(true);
   };
@@ -32,6 +32,7 @@ export default function Waitlist() {
         <meta property="og:title" content="Lintbase Waitlist" key="title" />
       </Head>
       <main className="py-8 px-6 max-w-4xl mx-auto min-h-screen">
+        {/* eslint-disable-next-line @typescript-eslint/no-misused-promises*/}
         <form onSubmit={handleSubmit}>
           <Card>
             <CardContent>

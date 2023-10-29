@@ -113,10 +113,10 @@ export default function Repo({
     return <AccessDenied />;
   }
 
-  const handleRefresh = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleRefresh = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    repositoryRefreshMutation.mutate({
+    await repositoryRefreshMutation.mutateAsync({
       fullName: repo.fullName,
     });
   };
@@ -124,7 +124,7 @@ export default function Repo({
   const handleRemove = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    repositoryRemoveMutation.mutate({
+    await repositoryRemoveMutation.mutateAsync({
       fullName: repo.fullName,
     });
 
@@ -204,6 +204,7 @@ export default function Repo({
                     {repo.committedAt && ` (${format(repo.committedAt)})`}
                   </TableCell>
                   <TableCell align="right">
+                    {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
                     <form onSubmit={handleRefresh}>
                       {countCommitsBehind === 0 && (
                         <Chip

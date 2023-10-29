@@ -109,7 +109,7 @@ export default function Add({
       return;
     }
 
-    repositoryAddMutation.mutate({
+    await repositoryAddMutation.mutateAsync({
       name: repository.name,
       fullName: repository.full_name,
       language: repository.language || undefined,
@@ -117,7 +117,9 @@ export default function Add({
       description: repository.description || undefined,
     });
 
-    repositoryRefreshMutation.mutate({ fullName: repository.full_name });
+    await repositoryRefreshMutation.mutateAsync({
+      fullName: repository.full_name,
+    });
 
     await router.push('/dashboard/repos');
   };
