@@ -26,17 +26,17 @@ export default function DatabaseNavigation() {
         fullWidth={true}
       >
         <ToggleButton value="home" href="/db">
-          Summary
+          📊 Summary
         </ToggleButton>
         <ToggleButton value="linters" href="/db/linters">
-          Linters
+          🕵️‍♂️ Linters
         </ToggleButton>
         <ToggleButton value="plugins" href="/db/plugins">
-          Plugins
+          🔌 Plugins
         </ToggleButton>
         {value === 'rules' && (
           <ToggleButton value="rules" href="/db/rules">
-            Rules
+            📜 Rules
           </ToggleButton>
         )}
         {router.query.q && <ToggleButton value="search">Search</ToggleButton>}
