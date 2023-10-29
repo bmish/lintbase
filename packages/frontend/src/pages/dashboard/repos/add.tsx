@@ -28,6 +28,7 @@ import { useRouter } from 'next/router';
 import { getServerAuthSession } from '@/server/auth';
 import { prisma } from '@/server/db';
 import { Info } from '@mui/icons-material';
+import AddIcon from '@mui/icons-material/Add';
 
 type Repo = {
   name: string;
@@ -208,7 +209,7 @@ export default function Add({
                             '#1976d2' /* Color is to avoid this issue https://stackoverflow.com/questions/75202373/button-in-material-ui-is-transparent-when-loading */,
                         }}
                       >
-                        Import
+                        <AddIcon fontSize="small" className="mr-1" /> Import
                       </Button>
                       <input
                         type="hidden"

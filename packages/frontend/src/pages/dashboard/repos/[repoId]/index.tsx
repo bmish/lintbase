@@ -37,6 +37,9 @@ import { Info } from '@mui/icons-material';
 import { Octokit } from 'octokit';
 import { env } from '@/env.mjs';
 import { useRouter } from 'next/router';
+import DeleteIcon from '@mui/icons-material/Delete';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import Image from 'next/image';
 
 const include = {
   localPackages: {
@@ -153,7 +156,16 @@ export default function Repo({
             <p>{repo.description}</p>
           </CardContent>
           <CardActions>
-            <Button href={`https://github.com/${repo.fullName}`}>GitHub</Button>
+            <Button href={`https://github.com/${repo.fullName}`}>
+              <Image
+                src="/icon-github.svg"
+                width="12"
+                height="12"
+                alt="GitHub Logo"
+                className="mr-1"
+              />{' '}
+              GitHub
+            </Button>
           </CardActions>
         </Card>
 
@@ -171,7 +183,7 @@ export default function Repo({
                     {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
                     <form onSubmit={handleRemove}>
                       <Button type="submit" variant="outlined" color="error">
-                        Remove
+                        <DeleteIcon fontSize="small" className="mr-1" /> Remove
                       </Button>
                     </form>
                   </TableCell>
@@ -212,6 +224,7 @@ export default function Repo({
                         variant="outlined"
                         disabled={countCommitsBehind === 0}
                       >
+                        <RefreshIcon fontSize="small" className="mr-1" />{' '}
                         Refresh
                       </Button>
                     </form>
@@ -282,8 +295,18 @@ export default function Repo({
                               }/linters/${
                                 localPackageLintFramework.lintFramework.name
                               }`}
+                              className="flex flex-row"
                             >
-                              {' '}
+                              {localPackageLintFramework.lintFramework.name ===
+                                'eslint' && (
+                                <Image
+                                  src="/icon-eslint-square.png"
+                                  width="14"
+                                  height="14"
+                                  alt="ESLint Logo"
+                                  className="mr-1 mt-1 mb-1"
+                                />
+                              )}
                               {lintFrameworkToDisplayName(
                                 localPackageLintFramework.lintFramework
                               )}

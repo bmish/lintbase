@@ -2,6 +2,8 @@ import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { Prisma } from '@prisma/client';
 import { Button, Chip, Link, TableCell, TableRow } from '@mui/material';
 import { getConfigEmojis } from '@/utils/config-emoji';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 
 const include = {
   localPackage: {
@@ -160,11 +162,11 @@ export default function DashboardRuleRow({
           ))}
         {isEnabled ? (
           <Button variant="outlined" size="small" color="error">
-            Disable
+            <DeleteIcon fontSize="small" className="mr-1" /> Disable
           </Button>
         ) : (
           <Button variant="outlined" size="small">
-            Enable
+            <AddIcon fontSize="small" className="mr-1" /> Enable
           </Button>
         )}
       </TableCell>

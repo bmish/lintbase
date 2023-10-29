@@ -29,6 +29,7 @@ import { prisma } from '@/server/db';
 import { fixAnyDatesInObject } from '@/utils/prisma';
 import { lintFrameworkToDisplayName } from '@/utils/dynamic-fields';
 import DashboardLinterRow from '@/components/DashboardLinterRow';
+import Image from 'next/image';
 
 const include = {
   localPackage: {
@@ -179,7 +180,20 @@ export default function Repo({
                   ? 'Root'
                   : localPackageLintFramework.localPackage.path}
               </Typography>
-              <Typography variant="h5" color="text.secondary">
+              <Typography
+                variant="h5"
+                color="text.secondary"
+                className="flex flex-row"
+              >
+                {localPackageLintFramework.lintFramework.name === 'eslint' && (
+                  <Image
+                    src="/icon-eslint-square.png"
+                    width="14"
+                    height="14"
+                    alt="ESLint Logo"
+                    className="mr-1 mt-2 mb-2"
+                  />
+                )}
                 {lintFrameworkToDisplayName(
                   localPackageLintFramework.lintFramework
                 )}
@@ -193,7 +207,7 @@ export default function Repo({
                   .name as string
               }`}
             >
-              Linter in Database
+              🕵️‍♂️ Linter in Database
             </Button>
             <Button
               href={`https://github.com/${
@@ -203,7 +217,7 @@ export default function Repo({
                   .commitSha as string
               }/${localPackage.path}`}
             >
-              Config File
+              ⚙️ Config File
             </Button>
           </CardActions>
         </Card>

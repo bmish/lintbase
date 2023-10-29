@@ -24,6 +24,7 @@ import { fixAnyDatesInObject } from '@/utils/prisma';
 import { getServerAuthSession } from '@/server/auth';
 import { format } from 'timeago.js';
 import { Info } from '@mui/icons-material';
+import AddIcon from '@mui/icons-material/Add';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerAuthSession(context);
@@ -90,7 +91,7 @@ export default function Repos({
                 <TableCell scope="col">Refreshed</TableCell>
                 <TableCell align="right">
                   <Button variant="outlined" href="/dashboard/repos/add">
-                    Add Repository
+                    <AddIcon fontSize="small" className="mr-1" /> Add Repository
                   </Button>
                 </TableCell>
               </TableRow>

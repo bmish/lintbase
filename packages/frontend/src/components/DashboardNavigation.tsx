@@ -31,10 +31,10 @@ export default function DashboardNavigation() {
           Home
         </ToggleButton> */}
         <ToggleButton value="repos" href="/dashboard/repos">
-          Repositories
+          🗄️ Repositories
         </ToggleButton>
         <ToggleButton value="starred" href="/dashboard/starred">
-          Starred
+          ⭐ Starred
         </ToggleButton>
       </ToggleButtonGroup>
     </nav>

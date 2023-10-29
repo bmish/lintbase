@@ -57,11 +57,11 @@ export default function DashboardLinterRow({
       <TableCell scope="row" align="right">
         {localPackageLinter.version}
         {localPackageLinter.isSuggested && (
-          <Chip label="Suggested" color="info"></Chip>
+          <Chip label="💡 Suggested" color="info"></Chip>
         )}
         {localPackageLinter.linter.package.deprecated && ' '}
         {localPackageLinter.linter.package.deprecated && (
-          <Chip label="Deprecated" color="error" />
+          <Chip label="❌ Deprecated" color="error" />
         )}
         {localPackageLinter.linter.package.deprecatedReplacements.length > 0 &&
           ' '}

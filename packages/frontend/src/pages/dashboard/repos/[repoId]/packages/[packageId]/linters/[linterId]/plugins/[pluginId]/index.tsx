@@ -31,6 +31,9 @@ import { fixAnyDatesInObject } from '@/utils/prisma';
 import { lintFrameworkToDisplayName } from '@/utils/dynamic-fields';
 import DashboardRuleRow from '@/components/DashboardRuleRow';
 import { getConfigEmojis } from '@/utils/config-emoji';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+import Image from 'next/image';
 
 const include = {
   localPackage: {
@@ -186,7 +189,18 @@ export default function Repo({
                       ? 'root'
                       : localPackageLinter.localPackage.path
                   }/linters/${localPackageLinter.linter.lintFramework.name}`}
+                  className="flex flex-row"
                 >
+                  {localPackageLinter.linter.lintFramework.name ===
+                    'eslint' && (
+                    <Image
+                      src="/icon-eslint-square.png"
+                      width="14"
+                      height="14"
+                      alt="ESLint Logo"
+                      className="mr-1 mt-2 mb-2"
+                    />
+                  )}
                   {lintFrameworkToDisplayName(
                     localPackageLinter.linter.lintFramework
                   )}
@@ -199,7 +213,7 @@ export default function Repo({
           </CardContent>
           <CardActions>
             <Button href={`/db/npm/${localPackageLinter.linter.package.name}`}>
-              Plugin in Database
+              🔌 Plugin in Database
             </Button>
           </CardActions>
         </Card>
@@ -258,10 +272,12 @@ export default function Repo({
                               size="small"
                               color="error"
                             >
+                              <DeleteIcon fontSize="small" className="mr-1" />
                               Disable
                             </Button>
                           ) : (
                             <Button variant="outlined" size="small">
+                              <AddIcon fontSize="small" className="mr-1" />
                               Enable
                             </Button>
                           )}
