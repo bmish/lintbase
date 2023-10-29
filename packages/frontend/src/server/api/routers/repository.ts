@@ -75,6 +75,8 @@ function rulesToInfo(rules: TSESLint.Linter.RulesRecord | undefined): {
   );
 }
 
+const ESLINTRC_FILENAMES = new Set(['.eslintrc.js', '.eslintrc.cjs']); // TODO: json, yaml, etc.
+
 export const repositoryRouter = createTRPCRouter({
   add: protectedProcedure
     .input(
@@ -225,6 +227,11 @@ export const repositoryRouter = createTRPCRouter({
         }
       )) as { data: { name: string; path: string }[] };
 
+      if (!contents.data.some((file) => file.name === 'package.json')) {
+        console.log('No package.json file(s) found in repository.'); // eslint-disable-line no-console
+        return;
+      }
+
       // TODO: search recursively for local packages in monorepos.
       const contentsLocalPackageManifest = (await octokit.request(
         'GET /repos/{owner}/{repo}/contents/{path}',
@@ -245,6 +252,11 @@ export const repositoryRouter = createTRPCRouter({
         ).toString('utf8')
       ) as PackageJson;
 
+      if (!contents.data.some((file) => ESLINTRC_FILENAMES.has(file.name))) {
+        console.log('No eslintrc file(s) found in repository.'); // eslint-disable-line no-console
+        return;
+      }
+
       // TODO: search recursively for linter configs in monorepos.
       const contentsEslintrc = (await octokit.request(
         'GET /repos/{owner}/{repo}/contents/{path}',
@@ -252,9 +264,7 @@ export const repositoryRouter = createTRPCRouter({
           owner: input.fullName.split('/')[0],
           repo: input.fullName.split('/')[1],
           path: contents.data
-            .filter((data) =>
-              ['.eslintrc.js', '.eslintrc.cjs'].includes(data.path)
-            )
+            .filter((data) => ESLINTRC_FILENAMES.has(data.path))
             .map((data) => data.path)[0],
           headers: {
             'X-GitHub-Api-Version': '2022-11-28',
@@ -432,9 +442,7 @@ export const repositoryRouter = createTRPCRouter({
 
                 localPackageLintFrameworks: {
                   create: contents.data
-                    .filter((data) =>
-                      ['.eslintrc.js', '.eslintrc.cjs'].includes(data.name)
-                    )
+                    .filter((data) => ESLINTRC_FILENAMES.has(data.name))
                     .map((data) => ({
                       pathConfig: data.path,
                       isPresent: true,
