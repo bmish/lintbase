@@ -89,10 +89,22 @@ export const repositoryRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.repository.create({
-        data: {
+      await ctx.prisma.repository.upsert({
+        where: {
+          fullName: input.fullName,
+        },
+        create: {
           name: input.name,
           fullName: input.fullName,
+          description: input.description,
+          commitSha: input.commitSha,
+          language: input.language,
+          size: input.size,
+          importedAt: new Date(),
+          owner: { connect: { id: ctx.session.user.id } },
+          // TODO: add more repository fields
+        },
+        update: {
           description: input.description,
           commitSha: input.commitSha,
           language: input.language,
