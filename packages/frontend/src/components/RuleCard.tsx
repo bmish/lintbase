@@ -24,6 +24,7 @@ import EmojiTypeLayout from './EmojiTypeLayout';
 import EmojiTypeProblem from './EmojiTypeProblem';
 import EmojiTypeSuggestion from './EmojiTypeSuggestion';
 import EmojiDeprecated from './EmojiDeprecated';
+import Image from 'next/image';
 
 export default function RuleCard({
   rule,
@@ -55,7 +56,18 @@ export default function RuleCard({
             sx={{ fontSize: 14 }}
             color="text.secondary"
             href={lintFrameworkToLinkUs(rule.linter.lintFramework)}
+            className="flex flex-row"
           >
+            {rule.linter.lintFramework &&
+              rule.linter.lintFramework.name === 'eslint' && (
+                <Image
+                  src="/icon-eslint-square.png"
+                  width="14"
+                  height="14"
+                  alt="ESLint Logo"
+                  className="mr-1 mt-1 mb-1"
+                />
+              )}
             {lintFrameworkToDisplayName(rule.linter.lintFramework)}
           </Link>
           <Link
