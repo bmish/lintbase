@@ -119,7 +119,7 @@ export default function RuleCard({
         <CardActions>
           {rule.linkRuleDoc && (
             <Button size="small" href={rule.linkRuleDoc}>
-              Rule Doc
+              📖 Rule Doc
             </Button>
           )}
         </CardActions>
