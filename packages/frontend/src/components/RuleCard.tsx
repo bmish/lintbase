@@ -26,6 +26,7 @@ import EmojiTypeSuggestion from './EmojiTypeSuggestion';
 import EmojiDeprecated from './EmojiDeprecated';
 import Image from 'next/image';
 
+// eslint-disable-next-line complexity
 export default function RuleCard({
   rule,
   detailed = false,
@@ -48,7 +49,21 @@ export default function RuleCard({
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
         <Breadcrumbs aria-label="breadcrumb" className="mb-1">
-          <Typography sx={{ fontSize: 14 }} color="text.secondary">
+          <Typography
+            sx={{ fontSize: 14 }}
+            color="text.secondary"
+            className="flex flex-row"
+          >
+            {rule.linter.package.ecosystem &&
+              rule.linter.package.ecosystem.name === 'node' && (
+                <Image
+                  src="/icon-nodejs-square.svg"
+                  width="14"
+                  height="14"
+                  alt="Node.js Logo"
+                  className="mr-1 mt-1 mb-1"
+                />
+              )}
             {ecosystemToDisplayName(rule.linter.package.ecosystem)}
           </Typography>
           <Link
@@ -75,6 +90,7 @@ export default function RuleCard({
             sx={{ fontSize: 14 }}
             color="text.secondary"
             href={packageToLinkUs(rule.linter.package)}
+            className="flex flex-row"
           >
             {rule.linter.package.name}
           </Link>
