@@ -153,22 +153,12 @@ export default function Rule({
       <DatabaseNavigation />
 
       <main className="flex-grow overflow-y-auto bg-gray-100 pt-8 px-6 mx-auto min-h-screen">
-        {rule && <RuleCard rule={rule} detailed={true}></RuleCard>}
-
-        {rulesRelated && rulesRelated.length > 0 && (
-          <div className="mt-8">
-            <Typography className="mb-2">Related Rules</Typography>
-            <div className="flex md:flex-row flex-col justify-between">
-              {rulesRelated.map((ruleRelated) => (
-                <div
-                  className="flex-grow md:mr-8 last:md:mr-0 md:mb-0 mb-8 last:mb-0"
-                  key={ruleRelated.id}
-                >
-                  <RuleCard rule={ruleRelated} />
-                </div>
-              ))}
-            </div>
-          </div>
+        {rule && (
+          <RuleCard
+            rule={rule}
+            detailed={true}
+            rulesRelated={rulesRelated}
+          ></RuleCard>
         )}
 
         {rule && rule.ruleConfigs.length > 0 && (
