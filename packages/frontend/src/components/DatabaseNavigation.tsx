@@ -39,7 +39,9 @@ export default function DatabaseNavigation() {
             📜 Rules
           </ToggleButton>
         )}
-        {router.query.q && <ToggleButton value="search">Search</ToggleButton>}
+        {router.query.q && (
+          <ToggleButton value="search">🔎 Search</ToggleButton>
+        )}
       </ToggleButtonGroup>
     </nav>
   );
