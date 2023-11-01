@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
+import SearchIcon from '@mui/icons-material/Search';
 
 export default function Header() {
   const { data: session } = useSession();
@@ -42,7 +43,8 @@ export default function Header() {
         </Link>
 
         <ul className="space-x-0 sm:space-x-2 inline-flex">
-          <li className="pr-4 w-32">
+          <li className="pr-4 w-32 flex flex-row">
+            <SearchIcon fontSize="small" className="mt-auto mb-auto mr-1" />
             <TextField
               type="search"
               placeholder="Search"
