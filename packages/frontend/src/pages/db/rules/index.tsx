@@ -15,7 +15,7 @@ import { fixAnyDatesInObject } from '@/utils/prisma';
 import React from 'react';
 import { useRouter } from 'next/router';
 import { ruleToLinkUs } from '@/utils/dynamic-fields';
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import ReactMarkdown from 'react-markdown';
 import { Prisma } from '@prisma/client';
 import DatabaseNavigation from '@/components/DatabaseNavigation';
 import Head from 'next/head';

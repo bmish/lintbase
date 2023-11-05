@@ -1,4 +1,4 @@
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import ReactMarkdown from 'react-markdown';
 import { Prisma } from '@prisma/client';
 import { Button, Chip, Link, TableCell, TableRow } from '@mui/material';
 import { getConfigEmojis } from '@/utils/config-emoji';

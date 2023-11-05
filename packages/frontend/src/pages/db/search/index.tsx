@@ -31,7 +31,7 @@ import EmojiTypeSuggestion from '@/components/EmojiTypeSuggestion';
 import EmojiOptions from '@/components/EmojiOptions';
 import EmojiDeprecated from '@/components/EmojiDeprecated';
 import EmojiType from '@/components/EmojiType';
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import ReactMarkdown from 'react-markdown';
 
 const includeLinter = {
   rules: true,

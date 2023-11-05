@@ -19,7 +19,7 @@ import EmojiType from '@/components/EmojiType';
 import EmojiSeverityWarn from '@/components/EmojiSeverityWarn';
 import EmojiSeverityOff from '@/components/EmojiSeverityOff';
 import { ruleToLinkUs } from '@/utils/dynamic-fields';
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import ReactMarkdown from 'react-markdown';
 import { Prisma, Package as PrismaPackage } from '@prisma/client';
 
 export default function RuleTable({

@@ -15,7 +15,7 @@ import {
   packageToLinkUs,
   ruleToLinkUs,
 } from '@/utils/dynamic-fields';
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import ReactMarkdown from 'react-markdown';
 import { Prisma } from '@prisma/client';
 import EmojiFixable from './EmojiFixable';
 import EmojiHasSuggestions from './EmojiHasSuggestions';
