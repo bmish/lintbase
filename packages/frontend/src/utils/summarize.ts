@@ -5,7 +5,6 @@ import { Prisma } from '@prisma/client';
 async function createChatCompletion(
   messages: { role: 'user' | 'system' | 'assistant'; content: string }[],
 ) {
-  
   const openai = new OpenAI({
     apiKey: env.OPENAI_API_KEY,
   });
