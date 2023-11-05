@@ -43,7 +43,7 @@ export default function RuleTableTabbed({
   const [currentRuleListIndex, setCurrentRuleListIndex] = React.useState(0);
   const handleChangeCurrentRuleListIndex = (
     event: React.SyntheticEvent,
-    newValue: number
+    newValue: number,
   ) => {
     setCurrentRuleListIndex(newValue);
   };

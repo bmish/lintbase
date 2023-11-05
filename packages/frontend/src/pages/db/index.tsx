@@ -139,16 +139,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       data: {
         lintersPopular: lintersPopular.map((linter) =>
-          fixAnyDatesInObject(linter)
+          fixAnyDatesInObject(linter),
         ),
         lintersTrending: lintersTrending.map((linter) =>
-          fixAnyDatesInObject(linter)
+          fixAnyDatesInObject(linter),
         ),
         lintersMostStarred: lintersMostStarred.map((linter) =>
-          fixAnyDatesInObject(linter)
+          fixAnyDatesInObject(linter),
         ),
         packageVersionTagsLatest: packageVersionTagsLatest.map((obj) =>
-          fixAnyDatesInObject(obj)
+          fixAnyDatesInObject(obj),
         ),
         userId: session?.user.id || null,
       },

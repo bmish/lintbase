@@ -1,5 +1,5 @@
 /* eslint filenames/match-exported:"off" */
-/* eslint node/no-unsupported-features/es-syntax:"off" */
+/* eslint n/no-unsupported-features/es-syntax:"off" */
 import Footer from '@/components/Footer';
 import Head from 'next/head';
 import {
@@ -169,7 +169,7 @@ export default function Repo({
               <Typography variant="h5">
                 <Link
                   href={`/dashboard/repos/${encodeURIComponent(
-                    localPackageLinter.localPackage.repository.fullName
+                    localPackageLinter.localPackage.repository.fullName,
                   )}`}
                 >
                   {localPackageLinter.localPackage.repository.fullName}
@@ -183,7 +183,7 @@ export default function Repo({
               <Typography variant="h5" color="text.secondary">
                 <Link
                   href={`/dashboard/repos/${encodeURIComponent(
-                    localPackageLinter.localPackage.repository.fullName
+                    localPackageLinter.localPackage.repository.fullName,
                   )}/packages/${
                     localPackageLinter.localPackage.path === '.'
                       ? 'root'
@@ -202,7 +202,7 @@ export default function Repo({
                     />
                   )}
                   {lintFrameworkToDisplayName(
-                    localPackageLinter.linter.lintFramework
+                    localPackageLinter.linter.lintFramework,
                   )}
                 </Link>
               </Typography>
@@ -251,7 +251,7 @@ export default function Repo({
                           {config.localPackageConfigs.some(
                             (localPackageConfig) =>
                               localPackageConfig.localPackageId ===
-                              localPackageLinter.localPackageId
+                              localPackageLinter.localPackageId,
                           ) && (
                             <Chip
                               label={'Enabled'}
@@ -265,7 +265,7 @@ export default function Repo({
                           {config.localPackageConfigs.some(
                             (localPackageConfig) =>
                               localPackageConfig.localPackageId ===
-                              localPackageLinter.localPackageId
+                              localPackageLinter.localPackageId,
                           ) ? (
                             <Button
                               variant="outlined"

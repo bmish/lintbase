@@ -104,7 +104,7 @@ export default function Rules({
 
   const handleChangePage = async (
     event: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number
+    newPage: number,
   ) => {
     const newQueryParams = new URLSearchParams();
     if (router.query.q) {
@@ -119,12 +119,12 @@ export default function Rules({
     await router.push(
       `${router.pathname}${
         newQueryParams.size > 0 ? '?' : ''
-      }${newQueryParams.toString()}`
+      }${newQueryParams.toString()}`,
     );
   };
 
   const handleChangeRowsPerPage = async (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const pageSize = Number.parseInt(event.target.value, 10);
     const newQueryParams = new URLSearchParams();

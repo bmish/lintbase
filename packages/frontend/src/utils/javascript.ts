@@ -1,5 +1,5 @@
 export function asArray<T>(
-  value: T | readonly T[] | undefined | null
+  value: T | readonly T[] | undefined | null,
 ): readonly T[] {
   // eslint-disable-next-line unicorn/no-instanceof-array -- incorrect TypeScript narrowing
   if (value instanceof Array) {
@@ -13,7 +13,7 @@ export function asArray<T>(
 
 export function uniqueItems<T>(
   array: readonly T[],
-  propertyOrCallback?: string | ((i: T) => unknown)
+  propertyOrCallback?: string | ((i: T) => unknown),
 ): readonly T[] {
   const seen = new Set<T | unknown>();
 
@@ -38,10 +38,10 @@ export function uniqueItems<T>(
 
 export async function createObjectAsync<T>(
   keys: string[],
-  create: (_key: string) => Promise<T>
+  create: (_key: string) => Promise<T>,
 ): Promise<Record<string, T>> {
   const results = await Promise.all(keys.map((key) => create(key)));
   return Object.fromEntries(
-    results.map((result, index) => [keys[index], result])
+    results.map((result, index) => [keys[index], result]),
   );
 }

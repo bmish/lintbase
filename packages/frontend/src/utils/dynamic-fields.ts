@@ -7,7 +7,7 @@ import {
 
 export function ruleToLinkUs(rule: PrismaRule, package_: PrismaPackage) {
   return `/db/npm/${encodeURIComponent(
-    package_.name
+    package_.name,
   )}/rules/${encodeURIComponent(rule.name)}`;
 }
 

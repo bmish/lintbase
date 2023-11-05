@@ -27,7 +27,7 @@ export async function getServerSideProps() {
   });
 
   const lintersPopularFixed = lintersPopular.map((linter) =>
-    fixAnyDatesInObject(linter)
+    fixAnyDatesInObject(linter),
   );
 
   return {

@@ -18,7 +18,7 @@ export function fixAnyDatesInObject(object: object): object {
       }
 
       return [key, value];
-    })
+    }),
   );
 }
 

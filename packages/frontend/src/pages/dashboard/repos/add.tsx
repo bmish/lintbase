@@ -1,4 +1,4 @@
-/* eslint node/no-unsupported-features/es-syntax:"off" */
+/* eslint n/no-unsupported-features/es-syntax:"off" */
 import Footer from '@/components/Footer';
 import Head from 'next/head';
 import { useSession } from 'next-auth/react';
@@ -102,7 +102,7 @@ export default function Add({
     const repositoryFullName = e.currentTarget.elements.repositoryFullName
       .value as string;
     const repository = repositories.find(
-      (repo) => repo.full_name === repositoryFullName
+      (repo) => repo.full_name === repositoryFullName,
     );
 
     if (!repository) {

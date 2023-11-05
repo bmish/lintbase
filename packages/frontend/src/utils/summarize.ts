@@ -3,7 +3,7 @@ import { env } from '@/env.mjs';
 import { Prisma } from '@prisma/client';
 
 async function createChatCompletion(
-  messages: { role: 'user' | 'system' | 'assistant'; content: string }[]
+  messages: { role: 'user' | 'system' | 'assistant'; content: string }[],
 ) {
   const configuration = new Configuration({
     apiKey: env.OPENAI_API_KEY,
@@ -28,7 +28,7 @@ async function createChatCompletion(
 export async function summarizeLinter(
   linter: Prisma.LinterGetPayload<{
     include: { rules: true; configs: true; package: true };
-  }>
+  }>,
 ): Promise<string> {
   const messageIntro = [
     'Generate a concise, one-paragraph summary (1-3 sentences) about the specified linting plugin.',
@@ -70,7 +70,7 @@ export async function summarizeLinter(
 
   if (!result) {
     throw new Error(
-      `Unable to generate linter summary for ${linter.package.name}`
+      `Unable to generate linter summary for ${linter.package.name}`,
     );
   }
 
@@ -83,7 +83,7 @@ export async function summarizeConfig(
       ruleConfigs: { include: { rule: true } };
       linter: { include: { package: true } };
     };
-  }>
+  }>,
 ): Promise<string> {
   const messageIntro = [
     'A lint config is a collection of lint rules that are usually related or used together.',
@@ -130,7 +130,7 @@ export async function summarizeConfig(
 
   if (!result) {
     throw new Error(
-      `Unable to generate config summary for linter ${config.linter.package.name}`
+      `Unable to generate config summary for linter ${config.linter.package.name}`,
     );
   }
 
@@ -138,7 +138,7 @@ export async function summarizeConfig(
 }
 
 export async function clusterNamesForRules(
-  ruleLists: string
+  ruleLists: string,
 ): Promise<string[]> {
   const messageIntro =
     'A cluster is a set of related lint rules. Generate a human-readable name to distinguish each cluster of lint rules. Use only a few words in each cluster name and avoid any boilerplate. Return a JSON array of cluster names and nothing else.';

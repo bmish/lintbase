@@ -114,7 +114,7 @@ export default function RuleTable({
                   {rule.ruleConfigs.some(
                     (ruleConfig) =>
                       ruleConfig.config.name === config &&
-                      ruleConfig.severity === 'error'
+                      ruleConfig.severity === 'error',
                   ) ? (
                     <span title={`Errors in ${config}`}>{emoji}</span>
                   ) : (
@@ -123,7 +123,7 @@ export default function RuleTable({
                   {rule.ruleConfigs.some(
                     (ruleConfig) =>
                       ruleConfig.config.name === config &&
-                      ruleConfig.severity === 'warn'
+                      ruleConfig.severity === 'warn',
                   ) ? (
                     <EmojiSeverityWarn config={config} />
                   ) : (
@@ -132,7 +132,7 @@ export default function RuleTable({
                   {rule.ruleConfigs.some(
                     (ruleConfig) =>
                       ruleConfig.config.name === config &&
-                      ruleConfig.severity === 'off'
+                      ruleConfig.severity === 'off',
                   ) ? (
                     <EmojiSeverityOff config={config} />
                   ) : (

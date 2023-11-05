@@ -4,7 +4,7 @@ import { prisma } from '@/server/db';
 
 export default async function deleteSummariesConfigs(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (env.NODE_ENV !== 'development') {
     res.status(404).end();

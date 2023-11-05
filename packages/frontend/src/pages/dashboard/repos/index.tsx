@@ -1,4 +1,4 @@
-/* eslint node/no-unsupported-features/es-syntax:"off" */
+/* eslint n/no-unsupported-features/es-syntax:"off" */
 import Footer from '@/components/Footer';
 import Head from 'next/head';
 import { useSession } from 'next-auth/react';
@@ -105,7 +105,7 @@ export default function Repos({
                   <TableCell scope="row">
                     <Link
                       href={`/dashboard/repos/${encodeURIComponent(
-                        repo.fullName
+                        repo.fullName,
                       )}`}
                     >
                       {repo.fullName}

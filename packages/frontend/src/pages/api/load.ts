@@ -25,7 +25,7 @@ export default async function load(req: NextApiRequest, res: NextApiResponse) {
 
   const lintersCreated = await loadLintersToDb(
     Object.fromEntries(eslintRules.entries()), // Convert from LazyLoadingRuleMap to standard object.
-    { rules: etlRules, configurations: etlConfigurations }
+    { rules: etlRules, configurations: etlConfigurations },
   );
   res.status(200).json({ linterCreatedCount: lintersCreated.length });
 }

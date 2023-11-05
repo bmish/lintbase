@@ -57,8 +57,8 @@ export async function getServerSideProps({ query }: { query: { q?: string } }) {
             lintFrameworkId: lintFramework.id,
           },
         },
-      })
-    )
+      }),
+    ),
   );
 
   const linterCountPerLintFramework = await Promise.all(
@@ -68,12 +68,12 @@ export async function getServerSideProps({ query }: { query: { q?: string } }) {
           lintFrameworkId: lintFramework.id,
           OR: [{ rules: { some: {} } }, { configs: { some: {} } }], // Actual linter with rules or configs.
         },
-      })
-    )
+      }),
+    ),
   );
 
   const lintFrameworksFixed = lintFrameworks.map((linter) =>
-    fixAnyDatesInObject(linter)
+    fixAnyDatesInObject(linter),
   );
 
   return {
@@ -84,7 +84,7 @@ export async function getServerSideProps({ query }: { query: { q?: string } }) {
             lintFramework,
             countRules: ruleCountPerLintFramework[index],
             countLinters: linterCountPerLintFramework[index],
-          })
+          }),
         ),
       },
     },
@@ -116,13 +116,13 @@ export default function Linters({
           <Paper>
             <LintFrameworkTable
               lintFrameworks={lintFrameworksAndRuleCounts.map(
-                (obj) => obj.lintFramework
+                (obj) => obj.lintFramework,
               )}
               ruleCounts={lintFrameworksAndRuleCounts.map(
-                (obj) => obj.countRules
+                (obj) => obj.countRules,
               )}
               linterCounts={lintFrameworksAndRuleCounts.map(
-                (obj) => obj.countLinters
+                (obj) => obj.countLinters,
               )}
             />
           </Paper>

@@ -11,7 +11,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
 } from '@mui/material';
 import { Prisma } from '@prisma/client';
 import Head from 'next/head';
@@ -209,7 +208,7 @@ export default function Rule({
                     <TableCell scope="col">Type</TableCell>
                   )}
                   {rule.options.some(
-                    (option) => option.choices && option.choices.length > 0
+                    (option) => option.choices && option.choices.length > 0,
                   ) && <TableCell scope="col">Choices</TableCell>}
                   {rule.options.some((option) => option.default !== null) && (
                     <TableCell scope="col">Default</TableCell>
@@ -236,7 +235,7 @@ export default function Rule({
                       <TableCell scope="col">{option.type}</TableCell>
                     )}
                     {rule.options.some(
-                      (option) => option.choices && option.choices.length > 0
+                      (option) => option.choices && option.choices.length > 0,
                     ) && (
                       <TableCell scope="col">
                         {option.choices.length > 0

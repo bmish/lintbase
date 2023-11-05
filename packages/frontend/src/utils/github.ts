@@ -4,7 +4,7 @@ import pLimit from 'p-limit';
 import { PackageJson } from 'type-fest';
 
 function getGitHubInfoFromUrlOrShortcut(
-  urlOrShortcut: string
+  urlOrShortcut: string,
 ): { owner: string; repo: string } | undefined {
   // Check for this format: github:user/repo or github.com:user/repo
   const regexShortcut = /github(?:.com)?:([^/]+)\/([^/]+)/u;
@@ -30,7 +30,7 @@ function getGitHubInfoFromUrlOrShortcut(
 }
 
 function findGitHubInfoFromPackageJson(
-  packageJson: PackageJson
+  packageJson: PackageJson,
 ): { repo: string; owner: string } | undefined {
   const candidates: string[] = []; // In order of priority.
 
@@ -55,7 +55,7 @@ function findGitHubInfoFromPackageJson(
   }
 
   const matchingCandidate = candidates.find(
-    (candidate) => getGitHubInfoFromUrlOrShortcut(candidate) !== undefined
+    (candidate) => getGitHubInfoFromUrlOrShortcut(candidate) !== undefined,
   );
 
   return matchingCandidate
@@ -75,7 +75,7 @@ async function getRepository(octokit: Octokit, owner: string, repo: string) {
 export type Repository = Awaited<ReturnType<typeof getRepository>>['data'];
 
 export async function getRepositories(
-  repos: readonly { owner: string; repo: string }[]
+  repos: readonly { owner: string; repo: string }[],
 ): Promise<Record<string, Repository | undefined>> {
   // Rate-limit to avoid hitting github's rate limit.
   const limit = pLimit(10);
@@ -95,8 +95,8 @@ export async function getRepositories(
           console.log(`Fetching GitHub info failed for ${owner}/${repo}.`); // eslint-disable-line no-console
           return undefined; // eslint-disable-line unicorn/no-useless-undefined
         }
-      })
-    )
+      }),
+    ),
   );
 
   return Object.fromEntries(
@@ -106,12 +106,12 @@ export async function getRepositories(
         return [];
       }
       return [[`${owner}/${repo}`, item.data]];
-    })
+    }),
   );
 }
 
 export function packagesToGitHubInfo(
-  packageToPackageJson: Record<string, PackageJson>
+  packageToPackageJson: Record<string, PackageJson>,
 ): Record<string, { repo: string; owner: string }> {
   return Object.fromEntries(
     Object.entries(packageToPackageJson).flatMap(
@@ -120,13 +120,13 @@ export function packagesToGitHubInfo(
           return [];
         }
         const gitHubInfo = findGitHubInfoFromPackageJson(
-          packageToPackageJson[packageName]
+          packageToPackageJson[packageName],
         );
         if (!gitHubInfo) {
           return [];
         }
         return [[packageName, gitHubInfo]];
-      }
-    )
+      },
+    ),
   );
 }

@@ -201,7 +201,7 @@ export default function Search({
   async function handleChangePage(
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number,
-    type: 'plugin' | 'rule'
+    type: 'plugin' | 'rule',
   ) {
     const newQueryParams = new URLSearchParams();
     if (router.query.q) {
@@ -226,20 +226,20 @@ export default function Search({
     await router.push(
       `${router.pathname}${
         newQueryParams.size > 0 ? '?' : ''
-      }${newQueryParams.toString()}`
+      }${newQueryParams.toString()}`,
     );
   }
 
   async function handleChangePagePlugin(
     event: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number
+    newPage: number,
   ) {
     await handleChangePage(event, newPage, 'plugin');
   }
 
   async function handleChangePageRule(
     event: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number
+    newPage: number,
   ) {
     await handleChangePage(event, newPage, 'rule');
   }
@@ -302,10 +302,10 @@ export default function Search({
                     {linter.package.packageUpdatedAt && (
                       <time
                         dateTime={new Date(
-                          linter.package.packageUpdatedAt
+                          linter.package.packageUpdatedAt,
                         ).toISOString()}
                         title={new Date(
-                          linter.package.packageUpdatedAt
+                          linter.package.packageUpdatedAt,
                         ).toUTCString()}
                       >
                         {format(new Date(linter.package.packageUpdatedAt))}

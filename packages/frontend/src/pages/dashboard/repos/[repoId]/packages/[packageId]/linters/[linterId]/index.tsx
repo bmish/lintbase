@@ -1,5 +1,5 @@
 /* eslint filenames/match-exported:"off" */
-/* eslint node/no-unsupported-features/es-syntax:"off" */
+/* eslint n/no-unsupported-features/es-syntax:"off" */
 import Footer from '@/components/Footer';
 import Head from 'next/head';
 import {
@@ -107,7 +107,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       include,
     });
   const localPackageLintFrameworkFixed = fixAnyDatesInObject(
-    localPackageLintFramework
+    localPackageLintFramework,
   );
 
   return {
@@ -169,7 +169,7 @@ export default function Repo({
               <Typography variant="h5">
                 <Link
                   href={`/dashboard/repos/${encodeURIComponent(
-                    localPackageLintFramework.localPackage.repository.fullName
+                    localPackageLintFramework.localPackage.repository.fullName,
                   )}`}
                 >
                   {localPackageLintFramework.localPackage.repository.fullName}
@@ -195,7 +195,7 @@ export default function Repo({
                   />
                 )}
                 {lintFrameworkToDisplayName(
-                  localPackageLintFramework.lintFramework
+                  localPackageLintFramework.lintFramework,
                 )}
               </Typography>
             </Breadcrumbs>
@@ -242,7 +242,7 @@ export default function Repo({
                       localPackageLintFramework={localPackageLintFramework}
                       localPackageLinter={localPackageLinter}
                     />
-                  )
+                  ),
                 )}
               </TableBody>
             </Table>

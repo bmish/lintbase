@@ -57,8 +57,9 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
-    "eslint-config-next": "^13.4.4",
-    "eslint-plugin-square": "^25.0.0"
+    "eslint-config-next": "^14.0.1",
+    "eslint-plugin-n": "^16.0.0",
+    "eslint-plugin-square": "^26.0.0"
   },
   "engines": {
     "node": ">=18.0.0"

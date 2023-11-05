@@ -41,7 +41,7 @@ export default function DashboardLinterRow({
         {localPackageLinter.isPresent && (
           <Link
             href={`/dashboard/repos/${encodeURIComponent(
-              localPackageLintFramework.localPackage.repository.fullName
+              localPackageLintFramework.localPackage.repository.fullName,
             )}/packages/${
               localPackageLintFramework.localPackage.path === '.'
                 ? 'root'
@@ -73,7 +73,7 @@ export default function DashboardLinterRow({
             >
               <Chip color="success" label={replacementPackage.name} />
             </Link>
-          )
+          ),
         )}
       </TableCell>
       <TableCell scope="row" align="right">
@@ -86,8 +86,8 @@ export default function DashboardLinterRow({
               config.localPackageConfigs.some(
                 (localPackageConfig) =>
                   localPackageConfig.localPackageId ===
-                  localPackageLinter.localPackageId
-              )
+                  localPackageLinter.localPackageId,
+              ),
             )
             .map((config) => (
               <Chip
@@ -109,7 +109,7 @@ export default function DashboardLinterRow({
                   (localPackageRule) =>
                     localPackageRule.localPackageId ===
                       localPackageLinter.localPackageId &&
-                    localPackageRule.severity !== '0'
+                    localPackageRule.severity !== '0',
                 ) ||
                 localPackageLinter.linter.configs.some((config) =>
                   config.localPackageConfigs.some(
@@ -117,10 +117,10 @@ export default function DashboardLinterRow({
                       localPackageConfig.localPackageId ===
                         localPackageLinter.localPackageId &&
                       config.ruleConfigs.some(
-                        (ruleConfig) => ruleConfig.ruleId === rule.id
-                      )
-                  )
-                )
+                        (ruleConfig) => ruleConfig.ruleId === rule.id,
+                      ),
+                  ),
+                ),
             ).length
           }{' '}
           / {localPackageLinter.linter.rules.length}

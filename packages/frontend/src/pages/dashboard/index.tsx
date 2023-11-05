@@ -1,4 +1,4 @@
-/* eslint node/no-unsupported-features/es-syntax:"off" */
+/* eslint n/no-unsupported-features/es-syntax:"off" */
 import Footer from '@/components/Footer';
 import Head from 'next/head';
 import { Paper } from '@mui/material';

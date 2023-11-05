@@ -19,7 +19,7 @@ async function downloadJSON<T>(url: string): Promise<T> {
 
   if (!response.ok) {
     throw new Error(
-      `Failed to download JSON file. Status: ${response.status}. URL: ${url}`
+      `Failed to download JSON file. Status: ${response.status}. URL: ${url}`,
     );
   }
 
@@ -35,7 +35,7 @@ async function searchPackages(searchText: string): Promise<PackageInfo[]> {
     const dataPage = await downloadJSON<NpmSearchResult>(
       `https://registry.npmjs.org/-/v1/search?text=${searchText}&size=${PAGE_SIZE}&from=${
         page * PAGE_SIZE
-      }`
+      }`,
     );
     data.push(...dataPage.objects);
   }
@@ -50,26 +50,26 @@ async function searchPackages(searchText: string): Promise<PackageInfo[]> {
 
 async function installPackages(
   packageInfos: PackageInfo[],
-  downloadPath: string
+  downloadPath: string,
 ) {
   const packageJson = {
     dependencies: Object.fromEntries(
       packageInfos.map((pkg) => [
         pkg.name,
         pkg.version === 'latest' ? pkg.version : `^${pkg.version}`,
-      ])
+      ]),
     ),
   };
 
   fs.mkdirSync(downloadPath, { recursive: true });
   fs.writeFileSync(
     path.join(downloadPath, 'package.json'),
-    JSON.stringify(packageJson)
+    JSON.stringify(packageJson),
   );
 
   try {
     await execP(
-      `npm install --ignore-scripts --loglevel verbose --prefix ${downloadPath} --legacy-peer-deps`
+      `npm install --ignore-scripts --loglevel verbose --prefix ${downloadPath} --legacy-peer-deps`,
     );
   } catch (error) {
     console.error(`Failed to npm install. Error: ${String(error)}`);
@@ -78,7 +78,7 @@ async function installPackages(
 
 function loadPackages<T>(
   packages: PackageInfo[],
-  downloadPath: string
+  downloadPath: string,
 ): Record<string, T | undefined> {
   return Object.fromEntries(
     packages.flatMap((pkg) => {
@@ -94,7 +94,7 @@ function loadPackages<T>(
         return [[pkg.name, loaded]];
       } catch (error) {
         console.log(
-          `Failed to require: ${packagePath}. Error = ${String(error)}`
+          `Failed to require: ${packagePath}. Error = ${String(error)}`,
         );
       }
 
@@ -106,18 +106,18 @@ function loadPackages<T>(
         return [[pkg.name, loaded]];
       } catch (error) {
         console.log(
-          `Failed to require: ${packagePathDist}. Error = ${String(error)}`
+          `Failed to require: ${packagePathDist}. Error = ${String(error)}`,
         );
       }
 
       return [];
-    })
+    }),
   );
 }
 
 export async function searchDownloadAndLoad<T>(
   searchText: string,
-  downloadPath: string
+  downloadPath: string,
 ) {
   const packageInfos = await searchPackages(searchText);
 
@@ -129,17 +129,17 @@ export async function searchDownloadAndLoad<T>(
 export function load<T>(downloadPath: string) {
   const packageJsonPath = path.join(downloadPath, 'package.json');
   const packageJson = JSON.parse(
-    fs.readFileSync(packageJsonPath, { encoding: 'utf8' })
+    fs.readFileSync(packageJsonPath, { encoding: 'utf8' }),
   ) as { dependencies?: Record<string, string> };
   const packageInfos = Object.entries(packageJson.dependencies || {}).map(
-    ([name, version]) => ({ name, version })
+    ([name, version]) => ({ name, version }),
   );
   return loadPackages<T>(packageInfos, downloadPath);
 }
 
 export async function downloadAndLoad<T>(
   packageName: string,
-  downloadPath: string
+  downloadPath: string,
 ) {
   const packageInfos = [{ name: packageName, version: 'latest' }];
 

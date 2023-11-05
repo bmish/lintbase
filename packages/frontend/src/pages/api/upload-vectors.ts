@@ -9,7 +9,7 @@ import { env } from '@/env.mjs';
 
 export default async function uploadVectors(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const environment = env.PINECONE_ENVIRONMENT;
   const apiKey = env.PINECONE_API_KEY;
@@ -56,8 +56,8 @@ export default async function uploadVectors(
           model: 'text-embedding-ada-002',
         });
         return { rule, embedding: embedding.data.data[0].embedding };
-      })
-    )
+      }),
+    ),
   );
   const embeddingsLinters = await Promise.all(
     linters.map(async (linter) =>
@@ -71,8 +71,8 @@ export default async function uploadVectors(
           model: 'text-embedding-ada-002',
         });
         return { linter, embedding: embedding.data.data[0].embedding };
-      })
-    )
+      }),
+    ),
   );
 
   const MAX_UPSERT_PAGE_SIZE = 100;

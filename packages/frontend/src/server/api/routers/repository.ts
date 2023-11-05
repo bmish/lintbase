@@ -14,7 +14,7 @@ import {
 } from '@/utils/lintees';
 
 function extendsToInfo(
-  extendsList: string[] | undefined
+  extendsList: string[] | undefined,
 ): { plugin: string; config: string }[] {
   return (extendsList || []).flatMap(
     (configName) =>
@@ -27,12 +27,12 @@ function extendsToInfo(
               config: configName.split(':')[1].split('/')[1],
             },
           ]
-        : [] // TODO: unknown
+        : [], // TODO: unknown
   );
 }
 
 function normalizeSeverity(
-  severity: TSESLint.Linter.RuleLevel | TSESLint.Linter.Severity
+  severity: TSESLint.Linter.RuleLevel | TSESLint.Linter.Severity,
 ): 0 | 1 | 2 {
   return severity === 'off' || severity === 0
     ? 0
@@ -57,7 +57,7 @@ function rulesToInfo(rules: TSESLint.Linter.RulesRecord | undefined): {
             severity: normalizeSeverity(
               typeof entry === 'string' || typeof entry === 'number'
                 ? entry
-                : entry[0]
+                : entry[0],
             ),
           },
         ]
@@ -68,10 +68,10 @@ function rulesToInfo(rules: TSESLint.Linter.RulesRecord | undefined): {
             severity: normalizeSeverity(
               typeof entry === 'string' || typeof entry === 'number'
                 ? entry
-                : entry[0]
+                : entry[0],
             ),
           },
-        ]
+        ],
   );
 }
 
@@ -88,7 +88,7 @@ export const repositoryRouter = createTRPCRouter({
         commitSha: z.string().optional(),
         language: z.string().optional(),
         size: z.number().optional(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.repository.upsert({
@@ -122,7 +122,7 @@ export const repositoryRouter = createTRPCRouter({
     .input(
       z.object({
         fullName: z.string().min(1),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const deleteRepository = ctx.prisma.repository.delete({
@@ -196,7 +196,7 @@ export const repositoryRouter = createTRPCRouter({
     .input(
       z.object({
         fullName: z.string().min(1),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const octokit = new Octokit({
@@ -211,7 +211,7 @@ export const repositoryRouter = createTRPCRouter({
           headers: {
             'X-GitHub-Api-Version': '2022-11-28',
           },
-        }
+        },
       );
       const lastCommit = commits.data[0];
 
@@ -224,7 +224,7 @@ export const repositoryRouter = createTRPCRouter({
           headers: {
             'X-GitHub-Api-Version': '2022-11-28',
           },
-        }
+        },
       )) as { data: { name: string; path: string }[] };
 
       if (!contents.data.some((file) => file.name === 'package.json')) {
@@ -242,14 +242,14 @@ export const repositoryRouter = createTRPCRouter({
           headers: {
             'X-GitHub-Api-Version': '2022-11-28',
           },
-        }
+        },
       )) as { data: { content: string } };
       // decode base64 from contentsLocalPackageManifest.data.content
       const localPackageManifest = JSON.parse(
         Buffer.from(
           contentsLocalPackageManifest.data.content,
-          'base64'
-        ).toString('utf8')
+          'base64',
+        ).toString('utf8'),
       ) as PackageJson;
 
       if (!contents.data.some((file) => ESLINTRC_FILENAMES.has(file.name))) {
@@ -269,18 +269,18 @@ export const repositoryRouter = createTRPCRouter({
           headers: {
             'X-GitHub-Api-Version': '2022-11-28',
           },
-        }
+        },
       )) as { data: { content: string } };
       const requireRegex = /require\s*\(\s*["'][^"']+["']\s*\)\s*/u;
       const requireResolveRegex =
         /require\.resolve\s*\(\s*["'][^"']+["']\s*\)\s*/gu;
       const contentsEslintrcData = Buffer.from(
         contentsEslintrc.data.content,
-        'base64'
+        'base64',
       )
         .toString('utf8')
         .replace(requireRegex, '{}') // Replace require statement with dummy value for now.
-        .replace(requireResolveRegex, '{}'); // Replace require statement with dummy value for now.
+        .replaceAll(requireResolveRegex, '{}'); // Replace require statement with dummy value for now.
 
       const eslintrc = contentsEslintrc.data.content
         ? // eslint-disable-next-line no-eval -- TODO: eventually, we need a sandbox for installing repos and evaluating lint configs.
@@ -295,18 +295,18 @@ export const repositoryRouter = createTRPCRouter({
         ...localPackageManifest.devDependencies,
       };
       const localPackageLinters = Object.keys(
-        localPackageAllDependencies
+        localPackageAllDependencies,
       ).filter((dependency) => dependency.startsWith('eslint-plugin-'));
 
       const suggestedLinters = [
         ...Object.keys(localPackageAllDependencies).flatMap((dep) =>
-          getLintersForPackage(dep)
+          getLintersForPackage(dep),
         ),
         ...LINTERS_RECOMMENDED_ALWAYS,
       ].filter(
         (linterName) =>
           !LINTERS_RECOMMENDED_NEVER.includes(linterName) ||
-          linterName in LINTERS_DEPRECATED
+          linterName in LINTERS_DEPRECATED,
       );
 
       const linterPackageIds = await ctx.prisma.package.findMany({
@@ -326,7 +326,7 @@ export const repositoryRouter = createTRPCRouter({
         },
       });
       const linterToPackageId = Object.fromEntries(
-        linterPackageIds.map((obj) => [obj.name, obj.id])
+        linterPackageIds.map((obj) => [obj.name, obj.id]),
       );
 
       // TODO: support other lint frameworks.
@@ -461,7 +461,7 @@ export const repositoryRouter = createTRPCRouter({
                         ...localPackageLinters
                           .filter(
                             (linterName) =>
-                              linterToPackageId[linterName] !== undefined
+                              linterToPackageId[linterName] !== undefined,
                           )
                           .map((linterName) => ({
                             isPresent: true,
@@ -476,7 +476,7 @@ export const repositoryRouter = createTRPCRouter({
                         ...suggestedLinters
                           .filter(
                             (linterName) =>
-                              linterToPackageId[linterName] !== undefined
+                              linterToPackageId[linterName] !== undefined,
                           )
                           .map((linterName) => ({
                             isSuggested: true,
@@ -487,7 +487,7 @@ export const repositoryRouter = createTRPCRouter({
                             },
                           })),
                       ],
-                      (obj) => obj.linter.connect.packageId
+                      (obj) => obj.linter.connect.packageId,
                     ),
                   ],
                 },
@@ -500,7 +500,7 @@ export const repositoryRouter = createTRPCRouter({
                         name_linterId: {
                           name: config,
                           linterId: lintersForConfigs.find(
-                            (linter) => linter.package.name === plugin
+                            (linter) => linter.package.name === plugin,
                           )?.id as number,
                         },
                       },
@@ -517,7 +517,7 @@ export const repositoryRouter = createTRPCRouter({
                         name_linterId: {
                           name: ruleName,
                           linterId: lintersForRules.find(
-                            (linter) => linter.package.name === plugin
+                            (linter) => linter.package.name === plugin,
                           )?.id as number,
                         },
                       },

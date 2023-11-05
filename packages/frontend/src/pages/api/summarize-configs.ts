@@ -8,7 +8,7 @@ const LIMIT = 100; // Only summarize top configs now due to cost.
 
 export default async function summarizeConfigs(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (env.NODE_ENV !== 'development') {
     res.status(404).end();

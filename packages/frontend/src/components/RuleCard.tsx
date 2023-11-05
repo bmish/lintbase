@@ -163,7 +163,7 @@ export default function RuleCard({
                       <Link
                         href={ruleToLinkUs(
                           ruleRelated,
-                          ruleRelated.linter.package
+                          ruleRelated.linter.package,
                         )}
                         underline="none"
                       >

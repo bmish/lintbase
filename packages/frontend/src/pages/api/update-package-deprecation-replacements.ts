@@ -8,7 +8,7 @@ import { getServerAuthSession } from '@/server/auth';
 
 export default async function updatePackageDeprecationReplacements(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   const session = await getServerAuthSession({ req, res });
   const isAdmin = session?.user.id && session?.user.id === env.ADMIN_GITHUB_ID;
@@ -19,7 +19,7 @@ export default async function updatePackageDeprecationReplacements(
 
   const ecosystemNode = await getNodeEcosystem();
   const result = await updatePackageDeprecationReplacementsHelper(
-    ecosystemNode.id
+    ecosystemNode.id,
   );
 
   res.status(200).json({ result });

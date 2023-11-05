@@ -18,13 +18,13 @@ export default function DatabaseConfigRow({
   const configToEmoji = getConfigEmojis(configs);
 
   const countError = config.ruleConfigs.filter(
-    (ruleConfig) => ruleConfig.severity === 'error'
+    (ruleConfig) => ruleConfig.severity === 'error',
   ).length;
   const countWarn = config.ruleConfigs.filter(
-    (ruleConfig) => ruleConfig.severity === 'warn'
+    (ruleConfig) => ruleConfig.severity === 'warn',
   ).length;
   const countOff = config.ruleConfigs.filter(
-    (ruleConfig) => ruleConfig.severity === 'off'
+    (ruleConfig) => ruleConfig.severity === 'off',
   ).length;
 
   const countsDisplay = [

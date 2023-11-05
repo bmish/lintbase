@@ -8,7 +8,7 @@ const LIMIT = 25; // Only summarize top linters now due to cost.
 
 export default async function summarizeLinters(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (env.NODE_ENV !== 'development') {
     res.status(404).end();

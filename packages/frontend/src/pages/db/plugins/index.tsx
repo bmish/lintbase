@@ -141,7 +141,7 @@ export default function Plugins({
 
   const handleChangePage = async (
     event: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number
+    newPage: number,
   ) => {
     const newQueryParams = new URLSearchParams();
     if (router.query.q) {
@@ -156,12 +156,12 @@ export default function Plugins({
     await router.push(
       `${router.pathname}${
         newQueryParams.size > 0 ? '?' : ''
-      }${newQueryParams.toString()}`
+      }${newQueryParams.toString()}`,
     );
   };
 
   const handleChangeRowsPerPage = async (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const pageSize = Number.parseInt(event.target.value, 10);
     const newQueryParams = new URLSearchParams();
@@ -231,10 +231,10 @@ export default function Plugins({
                     {linter.package.packageUpdatedAt && (
                       <time
                         dateTime={new Date(
-                          linter.package.packageUpdatedAt
+                          linter.package.packageUpdatedAt,
                         ).toISOString()}
                         title={new Date(
-                          linter.package.packageUpdatedAt
+                          linter.package.packageUpdatedAt,
                         ).toUTCString()}
                       >
                         {format(new Date(linter.package.packageUpdatedAt))}

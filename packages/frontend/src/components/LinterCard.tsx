@@ -88,11 +88,11 @@ export default function LinterCard({
     linter.package.versions.length === 0
       ? undefined
       : linter.package.versions.find((version) =>
-          version.tags.some((tag) => tag.name === 'latest')
+          version.tags.some((tag) => tag.name === 'latest'),
         ) || linter.package.versions.at(-1);
 
   const versionLoaded = linter.package.versions.find(
-    (version) => version.isLoaded
+    (version) => version.isLoaded,
   );
   const versionLoadedToDisplay =
     versionLoaded &&
@@ -108,7 +108,7 @@ export default function LinterCard({
           []),
       ]
         .sort((a, b) => a.localeCompare(b))
-        .filter((keyword) => !linter.package.name.includes(keyword))
+        .filter((keyword) => !linter.package.name.includes(keyword)),
     ),
   ];
 
@@ -174,11 +174,11 @@ export default function LinterCard({
                     >
                       <Chip color="success" label={replacementPackage.name} />
                     </Link>
-                  )
+                  ),
                 )}{' '}
               {detailed &&
                 linter.package.repository?.stars.find(
-                  (star) => star.userId === userId
+                  (star) => star.userId === userId,
                 ) && <StarIcon titleAccess="Starred by you on GitHub" />}
               {!detailed && (
                 <Link href={packageToLinkUs(linter.package)} underline="none">
@@ -220,7 +220,7 @@ export default function LinterCard({
                 {!detailed && versionToDisplay && (
                   <time
                     dateTime={new Date(
-                      versionToDisplay.publishedAt
+                      versionToDisplay.publishedAt,
                     ).toISOString()}
                     title={new Date(versionToDisplay.publishedAt).toUTCString()}
                   >
@@ -248,7 +248,7 @@ export default function LinterCard({
                 onClick={() => {
                   // eslint-disable-next-line @typescript-eslint/no-floating-promises
                   navigator.clipboard.writeText(
-                    `npm i --save-dev ${linter.package.name}`
+                    `npm i --save-dev ${linter.package.name}`,
                   );
                 }}
               >
@@ -267,7 +267,7 @@ export default function LinterCard({
                   {['readme'].some(
                     (str) =>
                       linter.package.linkHomepage &&
-                      linter.package.linkHomepage.toLowerCase().includes(str)
+                      linter.package.linkHomepage.toLowerCase().includes(str),
                   )
                     ? '📖 README'
                     : '🏠 Homepage'}
@@ -311,7 +311,7 @@ export default function LinterCard({
                 href={linterToLinkPackageRegistry(linter.package)}
               >
                 {linterToLinkPackageRegistry(linter.package).startsWith(
-                  'https://www.npmjs.com/'
+                  'https://www.npmjs.com/',
                 ) && (
                   <Image
                     src="/icon-npm.svg"
@@ -322,7 +322,7 @@ export default function LinterCard({
                   />
                 )}
                 {linterToLinkPackageRegistry(linter.package).startsWith(
-                  'https://www.npmjs.com/'
+                  'https://www.npmjs.com/',
                 )
                   ? 'npm'
                   : 'Package Registry'}
@@ -469,10 +469,10 @@ export default function LinterCard({
                   {versionToDisplay && (
                     <time
                       dateTime={new Date(
-                        versionToDisplay.publishedAt
+                        versionToDisplay.publishedAt,
                       ).toISOString()}
                       title={new Date(
-                        versionToDisplay.publishedAt
+                        versionToDisplay.publishedAt,
                       ).toUTCString()}
                     >
                       {format(new Date(versionToDisplay.publishedAt))}
@@ -483,14 +483,14 @@ export default function LinterCard({
                   {linter.package.packageCreatedAt && (
                     <time
                       dateTime={new Date(
-                        linter.package.packageCreatedAt
+                        linter.package.packageCreatedAt,
                       ).toISOString()}
                       title={new Date(
-                        linter.package.packageCreatedAt
+                        linter.package.packageCreatedAt,
                       ).toUTCString()}
                     >
                       {format(
-                        new Date(linter.package.packageCreatedAt)
+                        new Date(linter.package.packageCreatedAt),
                       ).replace('ago', 'old')}
                     </time>
                   )}
@@ -531,7 +531,7 @@ export default function LinterCard({
                           {semverPretty(peerDependency.value).length > 20
                             ? `${semverPretty(peerDependency.value).slice(
                                 0,
-                                18
+                                18,
                               )}...`
                             : semverPretty(peerDependency.value)}
                         </span>

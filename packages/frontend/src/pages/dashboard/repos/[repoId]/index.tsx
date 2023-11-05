@@ -1,5 +1,5 @@
 /* eslint filenames/match-exported:"off" */
-/* eslint node/no-unsupported-features/es-syntax:"off" */
+/* eslint n/no-unsupported-features/es-syntax:"off" */
 import Footer from '@/components/Footer';
 import Head from 'next/head';
 import {
@@ -246,7 +246,7 @@ export default function Repo({
                         )}
                         {lastCommit &&
                           ` (${format(
-                            new Date(lastCommit.commit.committer.date)
+                            new Date(lastCommit.commit.committer.date),
                           )})`}
                       </TableCell>
                       <TableCell align="right">
@@ -288,7 +288,7 @@ export default function Repo({
                           <TableCell>
                             <Link
                               href={`/dashboard/repos/${encodeURIComponent(
-                                repo.fullName
+                                repo.fullName,
                               )}/packages/${
                                 localPackage.path === '.'
                                   ? 'root'
@@ -309,12 +309,12 @@ export default function Repo({
                                 />
                               )}
                               {lintFrameworkToDisplayName(
-                                localPackageLintFramework.lintFramework
+                                localPackageLintFramework.lintFramework,
                               )}
                             </Link>
                           </TableCell>
                         </TableRow>
-                      )
+                      ),
                     )}
                   </TableBody>
                 </>

@@ -38,7 +38,7 @@ app.octokit.log.debug(`Authenticated as '${data.name}'`);
 // Subscribe to the "pull_request.opened" webhook event
 app.webhooks.on('pull_request.opened', async ({ octokit, payload }) => {
   console.log(
-    `Received a pull request event for #${payload.pull_request.number}`
+    `Received a pull request event for #${payload.pull_request.number}`,
   );
   try {
     await octokit.rest.issues.createComment({
@@ -54,7 +54,7 @@ app.webhooks.on('pull_request.opened', async ({ octokit, payload }) => {
           `Error! Status: ${error.response.status}. Message: ${
             // @ts-expect-error -- not typed
             error.response.data.message as string
-          }`
+          }`,
         );
       } else {
         console.error(error);

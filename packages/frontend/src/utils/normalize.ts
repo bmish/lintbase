@@ -89,7 +89,7 @@ function createPackageObject(
   npmRegistryInfo: NpmRegistryInfo,
   githubInfo: Repository | undefined,
   keywordsToIgnore: Set<string>,
-  packageJsonLocal?: PackageJson // Only used when we actually downloaded the package locally.
+  packageJsonLocal?: PackageJson, // Only used when we actually downloaded the package locally.
 ): Prisma.PackageCreateInput {
   const result: Prisma.PackageCreateInput = {
     ecosystem: {
@@ -106,7 +106,7 @@ function createPackageObject(
     percentDownloadsWeekOverWeek: Math.round(
       ((npmDownloadsInfo.thisWeek - npmDownloadsInfo.lastWeek) /
         npmDownloadsInfo.lastWeek) *
-        100
+        100,
     ),
 
     packageCreatedAt: new Date(npmRegistryInfo.time.created),
@@ -161,13 +161,13 @@ function createPackageObject(
             return [];
           }
           return [{ name, value }];
-        }
+        },
       ),
     },
 
     peerDependencies: {
       create: Object.entries(
-        getPeerDependencies(npmRegistryInfo) || {}
+        getPeerDependencies(npmRegistryInfo) || {},
       ).flatMap(([name, value]) => {
         if (!value) {
           // Shouldn't happen.
@@ -186,7 +186,7 @@ function createPackageObject(
               'Skipping version',
               version,
               'due to invalid time for package',
-              linterName
+              linterName,
             );
             return false; // Skip when time is an object about being unpublished. TODO: mark as unpublished.
           }
@@ -288,7 +288,7 @@ async function baseToNormalizedLinter(
   rules: Prisma.RuleCreateWithoutLinterInput[],
   configs: Prisma.ConfigCreateWithoutLinterInput[],
   processors: Prisma.ProcessorCreateWithoutLinterInput[],
-  keywordsToIgnore: Set<string>
+  keywordsToIgnore: Set<string>,
 ): Promise<
   Prisma.LinterGetPayload<{ include: typeof linterInclude }> | undefined
 > {
@@ -330,7 +330,7 @@ async function baseToNormalizedLinter(
           npmRegistryInfo,
           githubInfo,
           keywordsToIgnore,
-          packageJson
+          packageJson,
         ),
       },
 
@@ -358,7 +358,7 @@ async function baseToNormalizedLinter(
             npmDownloadsInfo,
             npmRegistryInfo,
             githubInfo,
-            keywordsToIgnore
+            keywordsToIgnore,
           ),
         })),
       },
@@ -376,7 +376,7 @@ async function eslintLinterToNormalizedLinter(
   npmRegistryInfo: NpmRegistryInfo,
   githubInfo: Repository | undefined,
   lintFrameworkId: number,
-  ecosystemId: number
+  ecosystemId: number,
 ): Promise<
   Prisma.LinterGetPayload<{ include: typeof linterInclude }> | undefined
 > {
@@ -413,7 +413,7 @@ async function eslintLinterToNormalizedLinter(
                   default:
                     obj.default === undefined ? undefined : String(obj.default),
                   deprecated: obj.deprecated,
-                })
+                }),
               ),
             },
             requiresTypeChecking: false,
@@ -449,7 +449,7 @@ async function eslintLinterToNormalizedLinter(
         options: {
           create: uniqueItems(
             getAllNamedOptions(rule.meta?.schema),
-            'name'
+            'name',
           ).map((obj) => ({
             name: obj.name,
             type: obj.type,
@@ -470,7 +470,7 @@ async function eslintLinterToNormalizedLinter(
       };
 
       return [ruleNormalized];
-    }
+    },
   );
 
   const configs = Object.entries(linter?.configs || {}).map(
@@ -478,7 +478,7 @@ async function eslintLinterToNormalizedLinter(
       name: configName,
       // @ts-expect-error -- This is an unofficial config property.
       description: config.description,
-    })
+    }),
   );
 
   const processors = Object.entries(linter?.processors || {}).map(
@@ -487,7 +487,7 @@ async function eslintLinterToNormalizedLinter(
       // @ts-expect-error -- This is an unofficial processor property.
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       description: processor.description || processor.meta?.description,
-    })
+    }),
   );
 
   const linterCreated = await baseToNormalizedLinter(
@@ -501,7 +501,7 @@ async function eslintLinterToNormalizedLinter(
     rules,
     configs,
     processors,
-    ESLINT_IGNORED_KEYWORDS
+    ESLINT_IGNORED_KEYWORDS,
   );
 
   if (!linterCreated) {
@@ -525,7 +525,7 @@ async function eslintLinterToNormalizedLinter(
     data: Object.entries(linter?.configs || {}).flatMap(
       ([configName, config]) => {
         const configId = linterCreated.configs.find(
-          (configCreated) => configCreated.name === configName
+          (configCreated) => configCreated.name === configName,
         )?.id;
         if (configId === undefined) {
           return [];
@@ -536,7 +536,7 @@ async function eslintLinterToNormalizedLinter(
               (ruleCreated) =>
                 (linterPrefix
                   ? `${linterPrefix}/${ruleCreated.name}`
-                  : ruleCreated.name) === ruleName
+                  : ruleCreated.name) === ruleName,
             )?.id;
             if (ruleId === undefined) {
               return [];
@@ -558,9 +558,9 @@ async function eslintLinterToNormalizedLinter(
                 ruleId,
               },
             ];
-          }
+          },
         );
-      }
+      },
     ),
   });
 
@@ -575,7 +575,7 @@ async function emberTemplateLintLinterToNormalizedLinter(
   npmRegistryInfo: NpmRegistryInfo,
   githubInfo: Repository | undefined,
   lintFrameworkId: number,
-  ecosystemId: number
+  ecosystemId: number,
 ): Promise<
   Prisma.LinterGetPayload<{ include: typeof linterInclude }> | undefined
 > {
@@ -602,7 +602,7 @@ async function emberTemplateLintLinterToNormalizedLinter(
       };
 
       return config;
-    }
+    },
   );
 
   const linterCreated = await baseToNormalizedLinter(
@@ -616,7 +616,7 @@ async function emberTemplateLintLinterToNormalizedLinter(
     rules,
     configs,
     [],
-    EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS
+    EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS,
   );
 
   if (!linterCreated) {
@@ -638,7 +638,7 @@ async function emberTemplateLintLinterToNormalizedLinter(
     data: Object.entries(linter?.configurations || {}).flatMap(
       ([configName, config]) => {
         const configId = linterCreated.configs.find(
-          (configCreated) => configCreated.name === configName
+          (configCreated) => configCreated.name === configName,
         )?.id;
         if (configId === undefined) {
           return [];
@@ -646,7 +646,7 @@ async function emberTemplateLintLinterToNormalizedLinter(
         return Object.entries(config.rules || {}).flatMap(
           ([ruleName, ruleEntry]) => {
             const ruleId = linterCreated.rules.find(
-              (ruleCreated) => ruleCreated.name === ruleName
+              (ruleCreated) => ruleCreated.name === ruleName,
             )?.id;
             if (ruleId === undefined) {
               return [];
@@ -668,9 +668,9 @@ async function emberTemplateLintLinterToNormalizedLinter(
                 ruleId,
               },
             ];
-          }
+          },
         );
-      }
+      },
     ),
   });
 
@@ -685,7 +685,7 @@ async function stylelintToNormalizedLinter(
   npmRegistryInfo: NpmRegistryInfo,
   githubInfo: Repository | undefined,
   lintFrameworkId: number,
-  ecosystemId: number
+  ecosystemId: number,
 ): Promise<
   Prisma.LinterGetPayload<{ include: typeof linterInclude }> | undefined
 > {
@@ -716,7 +716,7 @@ async function stylelintToNormalizedLinter(
     rules,
     [],
     [],
-    IGNORED_KEYWORDS
+    IGNORED_KEYWORDS,
   );
 
   // TODO: create RuleConfigs
@@ -732,7 +732,7 @@ async function stylelintPluginToNormalizedLinter(
   npmRegistryInfo: NpmRegistryInfo,
   githubInfo: Repository | undefined,
   lintFrameworkId: number,
-  ecosystemId: number
+  ecosystemId: number,
 ): Promise<
   Prisma.LinterGetPayload<{ include: typeof linterInclude }> | undefined
 > {
@@ -763,7 +763,7 @@ async function stylelintPluginToNormalizedLinter(
     rules,
     [],
     [],
-    IGNORED_KEYWORDS
+    IGNORED_KEYWORDS,
   );
 
   // TODO: create RuleConfigs
@@ -789,7 +789,7 @@ function createLintFrameworks(ecosystemId: number) {
         update: {},
       });
       return result;
-    }
+    },
   );
 }
 
@@ -815,7 +815,7 @@ export async function loadLintersToDb(
     | TSESLint.RuleCreateFunction
     | TSESLint.RuleModule<string, unknown[], TSESLint.RuleListener>
   >,
-  etl: EmberTemplateLint
+  etl: EmberTemplateLint,
 ) {
   const linterTypes = [...CORE_LINTING_FRAMEWORKS, ...PLUGINS_SUPPORTED];
 
@@ -833,7 +833,7 @@ export async function loadLintersToDb(
       'downloader',
       'tmp',
       'npm',
-      linterType
+      linterType,
     );
 
     let linterRecord;
@@ -875,8 +875,8 @@ export async function loadLintersToDb(
                       ? 'error'
                       : undefined
                     : undefined,
-                ]
-              )
+                ],
+              ),
             ),
           },
         };
@@ -902,7 +902,7 @@ export async function loadLintersToDb(
             }
             return true;
           })
-          .slice(0, LIMIT_LINTERS_PER_FRAMEWORK)
+          .slice(0, LIMIT_LINTERS_PER_FRAMEWORK),
       );
     }
 
@@ -917,7 +917,7 @@ export async function loadLintersToDb(
           return [];
         }
         return [[packageName, npmInfo.npmRegistryInfo]];
-      })
+      }),
     );
     const githubRepoNames = packagesToGitHubInfo(packageToPackageJson);
     const githubInfo = await getRepositories(Object.values(githubRepoNames));
@@ -928,10 +928,10 @@ export async function loadLintersToDb(
           downloadPath,
           'node_modules',
           linterName,
-          'package.json'
+          'package.json',
         );
         const packageJson = JSON.parse(
-          readFileSync(pathPackageJson, { encoding: 'utf8' })
+          readFileSync(pathPackageJson, { encoding: 'utf8' }),
         ) as PackageJson;
 
         const { npmDownloadsInfo, npmRegistryInfo } = npmInfo[linterName] || {};
@@ -959,7 +959,7 @@ export async function loadLintersToDb(
               npmRegistryInfo,
               gitHubInfoForThisLinter,
               lintFrameworks.eslint.id,
-              ecosystemNode.id
+              ecosystemNode.id,
             );
             break;
           }
@@ -975,7 +975,7 @@ export async function loadLintersToDb(
               npmRegistryInfo,
               gitHubInfoForThisLinter,
               lintFrameworks['ember-template-lint'].id,
-              ecosystemNode.id
+              ecosystemNode.id,
             );
             break;
           }
@@ -990,7 +990,7 @@ export async function loadLintersToDb(
               npmRegistryInfo,
               gitHubInfoForThisLinter,
               lintFrameworks.stylelint.id,
-              ecosystemNode.id
+              ecosystemNode.id,
             );
             break;
           }
@@ -1004,7 +1004,7 @@ export async function loadLintersToDb(
               npmRegistryInfo,
               gitHubInfoForThisLinter,
               lintFrameworks.stylelint.id,
-              ecosystemNode.id
+              ecosystemNode.id,
             );
             break;
           }
@@ -1021,7 +1021,7 @@ export async function loadLintersToDb(
               [],
               [],
               [],
-              EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS
+              EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS,
             );
           }
         }
@@ -1031,7 +1031,7 @@ export async function loadLintersToDb(
         }
 
         return [linterNormalized];
-      })
+      }),
     );
 
     lintersCreated.push(...lintersCreatedForThisType);
@@ -1043,10 +1043,10 @@ export async function loadLintersToDb(
 }
 
 export async function updatePackageDeprecationReplacements(
-  ecosystemId: number
+  ecosystemId: number,
 ) {
   for (const [deprecatedLinterName, replacements] of Object.entries(
-    LINTERS_DEPRECATED
+    LINTERS_DEPRECATED,
   )) {
     await prisma.package.update({
       where: {

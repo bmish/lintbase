@@ -114,14 +114,14 @@ export default function LintFrameworkTable({
                   lintFramework.linter.package.packageUpdatedAt && (
                     <time
                       dateTime={new Date(
-                        lintFramework.linter.package.packageUpdatedAt
+                        lintFramework.linter.package.packageUpdatedAt,
                       ).toISOString()}
                       title={new Date(
-                        lintFramework.linter.package.packageUpdatedAt
+                        lintFramework.linter.package.packageUpdatedAt,
                       ).toUTCString()}
                     >
                       {format(
-                        new Date(lintFramework.linter.package.packageUpdatedAt)
+                        new Date(lintFramework.linter.package.packageUpdatedAt),
                       )}
                     </time>
                   )}

@@ -9,7 +9,7 @@ export function getConfigEmojis(configs: Prisma.ConfigGetPayload<object>[]) {
       (EMOJI_CONFIGS as Record<string, string | undefined>)[config.name] ||
         genEmoji.next().value ||
         undefined,
-    ])
+    ]),
   );
 
   return configToEmoji;

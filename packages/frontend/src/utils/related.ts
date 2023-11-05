@@ -15,7 +15,7 @@ export async function related(
         ecosystemName: string;
         linterName: string;
         count?: number | undefined;
-      }
+      },
 ) {
   const environment = env.PINECONE_ENVIRONMENT;
   const apiKey = env.PINECONE_API_KEY;

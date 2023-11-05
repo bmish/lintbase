@@ -65,7 +65,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           'X-GitHub-Api-Version': '2022-11-28',
         },
         per_page: 100,
-      }
+      },
     );
 
     const nodeEcosystem = await getNodeEcosystem();
@@ -211,7 +211,7 @@ export default function Starred({
 
   const handleChangePage = async (
     event: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number
+    newPage: number,
   ) => {
     const newQueryParams = new URLSearchParams();
     if (router.query.c) {
@@ -223,12 +223,12 @@ export default function Starred({
     await router.push(
       `${router.pathname}${
         newQueryParams.size > 0 ? '?' : ''
-      }${newQueryParams.toString()}`
+      }${newQueryParams.toString()}`,
     );
   };
 
   const handleChangeRowsPerPage = async (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const pageSize = Number.parseInt(event.target.value, 10);
     const newQueryParams = new URLSearchParams();
@@ -299,10 +299,10 @@ export default function Starred({
                     {linter.package.packageUpdatedAt && (
                       <time
                         dateTime={new Date(
-                          linter.package.packageUpdatedAt
+                          linter.package.packageUpdatedAt,
                         ).toISOString()}
                         title={new Date(
-                          linter.package.packageUpdatedAt
+                          linter.package.packageUpdatedAt,
                         ).toUTCString()}
                       >
                         {format(new Date(linter.package.packageUpdatedAt))}

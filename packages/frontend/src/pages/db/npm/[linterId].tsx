@@ -155,7 +155,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                             rules,
                           },
                         ]
-                      : [] // Skip rules without the grouping property.
+                      : [], // Skip rules without the grouping property.
                 )
             : []),
         ]
@@ -166,7 +166,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (clusters && Number(clusters) > 0) {
     const vectorIds = linter.rules.map(
       (rule) =>
-        `${linter.package.ecosystem.name}#${linter.package.name}#${rule.name}`
+        `${linter.package.ecosystem.name}#${linter.package.name}#${rule.name}`,
     );
     try {
       const vectors = await getVectors(vectorIds, 'rule');
@@ -181,7 +181,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       const clustersList = [];
       if (embeddings && embeddings.length > 0) {
         clustersList.push(
-          ...embeddingsToLists(Number(clusters), embeddings, linter)
+          ...embeddingsToLists(Number(clusters), embeddings, linter),
         );
       }
 
@@ -190,15 +190,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           const rulesList = obj.rules
             .map(
               (rule) =>
-                `\t${[rule.name, rule.description].filter(Boolean).join(' - ')}`
+                `\t${[rule.name, rule.description]
+                  .filter(Boolean)
+                  .join(' - ')}`,
             )
             .join('\n');
           return `Cluster ${i + 1}\n${rulesList}`;
         })
         .join('\n\n');
-      const clusterNamesGenerated = await clusterNamesForRules(
-        stringOfRuleClusters
-      );
+      const clusterNamesGenerated =
+        await clusterNamesForRules(stringOfRuleClusters);
 
       if (clusterNamesGenerated.length === Number(clusters)) {
         for (const [i, clusterName] of clusterNamesGenerated.entries()) {
@@ -207,7 +208,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       } else {
         // eslint-disable-next-line no-console
         console.log(
-          `Generated ${clusterNamesGenerated.length} cluster names, but ${clusters} were requested.`
+          `Generated ${clusterNamesGenerated.length} cluster names, but ${clusters} were requested.`,
         );
       }
 
@@ -237,12 +238,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 function embeddingsToLists(
   countClusters: number,
   embeddings: { ruleName: string; values: number[] }[],
-  linter: Prisma.LinterGetPayload<{ include: typeof include }>
+  linter: Prisma.LinterGetPayload<{ include: typeof include }>,
 ) {
   const ruleIndexToCluster = kmeans(
     embeddings.map((obj) => obj.values),
     Number(countClusters),
-    {}
+    {},
   ).clusters;
 
   const listsOfRules = Array.from({ length: Number(countClusters) })
@@ -250,7 +251,7 @@ function embeddingsToLists(
     .map((x, clusterIndex) => ({
       title: `Cluster ${clusterIndex + 1}`,
       rules: linter.rules.filter(
-        (_, ruleIndex) => ruleIndexToCluster[ruleIndex] === clusterIndex
+        (_, ruleIndex) => ruleIndexToCluster[ruleIndex] === clusterIndex,
       ),
     }));
 
@@ -320,10 +321,10 @@ export default function Linter({
                     config={config}
                     configs={linter.configs}
                     includeDescription={linter.configs.some(
-                      (config) => config.description
+                      (config) => config.description,
                     )}
                     includeDescriptionAI={linter.configs.some(
-                      (config) => config.descriptionAI
+                      (config) => config.descriptionAI,
                     )}
                   />
                 ))}

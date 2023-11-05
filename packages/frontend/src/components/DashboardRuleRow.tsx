@@ -50,24 +50,24 @@ export default function DashboardRuleRow({
       config.localPackageConfigs.some(
         (localPackageConfig) =>
           localPackageConfig.localPackageId ===
-          localPackageLinter.localPackageId
-      )
+          localPackageLinter.localPackageId,
+      ),
     )
     .some((config) =>
-      config.ruleConfigs.some((ruleConfig) => ruleConfig.ruleId === rule.id)
+      config.ruleConfigs.some((ruleConfig) => ruleConfig.ruleId === rule.id),
     );
 
   const isDisableIndividually = rule.localPackageRules.some(
     (localPackageRule) =>
       localPackageRule.localPackageId === localPackageLinter.localPackageId &&
       localPackageRule.severity &&
-      localPackageRule.severity === '0'
+      localPackageRule.severity === '0',
   );
 
   const isEnabledIndividually = rule.localPackageRules.some(
     (localPackageRule) =>
       localPackageRule.localPackageId === localPackageLinter.localPackageId &&
-      localPackageRule.severity !== '0'
+      localPackageRule.severity !== '0',
   );
 
   const isEnabled =
@@ -113,13 +113,13 @@ export default function DashboardRuleRow({
             config.localPackageConfigs.some(
               (localPackageConfig) =>
                 localPackageConfig.localPackageId ===
-                localPackageLinter.localPackageId
-            )
+                localPackageLinter.localPackageId,
+            ),
           )
           .filter((config) =>
             config.ruleConfigs.some(
-              (ruleConfig) => ruleConfig.ruleId === rule.id
-            )
+              (ruleConfig) => ruleConfig.ruleId === rule.id,
+            ),
           )
           .map((config) => (
             <Chip
@@ -136,8 +136,8 @@ export default function DashboardRuleRow({
               (localPackageRule) =>
                 localPackageRule.localPackageId ===
                   localPackageLinter.localPackageId &&
-                localPackageRule.ruleId === rule.id
-            )
+                localPackageRule.ruleId === rule.id,
+            ),
           )
           .map((rule2) => (
             <Chip

@@ -21,7 +21,7 @@ export function getAllNamedOptions(
     | JSONSchema.JSONSchema4
     | readonly JSONSchema.JSONSchema4[]
     | undefined
-    | null
+    | null,
 ): readonly RuleOption[] {
   if (!jsonSchema) {
     return [];
@@ -29,7 +29,7 @@ export function getAllNamedOptions(
 
   if (Array.isArray(jsonSchema)) {
     return jsonSchema.flatMap((js: JSONSchema.JSONSchema4) =>
-      getAllNamedOptions(js)
+      getAllNamedOptions(js),
     );
   }
 
@@ -55,7 +55,7 @@ export function getAllNamedOptions(
               ? value.required
               : Array.isArray(js.required) && js.required.includes(key),
           deprecated: value.deprecated,
-        }))
+        })),
       );
     }
   });
@@ -121,7 +121,7 @@ function severityNumberToString(severity: 0 | 1 | 2): 'off' | 'warn' | 'error' {
 }
 
 export function ruleEntryToStringSeverity(
-  ruleEntry: TSESLint.Linter.RuleEntry
+  ruleEntry: TSESLint.Linter.RuleEntry,
 ): 'off' | 'warn' | 'error' {
   if (typeof ruleEntry === 'number') {
     return severityNumberToString(ruleEntry);
@@ -142,7 +142,7 @@ export function ruleEntryToStringSeverity(
 }
 
 export function normalizeFixable(
-  val: boolean | string | null | undefined
+  val: boolean | string | null | undefined,
 ): 'code' | 'whitespace' | null {
   if (val === 'code' || val === true || val === 'true') {
     return 'code';
