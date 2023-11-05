@@ -2,7 +2,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { PineconeClient } from '@pinecone-database/pinecone';
 import { prisma } from '@/server/db';
-import { Configuration, OpenAIApi } from 'openai';
+import OpenAI from 'openai';
 import chunk from 'lodash.chunk';
 import pLimit from 'p-limit';
 import { env } from '@/env.mjs';
@@ -39,10 +39,9 @@ export default async function uploadVectors(
     }),
   ]);
 
-  const configuration = new Configuration({
+  const openai = new OpenAI({
     apiKey: env.OPENAI_API_KEY,
   });
-  const openai = new OpenAIApi(configuration);
 
   const limitRequests = pLimit(10); // Max 3000 RPM allowed.
 
@@ -50,12 +49,12 @@ export default async function uploadVectors(
     rules.map(async (rule) =>
       limitRequests(async () => {
         console.log(`Creating embedding for rule ${rule.name}...`);
-        const embedding = await openai.createEmbedding({
+        const embedding = await openai.embeddings.create({
           input: [rule.name, rule.description].filter(Boolean).join(': '),
           // TODO: include more data about rule?
           model: 'text-embedding-ada-002',
         });
-        return { rule, embedding: embedding.data.data[0].embedding };
+        return { rule, embedding: embedding.data[0].embedding };
       }),
     ),
   );
@@ -63,14 +62,14 @@ export default async function uploadVectors(
     linters.map(async (linter) =>
       limitRequests(async () => {
         console.log(`Creating embedding for linter ${linter.package.name}...`);
-        const embedding = await openai.createEmbedding({
+        const embedding = await openai.embeddings.create({
           input: [linter.package.name, linter.package.description]
             .filter(Boolean)
             .join(': '),
           // TODO: include more data about linter?
           model: 'text-embedding-ada-002',
         });
-        return { linter, embedding: embedding.data.data[0].embedding };
+        return { linter, embedding: embedding.data[0].embedding };
       }),
     ),
   );

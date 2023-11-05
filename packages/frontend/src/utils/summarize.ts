@@ -1,28 +1,28 @@
-import { Configuration, OpenAIApi } from 'openai';
+import OpenAI from 'openai';
 import { env } from '@/env.mjs';
 import { Prisma } from '@prisma/client';
 
 async function createChatCompletion(
   messages: { role: 'user' | 'system' | 'assistant'; content: string }[],
 ) {
-  const configuration = new Configuration({
+  
+  const openai = new OpenAI({
     apiKey: env.OPENAI_API_KEY,
   });
-  const openai = new OpenAIApi(configuration);
 
-  const response = await openai.createChatCompletion({
+  const response = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',
     messages,
   });
 
   if (
-    !response.data.choices[0].message ||
-    response.data.choices[0].message.content === ''
+    !response.choices[0].message ||
+    response.choices[0].message.content === ''
   ) {
     throw new Error('no message returned');
   }
 
-  return response.data.choices[0].message.content;
+  return response.choices[0].message.content;
 }
 
 export async function summarizeLinter(
