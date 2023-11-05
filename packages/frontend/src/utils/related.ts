@@ -1,4 +1,4 @@
-import { PineconeClient } from '@pinecone-database/pinecone';
+import { Pinecone } from '@pinecone-database/pinecone';
 import { env } from '@/env.mjs';
 
 export async function related(
@@ -24,29 +24,25 @@ export async function related(
     return null;
   }
 
-  const pinecone = new PineconeClient();
-  await pinecone.init({
+  const pinecone = new Pinecone({
     environment,
     apiKey,
   });
 
-  const rulesIndex = pinecone.Index('lintbase');
+  const index = pinecone.Index('lintbase');
+  const namespace = index.namespace(params.type);
 
   const vectorId =
     params.type === 'rule'
       ? `${params.ecosystemName}#${params.linterName}#${params.ruleName}`
       : `${params.ecosystemName}#${params.linterName}`;
 
-  const vectorResponse = await rulesIndex.fetch({
-    ids: [vectorId],
-    namespace: params.type,
-  });
-
-  if (!vectorResponse.vectors || !vectorResponse.vectors[vectorId]) {
+  const vectorResponse = await namespace.fetch([vectorId]);
+  if (!vectorResponse || !vectorResponse.records[vectorId]) {
     throw new Error('No vectors found.');
   }
 
-  const vector = vectorResponse.vectors[vectorId].values;
+  const vector = vectorResponse.records[vectorId].values;
 
   const count = params.count ?? 5;
 
@@ -58,13 +54,10 @@ export async function related(
           },
         }
       : {};
-  const related = await rulesIndex.query({
-    queryRequest: {
-      vector,
-      topK: count + 1, // Add one in case the vector itself is returned.
-      namespace: params.type,
-      ...extra,
-    },
+  const related = await namespace.query({
+    vector,
+    topK: count + 1, // Add one in case the vector itself is returned.
+    ...extra,
   });
 
   return related.matches

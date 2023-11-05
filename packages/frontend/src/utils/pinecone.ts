@@ -1,7 +1,7 @@
-import { PineconeClient } from '@pinecone-database/pinecone';
+import { Pinecone } from '@pinecone-database/pinecone';
 import { env } from '@/env.mjs';
 
-export async function getVectors(vectorIds: string[], namespace: string) {
+export async function getVectors(vectorIds: string[], namespaceName: string) {
   const environment = env.PINECONE_ENVIRONMENT;
   const apiKey = env.PINECONE_API_KEY;
 
@@ -9,17 +9,13 @@ export async function getVectors(vectorIds: string[], namespace: string) {
     throw new Error('Pinecone environment and API key must be set');
   }
 
-  const pinecone = new PineconeClient();
-  await pinecone.init({
+  const pinecone = new Pinecone({
     environment,
     apiKey,
   });
   const index = pinecone.Index('lintbase');
+  const namespace = index.namespace(namespaceName);
+  const vectorResponse = await namespace.fetch(vectorIds);
 
-  const vectorResponse = await index.fetch({
-    ids: vectorIds,
-    namespace,
-  });
-
-  return vectorResponse.vectors;
+  return vectorResponse.records;
 }

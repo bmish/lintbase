@@ -1,6 +1,6 @@
 /* eslint no-console:"off" */
 import { NextApiRequest, NextApiResponse } from 'next';
-import { PineconeClient } from '@pinecone-database/pinecone';
+import { Pinecone } from '@pinecone-database/pinecone';
 import { prisma } from '@/server/db';
 import OpenAI from 'openai';
 import chunk from 'lodash.chunk';
@@ -19,13 +19,14 @@ export default async function uploadVectors(
     return;
   }
 
-  const pinecone = new PineconeClient();
-  await pinecone.init({
+  const pinecone = new Pinecone({
     environment,
     apiKey,
   });
 
   const index = pinecone.Index('lintbase');
+  const namespaceRule = index.namespace('rule');
+  const namespaceLinter = index.namespace('linter');
 
   console.log('Retrieving linters and rules');
   const [linters, rules] = await Promise.all([
@@ -78,36 +79,30 @@ export default async function uploadVectors(
 
   console.log('Upserting rules...');
   for (const chunkedRules of chunk(embeddingsRules, MAX_UPSERT_PAGE_SIZE)) {
-    await index.upsert({
-      upsertRequest: {
-        vectors: chunkedRules.map(({ rule, embedding }) => ({
-          id: `${rule.linter.package.ecosystem.name}#${rule.linter.package.name}#${rule.name}`,
-          values: embedding,
-          metadata: {
-            ecosystemName: rule.linter.package.ecosystem.name,
-            linterName: rule.linter.package.name,
-          },
-        })),
-        namespace: 'rule',
-      },
-    });
+    await namespaceRule.upsert(
+      chunkedRules.map(({ rule, embedding }) => ({
+        id: `${rule.linter.package.ecosystem.name}#${rule.linter.package.name}#${rule.name}`,
+        values: embedding,
+        metadata: {
+          ecosystemName: rule.linter.package.ecosystem.name,
+          linterName: rule.linter.package.name,
+        },
+      })),
+    );
     console.log('Next page...');
   }
 
   console.log('Upserting linters...');
   for (const chunkedLinters of chunk(embeddingsLinters, MAX_UPSERT_PAGE_SIZE)) {
-    await index.upsert({
-      upsertRequest: {
-        vectors: chunkedLinters.map(({ linter, embedding }) => ({
-          id: `${linter.package.ecosystem.name}#${linter.package.name}`,
-          values: embedding,
-          metadata: {
-            ecosystemName: linter.package.ecosystem.name,
-          },
-        })),
-        namespace: 'linter',
-      },
-    });
+    await namespaceLinter.upsert(
+      chunkedLinters.map(({ linter, embedding }) => ({
+        id: `${linter.package.ecosystem.name}#${linter.package.name}`,
+        values: embedding,
+        metadata: {
+          ecosystemName: linter.package.ecosystem.name,
+        },
+      })),
+    );
     console.log('Next page...');
   }
 
