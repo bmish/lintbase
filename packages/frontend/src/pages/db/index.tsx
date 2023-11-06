@@ -43,6 +43,14 @@ const includeLinters = {
   lintees: true,
   lintFramework: true,
 };
+const includePackagesPopular = {
+  linters: {
+    include: {
+      package: true,
+    },
+    orderBy: { package: { countDownloadsThisWeek: Prisma.SortOrder.desc } },
+  },
+};
 
 const actualLinter = {
   OR: [{ rules: { some: {} } }, { configs: { some: {} } }], // Actual linter with rules or configs.
@@ -55,6 +63,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     lintersPopular,
     lintersTrending,
     lintersMostStarred,
+    packagesPopular,
     packageVersionTagsLatest,
   ] = await Promise.all([
     prisma.linter.findMany({
@@ -106,6 +115,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
       },
     }),
+    prisma.package.findMany({
+      include: includePackagesPopular,
+      take: 5,
+      orderBy: {
+        countDownloadsThisWeek: Prisma.SortOrder.desc,
+      },
+      where: {
+        linter: null,
+        linters: {},
+      },
+    }),
     prisma.packageVersionTag.findMany({
       include: {
         packageVersion: {
@@ -147,6 +167,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         lintersMostStarred: lintersMostStarred.map((linter) =>
           fixAnyDatesInObject(linter),
         ),
+        packagesPopular: packagesPopular.map((obj) => fixAnyDatesInObject(obj)),
         packageVersionTagsLatest: packageVersionTagsLatest.map((obj) =>
           fixAnyDatesInObject(obj),
         ),
@@ -161,6 +182,7 @@ export default function index({
     lintersPopular,
     lintersTrending,
     lintersMostStarred,
+    packagesPopular,
     packageVersionTagsLatest,
     userId,
   },
@@ -174,6 +196,9 @@ export default function index({
     }>[];
     lintersMostStarred: Prisma.LinterGetPayload<{
       include: typeof includeLinters;
+    }>[];
+    packagesPopular: Prisma.PackageGetPayload<{
+      include: typeof includePackagesPopular;
     }>[];
     packageVersionTagsLatest: Prisma.PackageVersionTagGetPayload<{
       include: {
@@ -289,6 +314,44 @@ export default function index({
                       <TableCell scope="row" align="right">
                         {obj.package.repository?.countStargazers &&
                           millify(obj.package.repository.countStargazers)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            <Typography
+              variant="h6"
+              className="text-center"
+              marginBottom={2}
+              marginTop={4}
+              title="Most popular packages with linters"
+            >
+              Most Linted 🔥
+            </Typography>
+            <TableContainer component={Paper}>
+              <Table aria-label="most popular packages with linters">
+                <TableBody>
+                  {packagesPopular.map((obj) => (
+                    <TableRow key={obj.name}>
+                      <TableCell
+                        scope="row"
+                        title={`${obj.name} is linted by ${obj.linters
+                          .map((linter) => linter.package.name)
+                          .join(', ')}`}
+                      >
+                        <Link href={packageToLinkUs(obj.linters[0].package)}>
+                          {obj.name}
+                        </Link>
+                      </TableCell>
+                      <TableCell
+                        scope="row"
+                        align="right"
+                        title="Weekly downloads for linted package"
+                      >
+                        {obj.countDownloadsThisWeek &&
+                          millify(obj.countDownloadsThisWeek)}
                       </TableCell>
                     </TableRow>
                   ))}
