@@ -21,6 +21,10 @@ import { type GetServerSideProps } from 'next';
 import { packageToLinkUs } from '@/utils/dynamic-fields';
 import millify from 'millify';
 
+// Attempt to balance height of cards and side lists.
+const COUNT_CARDS_PER_LIST = 6;
+const COUNT_NAMES_PER_LIST = 5;
+
 const includeLinters = {
   rules: true,
   configs: true,
@@ -68,7 +72,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   ] = await Promise.all([
     prisma.linter.findMany({
       include: includeLinters,
-      take: 5,
+      take: COUNT_CARDS_PER_LIST,
       orderBy: {
         package: {
           countDownloadsThisWeek: Prisma.SortOrder.desc,
@@ -78,7 +82,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }),
     prisma.linter.findMany({
       include: includeLinters,
-      take: 5,
+      take: COUNT_NAMES_PER_LIST,
       orderBy: {
         package: {
           percentDownloadsWeekOverWeek: Prisma.SortOrder.desc,
@@ -97,7 +101,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }),
     prisma.linter.findMany({
       include: includeLinters,
-      take: 5,
+      take: COUNT_NAMES_PER_LIST,
       orderBy: {
         package: {
           repository: {
@@ -117,7 +121,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }),
     prisma.package.findMany({
       include: includePackagesPopular,
-      take: 5,
+      take: COUNT_NAMES_PER_LIST,
       orderBy: {
         countDownloadsThisWeek: Prisma.SortOrder.desc,
       },
@@ -138,7 +142,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           },
         },
       },
-      take: 5,
+      take: COUNT_CARDS_PER_LIST,
       orderBy: {
         packageVersion: {
           publishedAt: Prisma.SortOrder.desc,
