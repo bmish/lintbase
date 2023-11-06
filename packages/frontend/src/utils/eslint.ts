@@ -152,3 +152,21 @@ export function normalizeFixable(
   }
   return null;
 }
+
+/**
+ * Enum version of this union type: TSESLint.RuleMetaData<''>['type'];
+ */
+enum RULE_TYPE {
+  'problem' = 'problem',
+  'suggestion' = 'suggestion',
+  'layout' = 'layout',
+}
+export const EMOJIS_TYPE: { [key in RULE_TYPE]: string } = {
+  [RULE_TYPE.problem]: '❗',
+  [RULE_TYPE.suggestion]: '📖',
+  [RULE_TYPE.layout]: '📏',
+};
+
+export function isRuleType(s: string): s is keyof typeof EMOJIS_TYPE {
+  return s in EMOJIS_TYPE;
+}

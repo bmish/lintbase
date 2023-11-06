@@ -27,6 +27,7 @@ import groupBy from 'lodash.groupby';
 import { getConfigEmojis } from '@/utils/config-emoji';
 import DatabaseConfigRow from '@/components/DatabaseConfigRow';
 import EmojiAi from '@/components/EmojiAi';
+import { EMOJIS_TYPE, isRuleType } from '@/utils/eslint';
 
 const include = {
   rules: {
@@ -151,7 +152,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                     title && title !== 'null'
                       ? [
                           {
-                            title,
+                            title:
+                              propertyToGroupRulesBy === 'type' &&
+                              isRuleType(title)
+                                ? `${EMOJIS_TYPE[title]} ${title}`
+                                : title,
                             rules,
                           },
                         ]
