@@ -477,7 +477,8 @@ async function eslintLinterToNormalizedLinter(
     ([configName, config]) => ({
       name: configName,
       // @ts-expect-error -- This is an unofficial config property.
-      description: config.description,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- This is an unofficial config property.
+      description: config.description || config.meta?.description,
     }),
   );
 
@@ -485,7 +486,7 @@ async function eslintLinterToNormalizedLinter(
     ([processorName, processor]) => ({
       name: processorName,
       // @ts-expect-error -- This is an unofficial processor property.
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- This is an unofficial config property.
       description: processor.description || processor.meta?.description,
     }),
   );
