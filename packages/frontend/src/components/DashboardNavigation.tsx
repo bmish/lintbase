@@ -10,10 +10,10 @@ export default function DashboardNavigation() {
     pathParts.length === 2 && pathParts[1] === 'dashboard'
       ? 'home'
       : pathParts.length > 2 &&
-        pathParts[1] === 'dashboard' &&
-        ['home', 'repos', 'starred'].includes(pathParts[2])
-      ? pathParts[2]
-      : undefined;
+          pathParts[1] === 'dashboard' &&
+          ['home', 'repos', 'starred'].includes(pathParts[2])
+        ? pathParts[2]
+        : undefined;
 
   // TODO: temporarily hidden behind query parameter until we have a need for multiple Dashboard sections.
 

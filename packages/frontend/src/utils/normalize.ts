@@ -128,8 +128,8 @@ function createPackageObject(
       typeof npmRegistryInfo.repository === 'object'
         ? npmRegistryInfo.repository.url
         : typeof npmRegistryInfo.repository === 'string'
-        ? npmRegistryInfo.repository
-        : null,
+          ? npmRegistryInfo.repository
+          : null,
     repositoryDirectory:
       typeof npmRegistryInfo.repository === 'object'
         ? npmRegistryInfo.repository.directory
@@ -140,8 +140,8 @@ function createPackageObject(
       typeof npmRegistryInfo.bugs === 'object'
         ? npmRegistryInfo.bugs.url
         : typeof npmRegistryInfo.bugs === 'string'
-        ? npmRegistryInfo.bugs
-        : null,
+          ? npmRegistryInfo.bugs
+          : null,
     emailBugs:
       typeof npmRegistryInfo.bugs === 'object'
         ? npmRegistryInfo.bugs.email

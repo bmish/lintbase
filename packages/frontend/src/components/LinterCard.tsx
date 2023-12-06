@@ -523,8 +523,8 @@ export default function LinterCard({
                           {peerDependency.name === 'eslint'
                             ? 'ESLint'
                             : peerDependency.name.length > 20
-                            ? `${peerDependency.name.slice(0, 18)}...`
-                            : peerDependency.name}
+                              ? `${peerDependency.name.slice(0, 18)}...`
+                              : peerDependency.name}
                         </span>
                         :{' '}
                         <span title={peerDependency.value}>

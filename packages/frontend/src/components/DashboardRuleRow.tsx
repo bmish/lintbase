@@ -146,16 +146,16 @@ export default function DashboardRuleRow({
                 rule2.severity === '2'
                   ? 'Enabled'
                   : rule2.severity === '1'
-                  ? 'Set To Warn'
-                  : 'Disabled'
+                    ? 'Set To Warn'
+                    : 'Disabled'
               } Individually`}
               key={rule2.id}
               color={
                 rule2.severity === '2'
                   ? 'success'
                   : rule2.severity === '1'
-                  ? 'warning'
-                  : 'error'
+                    ? 'warning'
+                    : 'error'
               }
               size="small"
             />

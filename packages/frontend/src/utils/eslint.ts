@@ -45,8 +45,8 @@ export function getAllNamedOptions(
             value.items?.type
               ? `${value.items.type.toString()}[]`
               : value.type
-              ? value.type.toString()
-              : undefined,
+                ? value.type.toString()
+                : undefined,
           description: value.description,
           default: value.default,
           enum: value.enum,

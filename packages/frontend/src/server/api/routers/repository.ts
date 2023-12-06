@@ -21,13 +21,15 @@ function extendsToInfo(
       configName.startsWith('eslint:')
         ? [{ plugin: 'eslint', config: configName.split(':')[1] }]
         : configName.startsWith('plugin:')
-        ? [
-            {
-              plugin: `eslint-plugin-${configName.split(':')[1].split('/')[0]}`,
-              config: configName.split(':')[1].split('/')[1],
-            },
-          ]
-        : [], // TODO: unknown
+          ? [
+              {
+                plugin: `eslint-plugin-${
+                  configName.split(':')[1].split('/')[0]
+                }`,
+                config: configName.split(':')[1].split('/')[1],
+              },
+            ]
+          : [], // TODO: unknown
   );
 }
 
@@ -37,8 +39,8 @@ function normalizeSeverity(
   return severity === 'off' || severity === 0
     ? 0
     : severity === 'warn' || severity === 1
-    ? 1
-    : 2;
+      ? 1
+      : 2;
 }
 
 function rulesToInfo(rules: TSESLint.Linter.RulesRecord | undefined): {
@@ -50,28 +52,28 @@ function rulesToInfo(rules: TSESLint.Linter.RulesRecord | undefined): {
     entry === undefined
       ? []
       : ruleName.includes('/')
-      ? [
-          {
-            plugin: `eslint-plugin-${ruleName.split('/')[0]}`,
-            ruleName: ruleName.split('/')[1],
-            severity: normalizeSeverity(
-              typeof entry === 'string' || typeof entry === 'number'
-                ? entry
-                : entry[0],
-            ),
-          },
-        ]
-      : [
-          {
-            plugin: 'eslint',
-            ruleName,
-            severity: normalizeSeverity(
-              typeof entry === 'string' || typeof entry === 'number'
-                ? entry
-                : entry[0],
-            ),
-          },
-        ],
+        ? [
+            {
+              plugin: `eslint-plugin-${ruleName.split('/')[0]}`,
+              ruleName: ruleName.split('/')[1],
+              severity: normalizeSeverity(
+                typeof entry === 'string' || typeof entry === 'number'
+                  ? entry
+                  : entry[0],
+              ),
+            },
+          ]
+        : [
+            {
+              plugin: 'eslint',
+              ruleName,
+              severity: normalizeSeverity(
+                typeof entry === 'string' || typeof entry === 'number'
+                  ? entry
+                  : entry[0],
+              ),
+            },
+          ],
   );
 }
 

@@ -137,8 +137,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const propertyToGroupRulesBy = linter.rules.some((rule) => rule.category)
     ? 'category'
     : linter.rules.some((rule) => rule.type)
-    ? 'type'
-    : undefined;
+      ? 'type'
+      : undefined;
 
   const listsOfRules =
     linter.rules.length > 0
