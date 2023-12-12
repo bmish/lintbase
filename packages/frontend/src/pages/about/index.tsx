@@ -28,8 +28,9 @@ export default function About() {
             <p className="mt-4">
               Instead of searching disparate GitHub repositories and package
               READMEs for relevant linting to apply to your codebases, we
-              aggregate thousands of linters in one place, exposing information
-              about lint rules and configurations in a standard format.
+              aggregate thousands of linters in one place, exposing rich
+              information about lint rules and configurations in a standard
+              format.
             </p>
             <p className="mt-4">
               We are currently focusing on ESLint for
@@ -37,17 +38,16 @@ export default function About() {
               and languages.
             </p>
             <p className="mt-4">
-              Join our <Link href="/waitlist/">mailing list</Link> to stay
-              up-to-date with new features, early access, and other
-              announcements.
-            </p>
-            <p>
-              For ESLint plugins, we also recommended setting up{' '}
+              For ESLint plugin authors, we also recommended setting up{' '}
               <Link href="https://github.com/bmish/eslint-doc-generator">
                 eslint-doc-generator
               </Link>{' '}
-              to improve and standardize the documentation stored in your
-              repository.
+              to improve the documentation files stored inside your repository.
+            </p>
+            <p className="mt-4">
+              Join our <Link href="/waitlist/">mailing list</Link> to stay
+              up-to-date with new features, early access, and other
+              announcements.
             </p>
           </CardContent>
         </Card>
