@@ -41,6 +41,14 @@ export default function About() {
               up-to-date with new features, early access, and other
               announcements.
             </p>
+            <p>
+              For ESLint plugins, we also recommended setting up{' '}
+              <Link href="https://github.com/bmish/eslint-doc-generator">
+                eslint-doc-generator
+              </Link>{' '}
+              to improve and standardize the documentation stored in your
+              repository.
+            </p>
           </CardContent>
         </Card>
 
