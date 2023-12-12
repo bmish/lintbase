@@ -37,8 +37,9 @@ export default function About() {
               and languages.
             </p>
             <p className="mt-4">
-              Join the <Link href="/waitlist/">waitlist</Link> for access to
-              powerful new developer workflows for linting.
+              Join our <Link href="/waitlist/">mailing list</Link> to stay
+              up-to-date with new features, early access, and other
+              announcements.
             </p>
           </CardContent>
         </Card>

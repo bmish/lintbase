@@ -39,7 +39,10 @@ export default function Waitlist() {
               <Typography variant="h6" marginBottom={2}>
                 Join the mailing list
               </Typography>
-              <p>Stay up-to-date with new features and other announcements.</p>
+              <p>
+                Stay up-to-date with new features, early access, and other
+                announcements.
+              </p>
               <br />
               <div>
                 {submitted ? (
