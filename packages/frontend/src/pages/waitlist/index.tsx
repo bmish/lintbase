@@ -28,8 +28,8 @@ export default function Waitlist() {
   return (
     <div className="bg-gray-100 h-full">
       <Head>
-        <title>Lintbase Waitlist</title>
-        <meta property="og:title" content="Lintbase Waitlist" key="title" />
+        <title>Lintbase Updates</title>
+        <meta property="og:title" content="Lintbase Updates" key="title" />
       </Head>
       <main className="py-8 px-6 max-w-4xl mx-auto min-h-screen">
         {/* eslint-disable-next-line @typescript-eslint/no-misused-promises*/}
@@ -37,12 +37,9 @@ export default function Waitlist() {
           <Card>
             <CardContent>
               <Typography variant="h6" marginBottom={2}>
-                Join the waitlist
+                Join the mailing list
               </Typography>
-              <p>
-                Powerful new features and streamlined developer experience
-                workflows await.
-              </p>
+              <p>Stay up-to-date with new features and other announcements.</p>
               <br />
               <div>
                 {submitted ? (

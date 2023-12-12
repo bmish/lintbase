@@ -109,7 +109,7 @@ export default function Header() {
                 href="/waitlist"
                 className="px-2 sm:px-4 py-2 font-semibold text-gray-600 rounded"
               >
-                Waitlist
+                Updates
               </Link>
             </li>
             /*
