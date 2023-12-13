@@ -1,3 +1,3 @@
-# Lintbase
+# Lintbase Frontend
 
 TODO
