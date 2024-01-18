@@ -6,6 +6,9 @@ import { Prisma } from '@prisma/client';
 
 const LIMIT = 100; // Only summarize top configs now due to cost.
 
+/**
+ * Generate AI summaries of configs.
+ */
 export default async function summarizeConfigs(
   req: NextApiRequest,
   res: NextApiResponse,

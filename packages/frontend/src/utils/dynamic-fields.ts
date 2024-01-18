@@ -1,5 +1,5 @@
 /**
- * These are helpers for generating display data based on what's stored in the database.
+ * These are helpers for generating display data (e.g. URLs) based on what's stored in the database.
  */
 
 import {

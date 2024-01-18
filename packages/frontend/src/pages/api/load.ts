@@ -6,12 +6,17 @@ import { builtinRules } from 'eslint/use-at-your-own-risk'; // Workaround from h
 // import etlRules from '../../../../downloader/tmp/npm/ember-template-lint/node_modules/ember-template-lint/lib/rules/index.js';
 // import etlConfigurations from '../../../../downloader/tmp/npm/ember-template-lint/node_modules/ember-template-lint/lib/config/index.js';
 
+/**
+ * Load the linters/packages downloaded locally by the @lintbase/downloader into the database.
+ * TODO: this requires temporarily uncommenting some lines that won't compile in production.
+ */
 export default async function load(req: NextApiRequest, res: NextApiResponse) {
   if (env.NODE_ENV !== 'development') {
     res.status(404).end();
     return;
   }
 
+  // Comment these out when uncommenting the corresponding imports above.
   const etlRules = {};
   const etlConfigurations = {};
 

@@ -1,5 +1,8 @@
 import { prisma } from '../server/db';
 
+/**
+ * Cleanup dates in objects retrieved from Prisma so they can be passed to Next.js pages without a serialization issue.
+ */
 export function fixAnyDatesInObject(object: object): object {
   return Object.fromEntries(
     Object.entries(object || {}).map(([key, value]) => {

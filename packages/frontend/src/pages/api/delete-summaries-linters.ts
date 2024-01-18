@@ -2,6 +2,10 @@ import { env } from '@/env.mjs';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '@/server/db';
 
+/**
+ * Delete summaries of linters.
+ * Mainly used for testing.
+ */
 export default async function deleteSummariesLinters(
   req: NextApiRequest,
   res: NextApiResponse,

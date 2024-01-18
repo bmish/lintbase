@@ -7,6 +7,9 @@ import chunk from 'lodash.chunk';
 import pLimit from 'p-limit';
 import { env } from '@/env.mjs';
 
+/**
+ * Upload vectors of linters/rules to Pinecone which can be later used for related/similarity search.
+ */
 export default async function uploadVectors(
   req: NextApiRequest,
   res: NextApiResponse,

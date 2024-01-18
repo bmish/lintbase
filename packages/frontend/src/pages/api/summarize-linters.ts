@@ -6,6 +6,9 @@ import { Prisma } from '@prisma/client';
 
 const LIMIT = 25; // Only summarize top linters now due to cost.
 
+/**
+ * Generate AI summaries of linters.
+ */
 export default async function summarizeLinters(
   req: NextApiRequest,
   res: NextApiResponse,

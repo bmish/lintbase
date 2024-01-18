@@ -2,6 +2,10 @@ import { env } from '@/env.mjs';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '@/server/db';
 
+/**
+ * Delete starred repositories.
+ * Mainly used for testing.
+ */
 export default async function deleteStars(
   req: NextApiRequest,
   res: NextApiResponse,

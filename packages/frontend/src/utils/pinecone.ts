@@ -1,6 +1,9 @@
 import { Pinecone } from '@pinecone-database/pinecone';
 import { env } from '@/env.mjs';
 
+/**
+ * Get vectors from Pinecone for related/similarity search.
+ */
 export async function getVectors(vectorIds: string[], namespaceName: string) {
   const environment = env.PINECONE_ENVIRONMENT;
   const apiKey = env.PINECONE_API_KEY;

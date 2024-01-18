@@ -6,6 +6,9 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { env } from '@/env.mjs';
 import { getServerAuthSession } from '@/server/auth';
 
+/**
+ * Update the replacement packages for deprecated packages.
+ */
 export default async function updatePackageDeprecationReplacements(
   req: NextApiRequest,
   res: NextApiResponse,
