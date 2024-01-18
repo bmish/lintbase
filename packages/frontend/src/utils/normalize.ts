@@ -1,3 +1,7 @@
+/**
+ * This file includes logic for populating the database for the given npm / locally downloaded packages and linters.
+ */
+
 import { EmberTemplateLint, Stylelint, StylelintPlugin } from '@/utils/types';
 import { load } from '@lintbase/downloader';
 import type { TSESLint } from '@typescript-eslint/utils';

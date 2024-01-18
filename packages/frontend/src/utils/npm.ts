@@ -1,3 +1,7 @@
+/**
+ * General utilities for npm and package.json.
+ */
+
 import pLimit from 'p-limit';
 import { PackageJson } from 'type-fest';
 

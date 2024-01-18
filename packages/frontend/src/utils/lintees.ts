@@ -1,4 +1,9 @@
-// Initial list.
+/**
+ * This file supports experimental logged-in features to recommend linters to users based on their dependencies.
+ * TODO: these are currently hardcoded lists.
+ */
+
+/** Packages that a linter lints. */
 const LINTER_TO_LINTEES = {
   '@angular-eslint/eslint-plugin': ['@angular/core'],
   '@next/eslint-plugin-next': ['next'],
@@ -23,12 +28,15 @@ const LINTER_TO_LINTEES = {
   'eslint-plugin-vue': ['vue'],
 };
 
+/** These are applicable to all or most projects. */
 export const LINTERS_RECOMMENDED_ALWAYS = [
   'eslint-plugin-n',
   'eslint-plugin-unicorn',
 ];
 
-export const LINTERS_RECOMMENDED_NEVER = ['eslint-plugin-jest-formatting'];
+export const LINTERS_RECOMMENDED_NEVER = [
+  'eslint-plugin-jest-formatting', // Purely stylistic rules and we don't want to recommend these for all jest users.
+];
 
 export const LINTERS_DEPRECATED: Record<string, readonly string[] | undefined> =
   {

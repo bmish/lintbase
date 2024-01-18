@@ -1,3 +1,7 @@
+/**
+ * These are helpers for generating display data based on what's stored in the database.
+ */
+
 import {
   Package as PrismaPackage,
   Rule as PrismaRule,

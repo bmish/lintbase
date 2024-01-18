@@ -1,3 +1,7 @@
+/**
+ * This file supports experimental features for retrieving AI summaries of different entities.
+ */
+
 import OpenAI from 'openai';
 import { env } from '@/env.mjs';
 import { Prisma } from '@prisma/client';

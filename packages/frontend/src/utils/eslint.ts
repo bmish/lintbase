@@ -1,3 +1,7 @@
+/**
+ * General utilities for ESLint.
+ */
+
 import type { JSONSchema, TSESLint } from '@typescript-eslint/utils';
 import traverse from 'json-schema-traverse';
 
@@ -13,6 +17,7 @@ export type RuleOption = {
 
 /**
  * Gather a list of named options from a rule schema.
+ * From: https://github.com/bmish/eslint-doc-generator/blob/e9594090e38a4a2e71e56ba0588a5c223435cd5f/lib/rule-options.ts#L9
  * @param jsonSchema - the JSON schema to check
  * @returns - list of named options we could detect from the schema
  */

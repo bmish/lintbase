@@ -1,3 +1,10 @@
+/**
+ * General JavaScript utilities.
+ */
+
+/**
+ * Convert a value to an array if it's not already.
+ */
 export function asArray<T>(
   value: T | readonly T[] | undefined | null,
 ): readonly T[] {

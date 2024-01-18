@@ -1,3 +1,7 @@
+/**
+ * General GitHub utilities.
+ */
+
 import { env } from '@/env.mjs';
 import { Octokit } from 'octokit';
 import pLimit from 'p-limit';

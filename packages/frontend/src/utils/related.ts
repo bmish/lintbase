@@ -1,6 +1,9 @@
 import { Pinecone } from '@pinecone-database/pinecone';
 import { env } from '@/env.mjs';
 
+/**
+ * Experimental feature to find related rules or linters.
+ */
 export async function related(
   params:
     | {

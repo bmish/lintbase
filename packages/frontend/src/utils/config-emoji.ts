@@ -1,6 +1,10 @@
 import { EMOJI_CONFIGS } from '@/utils/eslint';
 import { Prisma } from '@prisma/client';
 
+/**
+ * Assign an emoji to each config.
+ * @returns a map of config name to emoji.
+ */
 export function getConfigEmojis(configs: Prisma.ConfigGetPayload<object>[]) {
   const genEmoji = generateEmoji();
   const configToEmoji = Object.fromEntries(
