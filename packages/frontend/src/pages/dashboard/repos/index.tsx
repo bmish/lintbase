@@ -3,7 +3,7 @@ import Footer from '@/components/Footer';
 import Head from 'next/head';
 import { useSession } from 'next-auth/react';
 import AccessDenied from '@/components/AccessDenied';
-import DatabaseNavigation from '@/components/DashboardNavigation';
+import DatabaseNavigation from '@/components/Dashboard/DashboardNavigation';
 import {
   Button,
   Paper,

@@ -19,18 +19,18 @@ import { Prisma } from '@prisma/client';
 import { format } from 'timeago.js';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import millify from 'millify';
-import DatabaseNavigation from '@/components/DatabaseNavigation';
+import DatabaseNavigation from '@/components/Dashboard/DatabaseNavigation';
 import Head from 'next/head';
 import Footer from '@/components/Footer';
-import EmojiFixable from '@/components/EmojiFixable';
-import EmojiHasSuggestions from '@/components/EmojiHasSuggestions';
-import EmojiRequiresTypeChecking from '@/components/EmojiRequiresTypeChecking';
-import EmojiTypeLayout from '@/components/EmojiTypeLayout';
-import EmojiTypeProblem from '@/components/EmojiTypeProblem';
-import EmojiTypeSuggestion from '@/components/EmojiTypeSuggestion';
-import EmojiOptions from '@/components/EmojiOptions';
-import EmojiDeprecated from '@/components/EmojiDeprecated';
-import EmojiType from '@/components/EmojiType';
+import EmojiFixable from '@/components/Emoji/EmojiFixable';
+import EmojiHasSuggestions from '@/components/Emoji/EmojiHasSuggestions';
+import EmojiRequiresTypeChecking from '@/components/Emoji/EmojiRequiresTypeChecking';
+import EmojiTypeLayout from '@/components/Emoji/EmojiTypeLayout';
+import EmojiTypeProblem from '@/components/Emoji/EmojiTypeProblem';
+import EmojiTypeSuggestion from '@/components/Emoji/EmojiTypeSuggestion';
+import EmojiOptions from '@/components/Emoji/EmojiOptions';
+import EmojiDeprecated from '@/components/Emoji/EmojiDeprecated';
+import EmojiType from '@/components/Emoji/EmojiType';
 import ReactMarkdown from 'react-markdown';
 
 const includeLinter = {

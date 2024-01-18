@@ -7,17 +7,17 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import EmojiHasSuggestions from '@/components/EmojiHasSuggestions';
-import EmojiFixable from '@/components/EmojiFixable';
-import EmojiRequiresTypeChecking from '@/components/EmojiRequiresTypeChecking';
-import EmojiTypeLayout from '@/components/EmojiTypeLayout';
-import EmojiTypeProblem from '@/components/EmojiTypeProblem';
-import EmojiTypeSuggestion from '@/components/EmojiTypeSuggestion';
-import EmojiOptions from '@/components/EmojiOptions';
-import EmojiDeprecated from '@/components/EmojiDeprecated';
-import EmojiType from '@/components/EmojiType';
-import EmojiSeverityWarn from '@/components/EmojiSeverityWarn';
-import EmojiSeverityOff from '@/components/EmojiSeverityOff';
+import EmojiHasSuggestions from '@/components/Emoji/EmojiHasSuggestions';
+import EmojiFixable from '@/components/Emoji/EmojiFixable';
+import EmojiRequiresTypeChecking from '@/components/Emoji/EmojiRequiresTypeChecking';
+import EmojiTypeLayout from '@/components/Emoji/EmojiTypeLayout';
+import EmojiTypeProblem from '@/components/Emoji/EmojiTypeProblem';
+import EmojiTypeSuggestion from '@/components/Emoji/EmojiTypeSuggestion';
+import EmojiOptions from '@/components/Emoji/EmojiOptions';
+import EmojiDeprecated from '@/components/Emoji/EmojiDeprecated';
+import EmojiType from '@/components/Emoji/EmojiType';
+import EmojiSeverityWarn from '@/components/Emoji/EmojiSeverityWarn';
+import EmojiSeverityOff from '@/components/Emoji/EmojiSeverityOff';
 import { ruleToLinkUs } from '@/utils/dynamic-fields';
 import ReactMarkdown from 'react-markdown';
 import { Prisma, Package as PrismaPackage } from '@prisma/client';

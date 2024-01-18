@@ -14,9 +14,9 @@ import {
 } from '@mui/material';
 import { Prisma } from '@prisma/client';
 import Head from 'next/head';
-import EmojiSeverityWarn from '@/components/EmojiSeverityWarn';
-import EmojiSeverityOff from '@/components/EmojiSeverityOff';
-import DatabaseNavigation from '@/components/DatabaseNavigation';
+import EmojiSeverityWarn from '@/components/Emoji/EmojiSeverityWarn';
+import EmojiSeverityOff from '@/components/Emoji/EmojiSeverityOff';
+import DatabaseNavigation from '@/components/Dashboard/DatabaseNavigation';
 import { related } from '@/utils/related';
 import { getServerAuthSession } from '@/server/auth';
 import { type GetServerSideProps } from 'next';

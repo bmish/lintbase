@@ -2,7 +2,7 @@ import { prisma } from '@/server/db';
 import React from 'react';
 import { fixAnyDatesInObject } from '@/utils/prisma';
 import { Prisma } from '@prisma/client';
-import DatabaseNavigation from '@/components/DatabaseNavigation';
+import DatabaseNavigation from '@/components/Dashboard/DatabaseNavigation';
 import Head from 'next/head';
 import Footer from '@/components/Footer';
 import LintFrameworkTable from '@/components/LintFrameworkTable';

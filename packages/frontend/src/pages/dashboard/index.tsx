@@ -5,7 +5,7 @@ import { Paper } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import AccessDenied from '@/components/AccessDenied';
 import Link from 'next/link';
-import DatabaseNavigation from '@/components/DashboardNavigation';
+import DatabaseNavigation from '@/components/Dashboard/DashboardNavigation';
 
 export default function Dashboard() {
   const { data: session } = useSession();

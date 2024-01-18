@@ -20,7 +20,7 @@ import {
 } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import AccessDenied from '@/components/AccessDenied';
-import DatabaseNavigation from '@/components/DashboardNavigation';
+import DatabaseNavigation from '@/components/Dashboard/DashboardNavigation';
 import { getServerAuthSession } from '@/server/auth';
 import { type GetServerSideProps } from 'next';
 import React from 'react';
@@ -29,7 +29,7 @@ import { Prisma } from '@prisma/client';
 import { prisma } from '@/server/db';
 import { fixAnyDatesInObject } from '@/utils/prisma';
 import { lintFrameworkToDisplayName } from '@/utils/dynamic-fields';
-import DashboardRuleRow from '@/components/DashboardRuleRow';
+import DashboardRuleRow from '@/components/Dashboard/DashboardRuleRow';
 import { getConfigEmojis } from '@/utils/config-emoji';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';

@@ -22,7 +22,7 @@ import {
 } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import AccessDenied from '@/components/AccessDenied';
-import DatabaseNavigation from '@/components/DashboardNavigation';
+import DatabaseNavigation from '@/components/Dashboard/DashboardNavigation';
 import { getServerAuthSession } from '@/server/auth';
 import { type GetServerSideProps } from 'next';
 import React from 'react';

@@ -17,14 +17,14 @@ import {
 } from '@/utils/dynamic-fields';
 import ReactMarkdown from 'react-markdown';
 import { Prisma } from '@prisma/client';
-import EmojiFixable from './EmojiFixable';
-import EmojiHasSuggestions from './EmojiHasSuggestions';
-import EmojiOptions from './EmojiOptions';
-import EmojiRequiresTypeChecking from './EmojiRequiresTypeChecking';
-import EmojiTypeLayout from './EmojiTypeLayout';
-import EmojiTypeProblem from './EmojiTypeProblem';
-import EmojiTypeSuggestion from './EmojiTypeSuggestion';
-import EmojiDeprecated from './EmojiDeprecated';
+import EmojiFixable from './Emoji/EmojiFixable';
+import EmojiHasSuggestions from './Emoji/EmojiHasSuggestions';
+import EmojiOptions from './Emoji/EmojiOptions';
+import EmojiRequiresTypeChecking from './Emoji/EmojiRequiresTypeChecking';
+import EmojiTypeLayout from './Emoji/EmojiTypeLayout';
+import EmojiTypeProblem from './Emoji/EmojiTypeProblem';
+import EmojiTypeSuggestion from './Emoji/EmojiTypeSuggestion';
+import EmojiDeprecated from './Emoji/EmojiDeprecated';
 import Image from 'next/image';
 
 // eslint-disable-next-line complexity

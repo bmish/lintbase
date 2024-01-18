@@ -1,4 +1,4 @@
-import DatabaseNavigation from '@/components/DatabaseNavigation';
+import DatabaseNavigation from '@/components/Dashboard/DatabaseNavigation';
 import LinterCard from '@/components/LinterCard';
 import { prisma } from '@/server/db';
 import { fixAnyDatesInObject } from '@/utils/prisma';

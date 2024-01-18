@@ -21,7 +21,7 @@ import GetAppIcon from '@mui/icons-material/GetApp';
 import millify from 'millify';
 import Head from 'next/head';
 import Footer from '@/components/Footer';
-import DashboardNavigation from '@/components/DashboardNavigation';
+import DashboardNavigation from '@/components/Dashboard/DashboardNavigation';
 import { Octokit } from 'octokit';
 import { env } from '@/env.mjs';
 import { getServerAuthSession } from '@/server/auth';

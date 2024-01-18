@@ -14,7 +14,7 @@ import { fixAnyDatesInObject } from '@/utils/prisma';
 import { Prisma } from '@prisma/client';
 import Head from 'next/head';
 import Footer from '@/components/Footer';
-import DatabaseNavigation from '@/components/DatabaseNavigation';
+import DatabaseNavigation from '@/components/Dashboard/DatabaseNavigation';
 import { kmeans } from 'ml-kmeans';
 import React from 'react';
 import RuleTableTabbed from '@/components/RuleTableTabbed';
@@ -25,8 +25,8 @@ import { getServerAuthSession } from '@/server/auth';
 import { type GetServerSideProps } from 'next';
 import groupBy from 'lodash.groupby';
 import { getConfigEmojis } from '@/utils/config-emoji';
-import DatabaseConfigRow from '@/components/DatabaseConfigRow';
-import EmojiAi from '@/components/EmojiAi';
+import DatabaseConfigRow from '@/components/Dashboard/DatabaseConfigRow';
+import EmojiAi from '@/components/Emoji/EmojiAi';
 import { EMOJIS_TYPE, isRuleType } from '@/utils/eslint';
 
 const include = {
