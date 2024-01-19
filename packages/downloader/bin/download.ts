@@ -4,14 +4,20 @@ import path from 'node:path';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
-// Same as PLUGINS_SUPPORTED in packages/frontend/src/utils/normalize.ts.
+/**
+ * Same as PLUGINS_SUPPORTED in packages/frontend/src/utils/normalize.ts.
+ * TODO: create an API instead of hard-coding this.
+ */
 const searches: string[] = [
   'eslint-plugin',
   'ember-template-lint-plugin',
   'stylelint-plugin',
 ];
 
-// Same as CORE_LINTING_FRAMEWORKS in packages/frontend/src/utils/normalize.ts.
+/**
+ * Same as CORE_LINTING_FRAMEWORKS in packages/frontend/src/utils/normalize.ts.
+ * TODO: create an API instead of hard-coding this.
+ */
 const packages = [
   'ember-template-lint',
   'eslint',

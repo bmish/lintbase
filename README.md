@@ -1,6 +1,6 @@
 # Lintbase
 
-This is the repository for lintbase.com.
+This is the monorepo for the Lintbase project.
 
 ## Packages
 
