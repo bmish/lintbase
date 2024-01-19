@@ -1,6 +1,6 @@
 /* eslint filenames/match-exported:"off",unicorn/filename-case:"off" */
 import Footer from '@/components/Layout/Footer';
-import RuleCard from '@/components/RuleCard';
+import RuleCard from '@/components/Card/RuleCard';
 import { prisma } from '@/server/db';
 import { fixAnyDatesInObject } from '@/utils/prisma';
 import {

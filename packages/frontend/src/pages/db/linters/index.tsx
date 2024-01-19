@@ -5,7 +5,7 @@ import { Prisma } from '@prisma/client';
 import DatabaseNavigation from '@/components/Database/DatabaseNavigation';
 import Head from 'next/head';
 import Footer from '@/components/Layout/Footer';
-import LintFrameworkTable from '@/components/LintFrameworkTable';
+import LintFrameworkTable from '@/components/Table/LintFrameworkTable';
 import { Paper } from '@mui/material';
 
 const include = {

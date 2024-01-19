@@ -1,4 +1,4 @@
-import RuleTable from '@/components/RuleTable';
+import RuleTable from '@/components/Table/RuleTable';
 import { Box, Tab, Tabs } from '@mui/material';
 import { Prisma, Package as PrismaPackage } from '@prisma/client';
 import React from 'react';

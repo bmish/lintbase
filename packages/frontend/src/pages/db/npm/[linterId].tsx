@@ -1,5 +1,5 @@
 /* eslint filenames/match-exported:"off",unicorn/filename-case:"off" */
-import LinterCard from '@/components/LinterCard';
+import LinterCard from '@/components/Card/LinterCard';
 import {
   Paper,
   Table,
@@ -17,7 +17,7 @@ import Footer from '@/components/Layout/Footer';
 import DatabaseNavigation from '@/components/Database/DatabaseNavigation';
 import { kmeans } from 'ml-kmeans';
 import React from 'react';
-import RuleTableTabbed from '@/components/RuleTableTabbed';
+import RuleTableTabbed from '@/components/Table/RuleTableTabbed';
 import { related } from '@/utils/related';
 import { clusterNamesForRules } from '@/utils/summarize';
 import { getVectors } from '@/utils/pinecone';

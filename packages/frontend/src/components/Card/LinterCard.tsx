@@ -20,7 +20,7 @@ import millify from 'millify';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import { Prisma } from '@prisma/client';
 import { format } from 'timeago.js';
-import EmojiAi from './Emoji/EmojiAi';
+import EmojiAi from '../Emoji/EmojiAi';
 import StarIcon from '@mui/icons-material/Star';
 import prettyBytes from 'pretty-bytes';
 import { ContentCopy } from '@mui/icons-material';
