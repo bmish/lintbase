@@ -7,7 +7,7 @@ import { env } from '@/env.mjs';
 import { getServerAuthSession } from '@/server/auth';
 
 /**
- * Update the replacement packages for deprecated packages.
+ * Update the replacement packages specified for deprecated packages.
  */
 export default async function updatePackageDeprecationReplacements(
   req: NextApiRequest,

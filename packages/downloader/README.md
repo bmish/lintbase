@@ -9,6 +9,7 @@ This package needs a lot of work.
 - The API needs to be cleaned up and fleshed out.
 - Package names and search queries are currently hardcoded.
 - Packages are installed locally in a potentially-unsafe manner. This needs to run in a sandbox.
+- There are no tests yet.
 
 ## Usage
 
