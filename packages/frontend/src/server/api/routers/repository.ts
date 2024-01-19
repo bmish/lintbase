@@ -1,3 +1,7 @@
+/**
+ * Experimental and incomplete API to generate a database representation of the linters, packages, and lint setup in a user's repository.
+ */
+
 import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 import { Octokit } from 'octokit';
@@ -12,72 +16,7 @@ import {
   LINTERS_DEPRECATED,
   getLintersForPackage,
 } from '@/utils/lintees';
-
-function extendsToInfo(
-  extendsList: string[] | undefined,
-): { plugin: string; config: string }[] {
-  return (extendsList || []).flatMap(
-    (configName) =>
-      configName.startsWith('eslint:')
-        ? [{ plugin: 'eslint', config: configName.split(':')[1] }]
-        : configName.startsWith('plugin:')
-          ? [
-              {
-                plugin: `eslint-plugin-${
-                  configName.split(':')[1].split('/')[0]
-                }`,
-                config: configName.split(':')[1].split('/')[1],
-              },
-            ]
-          : [], // TODO: unknown
-  );
-}
-
-function normalizeSeverity(
-  severity: TSESLint.Linter.RuleLevel | TSESLint.Linter.Severity,
-): 0 | 1 | 2 {
-  return severity === 'off' || severity === 0
-    ? 0
-    : severity === 'warn' || severity === 1
-      ? 1
-      : 2;
-}
-
-function rulesToInfo(rules: TSESLint.Linter.RulesRecord | undefined): {
-  plugin: string;
-  ruleName: string;
-  severity: 0 | 1 | 2;
-}[] {
-  return Object.entries(rules || {}).flatMap(([ruleName, entry]) =>
-    entry === undefined
-      ? []
-      : ruleName.includes('/')
-        ? [
-            {
-              plugin: `eslint-plugin-${ruleName.split('/')[0]}`,
-              ruleName: ruleName.split('/')[1],
-              severity: normalizeSeverity(
-                typeof entry === 'string' || typeof entry === 'number'
-                  ? entry
-                  : entry[0],
-              ),
-            },
-          ]
-        : [
-            {
-              plugin: 'eslint',
-              ruleName,
-              severity: normalizeSeverity(
-                typeof entry === 'string' || typeof entry === 'number'
-                  ? entry
-                  : entry[0],
-              ),
-            },
-          ],
-  );
-}
-
-const ESLINTRC_FILENAMES = new Set(['.eslintrc.js', '.eslintrc.cjs']); // TODO: json, yaml, etc.
+import { ESLINTRC_FILENAMES, rulesToInfo, extendsToInfo } from '@/utils/eslint';
 
 export const repositoryRouter = createTRPCRouter({
   add: protectedProcedure
