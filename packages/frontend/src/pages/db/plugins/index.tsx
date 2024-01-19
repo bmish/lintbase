@@ -19,9 +19,9 @@ import { Prisma } from '@prisma/client';
 import { format } from 'timeago.js';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import millify from 'millify';
-import DatabaseNavigation from '@/components/Dashboard/DatabaseNavigation';
+import DatabaseNavigation from '@/components/Database/DatabaseNavigation';
 import Head from 'next/head';
-import Footer from '@/components/Footer';
+import Footer from '@/components/Layout/Footer';
 
 const include = {
   rules: true,

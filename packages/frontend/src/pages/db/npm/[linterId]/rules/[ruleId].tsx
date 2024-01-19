@@ -1,5 +1,5 @@
 /* eslint filenames/match-exported:"off",unicorn/filename-case:"off" */
-import Footer from '@/components/Footer';
+import Footer from '@/components/Layout/Footer';
 import RuleCard from '@/components/RuleCard';
 import { prisma } from '@/server/db';
 import { fixAnyDatesInObject } from '@/utils/prisma';
@@ -16,7 +16,7 @@ import { Prisma } from '@prisma/client';
 import Head from 'next/head';
 import EmojiSeverityWarn from '@/components/Emoji/EmojiSeverityWarn';
 import EmojiSeverityOff from '@/components/Emoji/EmojiSeverityOff';
-import DatabaseNavigation from '@/components/Dashboard/DatabaseNavigation';
+import DatabaseNavigation from '@/components/Database/DatabaseNavigation';
 import { related } from '@/utils/related';
 import { getServerAuthSession } from '@/server/auth';
 import { type GetServerSideProps } from 'next';

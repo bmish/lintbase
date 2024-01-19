@@ -1,4 +1,4 @@
-import DatabaseNavigation from '@/components/Dashboard/DatabaseNavigation';
+import DatabaseNavigation from '@/components/Database/DatabaseNavigation';
 import LinterCard from '@/components/LinterCard';
 import { prisma } from '@/server/db';
 import { fixAnyDatesInObject } from '@/utils/prisma';
@@ -15,7 +15,7 @@ import {
 import { Prisma } from '@prisma/client';
 import Link from 'next/link';
 import Head from 'next/head';
-import Footer from '@/components/Footer';
+import Footer from '@/components/Layout/Footer';
 import { getServerAuthSession } from '@/server/auth';
 import { type GetServerSideProps } from 'next';
 import { packageToLinkUs } from '@/utils/dynamic-fields';

@@ -10,7 +10,7 @@ import {
 import { prisma } from '@/server/db';
 import { Prisma } from '@prisma/client';
 import Link from 'next/link';
-import Footer from '@/components/Footer';
+import Footer from '@/components/Layout/Footer';
 
 export async function getServerSideProps() {
   const lintersPopular = await prisma.linter.findMany({

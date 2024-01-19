@@ -17,7 +17,7 @@ import { useRouter } from 'next/router';
 import { ruleToLinkUs } from '@/utils/dynamic-fields';
 import ReactMarkdown from 'react-markdown';
 import { Prisma } from '@prisma/client';
-import DatabaseNavigation from '@/components/Dashboard/DatabaseNavigation';
+import DatabaseNavigation from '@/components/Database/DatabaseNavigation';
 import Head from 'next/head';
 import EmojiFixable from '@/components/Emoji/EmojiFixable';
 import EmojiHasSuggestions from '@/components/Emoji/EmojiHasSuggestions';
@@ -28,7 +28,7 @@ import EmojiTypeSuggestion from '@/components/Emoji/EmojiTypeSuggestion';
 import EmojiOptions from '@/components/Emoji/EmojiOptions';
 import EmojiDeprecated from '@/components/Emoji/EmojiDeprecated';
 import EmojiType from '@/components/Emoji/EmojiType';
-import Footer from '@/components/Footer';
+import Footer from '@/components/Layout/Footer';
 
 const include = {
   linter: {

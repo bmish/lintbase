@@ -1,9 +1,9 @@
 /* eslint n/no-unsupported-features/es-syntax:"off" */
-import Footer from '@/components/Footer';
+import Footer from '@/components/Layout/Footer';
 import Head from 'next/head';
 import { Paper } from '@mui/material';
 import { useSession } from 'next-auth/react';
-import AccessDenied from '@/components/AccessDenied';
+import AccessDenied from '@/components/Layout/AccessDenied';
 import Link from 'next/link';
 import DatabaseNavigation from '@/components/Dashboard/DashboardNavigation';
 

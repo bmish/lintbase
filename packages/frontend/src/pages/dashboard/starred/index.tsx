@@ -20,7 +20,7 @@ import { format } from 'timeago.js';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import millify from 'millify';
 import Head from 'next/head';
-import Footer from '@/components/Footer';
+import Footer from '@/components/Layout/Footer';
 import DashboardNavigation from '@/components/Dashboard/DashboardNavigation';
 import { Octokit } from 'octokit';
 import { env } from '@/env.mjs';

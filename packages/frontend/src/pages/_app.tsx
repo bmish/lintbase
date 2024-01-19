@@ -8,7 +8,7 @@ import '@fontsource/roboto/700.css'; // eslint-disable-line import/no-unassigned
 
 import type { AppType } from 'next/app';
 import { api } from '@/utils/api';
-import Layout from '../components/layout';
+import Layout from '../components/Layout/layout';
 import { SessionProvider } from 'next-auth/react';
 import { type Session } from 'next-auth';
 import { Analytics } from '@vercel/analytics/react';
