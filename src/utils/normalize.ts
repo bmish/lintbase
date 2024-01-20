@@ -3,7 +3,7 @@
  */
 
 import { EmberTemplateLint, Stylelint, StylelintPlugin } from '@/utils/types';
-import { load } from '@lintbase/downloader';
+import { load } from '../../scripts/package-downloader/utils';
 import type { TSESLint } from '@typescript-eslint/utils';
 import path from 'node:path';
 import { PackageJson } from 'type-fest';
@@ -70,8 +70,8 @@ const EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS = new Set([
   'ember-template-lint-configurations',
 ]);
 
-// Keep in sync with: packages/downloader/bin/download.ts
-const CORE_LINTING_FRAMEWORKS = [
+// Keep in sync with: scripts/package-downloader/download.ts
+export const CORE_LINTING_FRAMEWORKS = [
   'ember-template-lint',
   'eslint',
   'markdownlint',
@@ -79,8 +79,8 @@ const CORE_LINTING_FRAMEWORKS = [
   'stylelint',
 ];
 
-// Keep in sync with: packages/downloader/bin/download.ts
-const PLUGINS_SUPPORTED = [
+// Keep in sync with: scripts/package-downloader/download.ts
+export const PLUGINS_SUPPORTED = [
   'eslint-plugin',
   'ember-template-lint-plugin',
   'stylelint-plugin',
@@ -404,7 +404,7 @@ async function eslintLinterToNormalizedLinter(
             category: null,
             options: {
               // @ts-expect-error -- type is missing for this property
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- type is missing for this property
+
               create: uniqueItems(getAllNamedOptions(rule.schema), 'name').map(
                 (obj) => ({
                   name: obj.name,
@@ -834,8 +834,8 @@ export async function loadLintersToDb(
   for (const linterType of linterTypes) {
     const downloadPath = path.join(
       process.cwd(),
-      '..',
-      'downloader',
+      'scripts',
+      'package-downloader',
       'tmp',
       'npm',
       linterType,
@@ -957,7 +957,7 @@ export async function loadLintersToDb(
           case 'eslint-plugin': {
             linterNormalized = await eslintLinterToNormalizedLinter(
               linterName,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
               linter,
               packageJson,
               npmDownloadsInfo,
