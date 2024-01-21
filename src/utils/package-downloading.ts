@@ -29,9 +29,10 @@ async function downloadJSON<T>(url: string): Promise<T> {
 
 async function searchPackages(searchText: string): Promise<PackageInfo[]> {
   // https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md
-  const PAGE_SIZE = 250; // Max page size from npm.
+  const PAGE_SIZE = 5; // Max page size from npm. // 250
+  const PAGE_COUNT = 1; // 4
   const data: { package: PackageInfo }[] = [];
-  for (let page = 0; page < 4; page += 1) {
+  for (let page = 0; page < PAGE_COUNT; page += 1) {
     const dataPage = await downloadJSON<NpmSearchResult>(
       `https://registry.npmjs.org/-/v1/search?text=${searchText}&size=${PAGE_SIZE}&from=${
         page * PAGE_SIZE

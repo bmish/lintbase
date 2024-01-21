@@ -3,7 +3,7 @@
  */
 
 import { EmberTemplateLint, Stylelint, StylelintPlugin } from '@/utils/types';
-import { load } from '../../scripts/package-downloader/utils';
+import { load } from './package-downloading';
 import type { TSESLint } from '@typescript-eslint/utils';
 import path from 'node:path';
 import { PackageJson } from 'type-fest';
@@ -70,7 +70,6 @@ const EMBER_TEMPLATE_LINT_IGNORED_KEYWORDS = new Set([
   'ember-template-lint-configurations',
 ]);
 
-// Keep in sync with: scripts/package-downloader/download.ts
 export const CORE_LINTING_FRAMEWORKS = [
   'ember-template-lint',
   'eslint',
@@ -79,7 +78,6 @@ export const CORE_LINTING_FRAMEWORKS = [
   'stylelint',
 ];
 
-// Keep in sync with: scripts/package-downloader/download.ts
 export const PLUGINS_SUPPORTED = [
   'eslint-plugin',
   'ember-template-lint-plugin',
@@ -834,8 +832,9 @@ export async function loadLintersToDb(
   for (const linterType of linterTypes) {
     const downloadPath = path.join(
       process.cwd(),
-      'scripts',
-      'package-downloader',
+      'src',
+      'pages',
+      'api',
       'tmp',
       'npm',
       linterType,

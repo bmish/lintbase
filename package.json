@@ -4,7 +4,6 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "download": "ts-node ./scripts/package-downloader/download.ts",
     "lint": "next lint",
     "postinstall": "prisma generate",
     "start": "next start",

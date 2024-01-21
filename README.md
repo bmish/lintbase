@@ -12,13 +12,11 @@ Install dependencies
 npm i
 ```
 
-Download lint packages locally:
+## Populate database
 
-```sh
-npm run download
-```
+Visit <http://localhost:3000/api/package-download> to download packages locally.
 
-Visit <http://localhost:3000/api/load> to load downloaded packages into the database.
+Visit <http://localhost:3000/api/package-load> to load downloaded packages into the database.
 
 ## Usage
 
